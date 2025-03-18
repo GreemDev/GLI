@@ -4,7 +4,7 @@ namespace GitLabCli.Entities.Cli;
 
 public class Options
 {
-    [Option("instance", Required = false, Default = "https://git.ryujinx.app", HelpText = "Runs the task every time the given time period has elapsed; i.e. 8h45m")]
+    [Option("instance", Required = false, Default = "https://git.ryujinx.app", HelpText = "The target GitLab instance to use.")]
     public string GitLabEndpoint { get; set; }
     
     [Option("access-token", Required = true, HelpText = "https://git.ryujinx.app/-/user_settings/personal_access_tokens")]
