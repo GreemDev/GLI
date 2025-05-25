@@ -9,6 +9,7 @@
         <TrimmerSingleWarn>false</TrimmerSingleWarn>
         <PublishTrimmed>true</PublishTrimmed>
         <TrimMode>partial</TrimMode>
+        <Version>1.1.0</Version>
         <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
     </PropertyGroup>
 
