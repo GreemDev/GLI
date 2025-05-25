@@ -1,6 +1,6 @@
 ﻿using CommandLine;
+using GitLabCli.Commands;
 
-namespace GitLabCli;
 
 public class Options
 {
@@ -18,10 +18,4 @@ public class Options
     
     [Value(0, MetaName = "input", HelpText = "The raw string passed to the action you are performing.")]
     public string InputData { get; set; }
-}
-
-public enum CliCommandName
-{
-    CreateTag,
-    CopyTags,
 }

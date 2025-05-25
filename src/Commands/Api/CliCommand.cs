@@ -24,3 +24,8 @@ internal struct CommandShim
     public required CliCommandName Name { get; init; }
     public required Func<Options, Task> Execute { get; init; }
 }
+
+public enum CliCommandName
+{
+    CreateTag,
+}
