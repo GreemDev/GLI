@@ -1,4 +1,4 @@
-﻿namespace GitLabCli.Entities;
+﻿namespace GitLabCli.Helpers;
 
 
 // from Discord.Net

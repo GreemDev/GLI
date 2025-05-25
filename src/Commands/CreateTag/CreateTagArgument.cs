@@ -1,6 +1,4 @@
-﻿using GitLabCli.Entities.Cli;
-
-namespace GitLabCli.Entities.Commands.CreateTag;
+﻿namespace GitLabCli.Commands.CreateTag;
 
 public class CreateTagArgument : CliCommandArgument
 {

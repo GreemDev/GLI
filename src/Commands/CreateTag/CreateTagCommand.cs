@@ -1,16 +1,16 @@
-﻿using GitLabCli.Entities.Cli;
-using GitLabCli.Helpers;
-using Gommon;
+﻿using GitLabCli.Helpers;
 using NGitLab.Models;
 
-namespace GitLabCli.Entities.Commands.CreateTag;
+namespace GitLabCli.Commands.CreateTag;
 
-public class CreateTagCommand() : CliCommand(CliCommandName.CreateTag)
+[Command]
+public class CreateTagCommand() : CliCommand<CreateTagArgument>(CliCommandName.CreateTag)
 {
-    public override Task ExecuteAsync(CliCommandArgument tempArg)
+    protected override CreateTagArgument CreateArg(Options options) => new(options);
+
+    public override Task ExecuteAsync(CreateTagArgument arg)
     {
-        var arg = tempArg.HardCast<CreateTagArgument>();
-        var repo = arg.CreateGitLabClient().GetRepository(new ProjectId(arg.Options.ProjectPath));
+        var repo = arg.GetRepoClient();
 
         if (repo == null)
             return Task.CompletedTask;
