@@ -60,6 +60,8 @@ public class UploadGenericPackageCommand() : CliCommand<UploadGenericPackageComm
             
         if (response.StatusCode == HttpStatusCode.Unauthorized)
             Logger.Error(LogSource.App, "Invalid authorization.");
+        if (response.StatusCode == HttpStatusCode.Forbidden)
+            Logger.Error(LogSource.App, "Target project has the package registry disabled.");
 
         return response.IsSuccessStatusCode;
     }
