@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
+using GitLabCli.API;
 using GitLabCli.Helpers;
 
 namespace GitLabCli.Commands.UploadGenericPackage;
@@ -25,13 +26,13 @@ public class UploadGenericPackageCommand() : CliCommand<UploadGenericPackageComm
             return;
         }
         
-        var http = CreateHttpClient(arg);
+        using var http = GitLabRestApi.CreateHttpClient(arg.Options.GitLabEndpoint, arg.AccessToken);
 
         int completedFiles = 0;
 
         foreach (var filePath in files)
         {
-            if (!await UploadGenericPackageAsync(arg, http, project.Id, filePath))
+            if (!await GitLabRestApi.UploadGenericPackageAsync(arg, http, project.Id, filePath))
                 Logger.Error(LogSource.App, $"{filePath.Replace(Environment.CurrentDirectory, string.Empty)} failed to upload.");
             else
             {
@@ -41,41 +42,5 @@ public class UploadGenericPackageCommand() : CliCommand<UploadGenericPackageComm
         }
         
         Logger.Info(LogSource.App, $"Finished. {completedFiles}/{files.Length} uploads successful.");
-    }
-
-    private static async Task<bool> UploadGenericPackageAsync(
-        UploadGenericPackageCommandArgument arg,
-        HttpClient http,
-        long projectId,
-        string filePath)
-    {
-        var httpRequest = new HttpRequestMessage(HttpMethod.Put,
-            $"api/v4/projects/{projectId}/packages/generic/{arg.PackageName}/{arg.PackageVersion}/{Path.GetFileName(filePath)}");
-
-        await using var fileStream = File.OpenRead(filePath);
-
-        httpRequest.Content = new StreamContent(fileStream);
-        
-        var response = await http.SendAsync(httpRequest);
-            
-        if (response.StatusCode == HttpStatusCode.Unauthorized)
-            Logger.Error(LogSource.App, "Invalid authorization.");
-        if (response.StatusCode == HttpStatusCode.Forbidden)
-            Logger.Error(LogSource.App, "Target project has the package registry disabled.");
-
-        return response.IsSuccessStatusCode;
-    }
-
-    private static HttpClient CreateHttpClient(UploadGenericPackageCommandArgument arg)
-    {
-        return new HttpClient
-        {
-            BaseAddress = new Uri("https://git.ryujinx.app/"),
-            DefaultRequestHeaders =
-            {
-                UserAgent = { new ProductInfoHeaderValue("GitLabCli", "1.0.0") },
-                Authorization = AuthenticationHeaderValue.Parse($"Bearer {arg.AccessToken}")
-            }
-        };
     }
 }

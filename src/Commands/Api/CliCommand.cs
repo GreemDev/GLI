@@ -28,5 +28,6 @@ internal struct CommandShim
 public enum CliCommandName
 {
     CreateTag,
-    UploadGenericPackage
+    UploadGenericPackage,
+    CreateReleaseFromGenericPackageFiles
 }
