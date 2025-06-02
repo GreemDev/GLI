@@ -32,8 +32,12 @@ public class UploadGenericPackageCommand() : CliCommand<UploadGenericPackageComm
         foreach (var filePath in files)
         {
             if (!await UploadGenericPackageAsync(arg, http, project.Id, filePath))
-                Logger.Error(LogSource.App, $"{filePath} failed to upload.");
-            else completedFiles++;
+                Logger.Error(LogSource.App, $"{filePath.Replace(Environment.CurrentDirectory, string.Empty)} failed to upload.");
+            else
+            {
+                Logger.Info(LogSource.App, $"Uploaded {filePath.Replace(Environment.CurrentDirectory, string.Empty)} to the package registry on project {project.NameWithNamespace} (id {project.Id})");
+                completedFiles++;
+            }
         }
         
         Logger.Info(LogSource.App, $"Finished. {completedFiles}/{files.Length} uploads successful.");
