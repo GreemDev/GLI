@@ -2,6 +2,7 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
+using GitLabCli.Commands.BulkUploadGenericPackage;
 using GitLabCli.Commands.CreateReleaseFromGenericPackageFiles;
 using GitLabCli.Commands.UploadGenericPackage;
 using GitLabCli.Helpers;
@@ -23,21 +24,26 @@ public static class GitLabRestApi
             }
         };
     }
-    
-    public static async Task<bool> UploadGenericPackageAsync(
-        UploadGenericPackageCommandArgument arg,
-        HttpClient http,
+
+    public static Task<bool> UploadGenericPackageAsync(
+        this BulkUploadGenericPackageCommandArgument arg,
         long projectId,
         string filePath)
+        => UploadGenericPackageAsync(new UploadGenericPackageCommandArgument(arg, filePath), projectId); 
+    
+    public static async Task<bool> UploadGenericPackageAsync(
+        this UploadGenericPackageCommandArgument arg,
+        long projectId)
     {
-        var httpRequest = new HttpRequestMessage(HttpMethod.Put,
-            $"api/v4/projects/{projectId}/packages/generic/{arg.PackageName}/{arg.PackageVersion}/{Path.GetFileName(filePath)}");
-
-        await using var fileStream = File.OpenRead(filePath);
-
-        httpRequest.Content = new StreamContent(fileStream);
+        HttpResponseMessage response;
         
-        var response = await http.SendAsync(httpRequest);
+        await using (var fileStream = arg.FilePath.OpenRead())
+        {
+            response = await arg.Http.PutAsync(
+                $"api/v4/projects/{projectId}/packages/generic/{arg.PackageName}/{arg.PackageVersion}/{arg.FilePath.Name}", 
+                new StreamContent(fileStream)
+            );
+        }
             
         if (response.StatusCode == HttpStatusCode.Unauthorized)
             Logger.Error(LogSource.App, "Invalid authorization.");
@@ -48,11 +54,10 @@ public static class GitLabRestApi
     }
 
     public static async Task<GetProjectPackagesItem?> FindMatchingPackageAsync(
-        CreateReleaseFromGenericPackageFilesArgument arg,
-        HttpClient http,
+        this CreateReleaseFromGenericPackageFilesArgument arg,
         long projectId)
     {
-        var response = await http.GetAsync($"api/v4/projects/{projectId}/packages");
+        var response = await arg.Http.GetAsync($"api/v4/projects/{projectId}/packages");
 
         if (response.StatusCode == HttpStatusCode.Forbidden)
         {
@@ -68,9 +73,9 @@ public static class GitLabRestApi
     }
 
     public static async Task<IEnumerable<GetPackageFilesItem>?> GetPackageFilesAsync(
+        this GetProjectPackagesItem matchingPackage,
         HttpClient http,
-        long projectId,
-        GetProjectPackagesItem matchingPackage)
+        long projectId)
     {
         var response = await http.GetAsync($"api/v4/projects/{projectId}/packages/{matchingPackage.Id}/package_files?per_page=100");
 
@@ -85,17 +90,16 @@ public static class GitLabRestApi
     
     
     public static async Task<ReleaseInfo?> CreateReleaseFromGenericPackagesAsync(
-        CreateReleaseFromGenericPackageFilesArgument arg,
-        HttpClient http,
+        this CreateReleaseFromGenericPackageFilesArgument arg,
         long projectId)
     {
-        if (await FindMatchingPackageAsync(arg, http, projectId) is not {} matchingPackage)
+        if (await arg.FindMatchingPackageAsync(projectId) is not {} matchingPackage)
         {
             Logger.Error(LogSource.App, $"Could not create a release, because a generic package matching name {arg.PackageName}, version {arg.PackageVersion} on project {arg.Options.ProjectPath} wasn't found.");
             return null;
         }
         
-        if (await GetPackageFilesAsync(http, projectId, matchingPackage) is not {} packageFiles)
+        if (await matchingPackage.GetPackageFilesAsync(arg.Http, projectId) is not {} packageFiles)
         {
             Logger.Error(LogSource.App, $"Could not create a release, because a request to get all package files for package matching name {arg.PackageName}, version {arg.PackageVersion} on project {arg.Options.ProjectPath} failed.");
             return null;

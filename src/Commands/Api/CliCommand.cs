@@ -6,7 +6,7 @@ public abstract class CliCommand<TArg> where TArg : CliCommandArgument
 
     public readonly CliCommandName Name;
     
-    public abstract Task ExecuteAsync(TArg arg);
+    public abstract Task<ExitCode> ExecuteAsync(TArg arg);
 
     protected abstract TArg CreateArg(Options options);
 
@@ -22,12 +22,13 @@ public abstract class CliCommand<TArg> where TArg : CliCommandArgument
 internal struct CommandShim
 {
     public required CliCommandName Name { get; init; }
-    public required Func<Options, Task> Execute { get; init; }
+    public required Func<Options, Task<ExitCode>> Execute { get; init; }
 }
 
 public enum CliCommandName
 {
     CreateTag,
+    BulkUploadGenericPackage,
     UploadGenericPackage,
     CreateReleaseFromGenericPackageFiles
 }

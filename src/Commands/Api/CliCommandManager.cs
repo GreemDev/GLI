@@ -34,6 +34,6 @@ public static class CliCommandManager
             return;
         }
 
-        await command.Execute(options);
+        Environment.Exit((int)await command.Execute(options));
     }
 }

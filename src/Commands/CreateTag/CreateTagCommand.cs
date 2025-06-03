@@ -8,12 +8,12 @@ public class CreateTagCommand() : CliCommand<CreateTagArgument>(CliCommandName.C
 {
     protected override CreateTagArgument CreateArg(Options options) => new(options);
 
-    public override Task ExecuteAsync(CreateTagArgument arg)
+    public override Task<ExitCode> ExecuteAsync(CreateTagArgument arg)
     {
         var repo = arg.GetRepoClient();
 
         if (repo == null)
-            return Task.CompletedTask;
+            return Task.FromResult(ExitCode.ProjectNotFound);
 
         repo.Tags.Create(new TagCreate
         {
@@ -22,8 +22,8 @@ public class CreateTagCommand() : CliCommand<CreateTagArgument>(CliCommandName.C
             Ref = arg.TagRef
         });
         
-        Logger.Info(LogSource.Cli, $"Created tag {arg.TagName} on project {arg.Options.ProjectPath}.");
+        Logger.Info(LogSource.App, $"Created tag '{arg.TagName}' on project '{arg.Options.ProjectPath}'.");
 
-        return Task.CompletedTask;
+        return Task.FromResult(ExitCode.Normal);
     }
 }

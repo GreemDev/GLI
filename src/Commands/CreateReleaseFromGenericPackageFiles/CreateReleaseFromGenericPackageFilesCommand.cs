@@ -8,19 +8,21 @@ public class CreateReleaseFromGenericPackageFilesCommand() : CliCommand<CreateRe
 {
     protected override CreateReleaseFromGenericPackageFilesArgument CreateArg(Options options) => new(options);
 
-    public override async Task ExecuteAsync(CreateReleaseFromGenericPackageFilesArgument arg)
+    public override async Task<ExitCode> ExecuteAsync(CreateReleaseFromGenericPackageFilesArgument arg)
     {
         var project = await arg.CreateGitLabClient().Projects.GetByNamespacedPathAsync(arg.Options.ProjectPath);
         if (project is null)
         {
-            Logger.Error(LogSource.App, $"Could not find the project {arg.Options.ProjectPath} on {arg.Options.GitLabEndpoint}");
-            return;
+            Logger.Error(LogSource.App, $"Could not find the project '{arg.Options.ProjectPath}' on '{arg.Options.GitLabEndpoint}'.");
+            return ExitCode.ProjectNotFound;
         }
         
         using var http = GitLabRestApi.CreateHttpClient(arg.Options.GitLabEndpoint, arg.AccessToken);
 
-        var releaseInfo = await GitLabRestApi.CreateReleaseFromGenericPackagesAsync(arg, http, project.Id);
+        var releaseInfo = await arg.CreateReleaseFromGenericPackagesAsync(project.Id);
         if (releaseInfo != null)
-            Logger.Info(LogSource.App, $"Release created at {arg.Options.GitLabEndpoint.TrimEnd('/')}/{arg.Options.ProjectPath}/-/releases/{arg.PackageVersion}");
+            Logger.Info(LogSource.App, $"Release created at '{arg.Options.GitLabEndpoint.TrimEnd('/')}/{arg.Options.ProjectPath}/-/releases/{arg.PackageVersion}'.");
+
+        return ExitCode.Normal;
     }
 }

@@ -1,4 +1,5 @@
-﻿using Gommon;
+﻿using GitLabCli.API;
+using Gommon;
 using NGitLab;
 using NGitLab.Models;
 
@@ -9,12 +10,13 @@ public abstract class CliCommandArgument
     protected CliCommandArgument(Options options)
     {
         Options = options;
-        AccessToken = options.AccessToken ?? ReadAccessTokenFromFile();
+        AccessToken = options?.AccessToken ?? ReadAccessTokenFromFile();
+        InitHttp();
     }
 
-    public string AccessToken { get; }
+    public string AccessToken { get; protected init; }
 
-    private static string ReadAccessTokenFromFile()
+    protected static string ReadAccessTokenFromFile()
     {
         var fp = new FilePath(Environment.CurrentDirectory) / ".accesstoken";
         if (!fp.ExistsAsFile)
@@ -24,7 +26,14 @@ public abstract class CliCommandArgument
         return fp.ReadAllText();
     }
 
-    public Options Options { get; }
+    protected void InitHttp()
+    {
+        Http = GitLabRestApi.CreateHttpClient(Options.GitLabEndpoint, AccessToken);
+    }
+
+    public HttpClient Http { get; private set; } = null!;
+
+    public Options Options { get; protected init; }
 
     public IRepositoryClient? GetRepoClient() => CreateGitLabClient().GetRepository(new ProjectId(Options.ProjectPath));
     
