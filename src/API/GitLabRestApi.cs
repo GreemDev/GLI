@@ -1,11 +1,11 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text.Json;
 using GitLabCli.Commands.BulkUploadGenericPackage;
 using GitLabCli.Commands.CreateReleaseFromGenericPackageFiles;
 using GitLabCli.Commands.UploadGenericPackage;
 using GitLabCli.Helpers;
+using Gommon;
 using NGitLab.Models;
 
 namespace GitLabCli.API;
@@ -118,7 +118,7 @@ public static class GitLabRestApi
             return await arg.CreateGitLabClient().GetReleases(projectId).CreateAsync(new ReleaseCreate
             {
                 TagName = arg.PackageVersion,
-                Ref = arg.ReleaseRef,
+                Ref = arg.ReleaseRef.EqualsAnyIgnoreCase("null") ? null : arg.ReleaseRef,
                 Name = arg.ReleaseTitle ?? arg.PackageVersion,
                 Description = arg.ReleaseBody,
                 ReleasedAt = matchingPackage.CreatedAt.LocalDateTime,
