@@ -1,4 +1,6 @@
-﻿namespace GitLabCli.Commands.CreateReleaseFromGenericPackageFiles;
+﻿using Gommon;
+
+namespace GitLabCli.Commands.CreateReleaseFromGenericPackageFiles;
 
 public class CreateReleaseFromGenericPackageFilesArgument : CliCommandArgument
 {
@@ -20,6 +22,9 @@ public class CreateReleaseFromGenericPackageFilesArgument : CliCommandArgument
         try
         {
             ReleaseBody = options.InputData.Split('|')[4];
+            
+            if (ReleaseBody.StartsWithIgnoreCase("rf:"))
+                ReleaseBody = File.ReadAllText(ReleaseBody[3..]);
         }
         catch
         {
