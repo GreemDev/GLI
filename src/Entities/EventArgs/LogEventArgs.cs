@@ -1,5 +1,4 @@
-﻿using GitLabCli.Entities;
-using GitLabCli.Helpers;
+﻿using GitLabCli.Helpers;
 
 namespace GitLabCli.Entities.EventArgs;
 

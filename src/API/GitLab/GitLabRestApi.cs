@@ -1,14 +1,16 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
 using GitLabCli.Commands.BulkUploadGenericPackage;
 using GitLabCli.Commands.CreateReleaseFromGenericPackageFiles;
+using GitLabCli.Commands.SendUpdateMessage;
 using GitLabCli.Commands.UploadGenericPackage;
 using GitLabCli.Helpers;
 using Gommon;
 using NGitLab.Models;
 
-namespace GitLabCli.API;
+namespace GitLabCli.API.GitLab;
 
 public static class GitLabRestApi
 {
@@ -23,6 +25,25 @@ public static class GitLabRestApi
                 Authorization = AuthenticationHeaderValue.Parse($"Bearer {accessToken}")
             }
         };
+    }
+    
+    public static Task<GitLabReleaseJsonResponse?> GetLatestReleaseAsync(HttpClient httpClient, Options options, long projectId) 
+        => GetReleaseAsync(httpClient, options, projectId, "permalink/latest");
+    
+    public static Task<GitLabReleaseJsonResponse?> GetReleaseAsync(this SendUpdateMessageArgument arg, long projectId)
+        => GetReleaseAsync(arg.Http, arg.Options, projectId, arg.ReleaseTag);
+
+    public static async Task<GitLabReleaseJsonResponse?> GetReleaseAsync(HttpClient httpClient, Options options,
+        long projectId, string tagName)
+    {
+        var resp = await httpClient.GetAsync($"{options.GitLabEndpoint.TrimEnd('/')}/api/v4/projects/{projectId}/releases/{tagName}");
+
+        var responseBody = await resp.Content.ReadAsStringAsync();
+        if (responseBody is "{\"message\":\"404 Not Found\"}")
+            return null;
+
+        return JsonSerializer.Deserialize(responseBody,
+            GitLabReleaseJsonResponseSerializerContext.Default.GitLabReleaseJsonResponse);
     }
 
     public static Task<bool> UploadGenericPackageAsync(

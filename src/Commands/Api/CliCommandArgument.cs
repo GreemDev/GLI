@@ -1,4 +1,4 @@
-﻿using GitLabCli.API;
+﻿using GitLabCli.API.GitLab;
 using Gommon;
 using NGitLab;
 using NGitLab.Models;

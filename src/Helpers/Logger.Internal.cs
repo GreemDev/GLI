@@ -1,10 +1,8 @@
-﻿using System.Drawing;
-using System.Text;
-using GitLabCli.Entities;
+﻿using System.Text;
 using GitLabCli.Entities.EventArgs;
 using Colorful;
 using Gommon;
-
+using Color = System.Drawing.Color;
 using Console = Colorful.Console;
 
 namespace GitLabCli.Helpers;

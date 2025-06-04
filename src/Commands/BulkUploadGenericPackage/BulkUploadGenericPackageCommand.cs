@@ -1,4 +1,4 @@
-﻿using GitLabCli.API;
+﻿using GitLabCli.API.GitLab;
 using GitLabCli.Helpers;
 
 namespace GitLabCli.Commands.BulkUploadGenericPackage;
@@ -38,8 +38,6 @@ public class BulkUploadGenericPackageCommand() : CliCommand<BulkUploadGenericPac
         }
         
         Logger.Info(LogSource.App, $"Finished. {completedFiles}/{files.Length} uploads successful.");
-        
-        arg.Http.Dispose();
 
         return ExitCode.Normal;
     }

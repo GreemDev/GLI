@@ -1,4 +1,4 @@
-﻿using GitLabCli.API;
+﻿using GitLabCli.API.GitLab;
 using GitLabCli.Helpers;
 
 namespace GitLabCli.Commands.CreateReleaseFromGenericPackageFiles;
@@ -16,8 +16,6 @@ public class CreateReleaseFromGenericPackageFilesCommand() : CliCommand<CreateRe
             Logger.Error(LogSource.App, $"Could not find the project '{arg.Options.ProjectPath}' on '{arg.Options.GitLabEndpoint}'.");
             return ExitCode.ProjectNotFound;
         }
-        
-        using var http = GitLabRestApi.CreateHttpClient(arg.Options.GitLabEndpoint, arg.AccessToken);
 
         var releaseInfo = await arg.CreateReleaseFromGenericPackagesAsync(project.Id);
         if (releaseInfo != null)

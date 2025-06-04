@@ -1,4 +1,4 @@
-﻿using GitLabCli.API;
+﻿using GitLabCli.API.GitLab;
 using GitLabCli.Helpers;
 
 namespace GitLabCli.Commands.UploadGenericPackage;

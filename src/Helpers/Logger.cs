@@ -1,7 +1,4 @@
-﻿using System.Diagnostics;
-using System.IO;
-using System.Runtime.CompilerServices;
-using GitLabCli.Entities;
+﻿using System.Runtime.CompilerServices;
 using GitLabCli.Entities.EventArgs;
 using Gommon;
 

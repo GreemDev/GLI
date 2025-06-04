@@ -6,4 +6,5 @@ public enum ExitCode
     Normal = 0,
     FileNotFound = 1,
     ProjectNotFound = 2,
+    ObjectNotFound = 3,
 }
