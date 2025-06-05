@@ -179,7 +179,6 @@ public static class GitLabRestApi
                 Ref = arg.ReleaseRef.EqualsAnyIgnoreCase("null") ? null : arg.ReleaseRef,
                 Name = arg.ReleaseTitle ?? arg.PackageVersion,
                 Description = arg.ReleaseBody,
-                ReleasedAt = matchingPackage.CreatedAt.LocalDateTime,
                 Assets = new ReleaseAssetsInfo
                 {
                     Count = gitlabAssetLinks.Length,
