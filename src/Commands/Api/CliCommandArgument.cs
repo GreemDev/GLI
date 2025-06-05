@@ -31,8 +31,8 @@ public abstract class CliCommandArgument
         Http = GitLabRestApi.CreateHttpClient(Options.GitLabEndpoint, AccessToken);
     }
 
-    public string FormatGitLabUrl(params string[] subPaths)
-        => string.Concat(Options.GitLabEndpoint.TrimEnd('/'), "/", subPaths);
+    public string FormatGitLabUrl(string subPath)
+        => string.Concat(Options.GitLabEndpoint.TrimEnd('/'), "/", subPath);
 
     public HttpClient Http { get; private set; } = null!;
 
