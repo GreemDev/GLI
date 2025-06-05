@@ -17,9 +17,9 @@ public class CreateReleaseFromGenericPackageFilesCommand() : CliCommand<CreateRe
             return ExitCode.ProjectNotFound;
         }
 
-        var releaseInfo = await arg.CreateReleaseFromGenericPackagesAsync(project.Id);
+        var releaseInfo = await arg.CreateReleaseFromGenericPackagesAsync(project);
         if (releaseInfo != null)
-            Logger.Info(LogSource.App, $"Release created at '{arg.Options.GitLabEndpoint.TrimEnd('/')}/{arg.Options.ProjectPath}/-/releases/{arg.PackageVersion}'.");
+            Logger.Info(LogSource.App, $"Release created at '{releaseInfo.Links.Self}'.");
 
         return ExitCode.Normal;
     }

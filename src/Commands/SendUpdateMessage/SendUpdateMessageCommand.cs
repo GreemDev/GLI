@@ -22,7 +22,7 @@ public class SendUpdateMessageCommand() : CliCommand<SendUpdateMessageArgument>(
             return ExitCode.ProjectNotFound;
         }
 
-        if (await arg.GetReleaseAsync(project.Id) is not { } release)
+        if (await arg.GetReleaseAsync(project) is not { } release)
         {
             Logger.Error(LogSource.App, $"Could not find a release on '{project.NameWithNamespace}' with the tag '{arg.ReleaseTag}'.");
             return ExitCode.ObjectNotFound;
@@ -61,16 +61,11 @@ public class SendUpdateMessageCommand() : CliCommand<SendUpdateMessageArgument>(
     {
         var windowsX64 = assets.Links.FirstOrDefault(x => x.AssetName.ContainsIgnoreCase("win_x64"));
         var windowsArm64 = assets.Links.FirstOrDefault(x => x.AssetName.ContainsIgnoreCase("win_arm64"));
-        var linuxX64 = assets.Links.FirstOrDefault(x =>
-            x.AssetName.ContainsIgnoreCase("linux_x64") && !x.AssetName.EndsWithIgnoreCase(".AppImage"));
-        var linuxX64AppImage =
-            assets.Links.FirstOrDefault(x => x.AssetName.ContainsIgnoreCase("x64") && x.AssetName.EndsWithIgnoreCase(".AppImage"));
+        var linuxX64 = assets.Links.FirstOrDefault(x => x.AssetName.ContainsIgnoreCase("linux_x64") && !x.AssetName.EndsWithIgnoreCase(".AppImage"));
+        var linuxX64AppImage = assets.Links.FirstOrDefault(x => x.AssetName.ContainsIgnoreCase("x64") && x.AssetName.EndsWithIgnoreCase(".AppImage"));
         var macOs = assets.Links.FirstOrDefault(x => x.AssetName.ContainsIgnoreCase("macos_universal"));
-        var linuxArm64 = assets.Links.FirstOrDefault(x =>
-            x.AssetName.ContainsIgnoreCase("linux_arm64") && !x.AssetName.EndsWithIgnoreCase(".AppImage"));
-        var linuxArm64AppImage = assets.Links.FirstOrDefault(x =>
-            x.AssetName.ContainsIgnoreCase("arm64") && x.AssetName.EndsWithIgnoreCase(".AppImage"));
-        
+        var linuxArm64 = assets.Links.FirstOrDefault(x => x.AssetName.ContainsIgnoreCase("linux_arm64") && !x.AssetName.EndsWithIgnoreCase(".AppImage"));
+        var linuxArm64AppImage = assets.Links.FirstOrDefault(x => x.AssetName.ContainsIgnoreCase("arm64") && x.AssetName.EndsWithIgnoreCase(".AppImage"));
         var androidApk = assets.Links.FirstOrDefault(x => x.AssetName.EndsWithIgnoreCase(".apk"));
 
         var arrayBuilder = ImmutableArray.CreateBuilder<DiscordMessageEmbedField>();

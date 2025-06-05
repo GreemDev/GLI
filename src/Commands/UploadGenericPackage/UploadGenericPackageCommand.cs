@@ -23,7 +23,7 @@ public class UploadGenericPackageCommand() : CliCommand<UploadGenericPackageComm
             return ExitCode.ProjectNotFound;
         }
 
-        if (!await arg.UploadGenericPackageAsync(project.Id))
+        if (!await arg.UploadGenericPackageAsync(project))
         {
             Logger.Error(LogSource.App, $"'{arg.FilePath.FullPath}' failed to upload.");
             return ExitCode.UploadFailed;
