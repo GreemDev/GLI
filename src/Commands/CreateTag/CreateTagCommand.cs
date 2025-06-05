@@ -10,7 +10,7 @@ public class CreateTagCommand() : CliCommand<CreateTagArgument>(CliCommandName.C
 
     public override Task<ExitCode> ExecuteAsync(CreateTagArgument arg)
     {
-        var repo = arg.GetRepoClient();
+        var repo = arg.CreateGitLabClient().GetRepository(arg.Options.ProjectPath);
 
         if (repo == null)
             return Task.FromResult(ExitCode.ProjectNotFound);

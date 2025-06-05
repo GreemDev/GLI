@@ -31,11 +31,12 @@ public abstract class CliCommandArgument
         Http = GitLabRestApi.CreateHttpClient(Options.GitLabEndpoint, AccessToken);
     }
 
+    public string FormatGitLabUrl(params string[] subPaths)
+        => string.Concat(Options.GitLabEndpoint.TrimEnd('/'), "/", subPaths);
+
     public HttpClient Http { get; private set; } = null!;
 
     public Options Options { get; protected init; }
-
-    public IRepositoryClient? GetRepoClient() => CreateGitLabClient().GetRepository(new ProjectId(Options.ProjectPath));
     
     public GitLabClient CreateGitLabClient() 
         => new(Options.GitLabEndpoint, AccessToken);
