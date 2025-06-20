@@ -63,9 +63,6 @@ public static partial class GitLabRestApi
     public static Task<GitLabReleaseJsonResponse?> GetLatestReleaseAsync(HttpClient httpClient, Project project)
         => GetReleaseAsync(httpClient, project, "permalink/latest");
 
-    public static Task<GitLabReleaseJsonResponse?> GetReleaseAsync(this SendUpdateMessageArgument arg, Project project)
-        => GetReleaseAsync(arg.Http, project, arg.ReleaseTag);
-
     public static async Task<GitLabReleaseJsonResponse?> GetReleaseAsync(HttpClient httpClient,
         Project project, string tagName)
     {

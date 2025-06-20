@@ -1,4 +1,6 @@
-﻿using GitLabCli.Helpers;
+﻿using GitLabCli.API.GitLab;
+using GitLabCli.Helpers;
+using NGitLab.Models;
 
 namespace GitLabCli.Commands.SendUpdateMessage;
 
@@ -43,6 +45,9 @@ public class SendUpdateMessageArgument : CliCommandArgument
             ShowReleaseDescription = true;
         }
     }
+    
+    public Task<GitLabReleaseJsonResponse?> GetReleaseAsync(Project project) 
+        => GitLabRestApi.GetReleaseAsync(Http, project, ReleaseTag);
     
     public string ReleaseTag { get; }
     public DiscordColor EmbedColor { get; }
