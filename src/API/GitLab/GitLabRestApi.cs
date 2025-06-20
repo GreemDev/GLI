@@ -116,7 +116,7 @@ public static partial class GitLabRestApi
     {
         var packages = await PaginateAsync(
             arg.Http, 
-            $"api/v4/projects/{project.Id}/packages?per_page=100",
+            $"api/v4/projects/{project.Id}/packages?package_type=generic&sort=desc&order_by=created_at&per_page=100",
             cont => 
                 cont.ReadFromJsonAsync(GetProjectPackagesSerializerContext.Default.IEnumerableGetProjectPackagesItem)!,
             _ => Logger.Error(LogSource.App, "Target project has the package registry disabled.")
