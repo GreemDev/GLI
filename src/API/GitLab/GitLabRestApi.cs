@@ -12,7 +12,7 @@ using NGitLab.Models;
 
 namespace GitLabCli.API.GitLab;
 
-public static class GitLabRestApi
+public static partial class GitLabRestApi
 {
     public static HttpClient CreateHttpClient(string host, string accessToken)
     {
@@ -27,7 +27,8 @@ public static class GitLabRestApi
         };
     }
 
-    public static async Task<MilestoneItem?> GetMilestoneByTitleAsync(HttpClient httpClient, Project project, string title)
+    public static async Task<MilestoneItem?> GetMilestoneByTitleAsync(HttpClient httpClient, Project project,
+        string title)
     {
         var resp = await httpClient
             .GetAsync($"api/v4/projects/{project.Id}/milestones?title={title}&include_ancestors=true");
@@ -40,26 +41,28 @@ public static class GitLabRestApi
 
         var milestones = JsonSerializer.Deserialize(await resp.Content.ReadAsStringAsync(),
             MilestoneItemSerializerContext.Default.MilestoneItemArray);
-        
+
         if (milestones is null || milestones.Length is 0)
         {
-            Logger.Error(LogSource.App, $"Project '{project.NameWithNamespace}' and its parents did not have a milestone matching title '{title}'.");
+            Logger.Error(LogSource.App,
+                $"Project '{project.NameWithNamespace}' and its parents did not have a milestone matching title '{title}'.");
             return null;
         }
 
         if (milestones.Length > 1)
         {
-            Logger.Error(LogSource.App, $"Project '{project.NameWithNamespace}' had multiple milestones (including group milestones) matching title '{title}'.");
+            Logger.Error(LogSource.App,
+                $"Project '{project.NameWithNamespace}' had multiple milestones (including group milestones) matching title '{title}'.");
             Logger.Error(LogSource.App, "Using the one with the largest description content.");
             return milestones.OrderByDescending(m => m.Description.Length).First();
         }
 
         return milestones.First();
     }
-    
-    public static Task<GitLabReleaseJsonResponse?> GetLatestReleaseAsync(HttpClient httpClient, Project project) 
+
+    public static Task<GitLabReleaseJsonResponse?> GetLatestReleaseAsync(HttpClient httpClient, Project project)
         => GetReleaseAsync(httpClient, project, "permalink/latest");
-    
+
     public static Task<GitLabReleaseJsonResponse?> GetReleaseAsync(this SendUpdateMessageArgument arg, Project project)
         => GetReleaseAsync(arg.Http, project, arg.ReleaseTag);
 
@@ -67,7 +70,7 @@ public static class GitLabRestApi
         Project project, string tagName)
     {
         var resp = await httpClient.GetAsync($"api/v4/projects/{project.Id}/releases/{tagName}");
-        
+
         if (resp.StatusCode == HttpStatusCode.Forbidden)
         {
             Logger.Error(LogSource.App, $"'{project.NameWithNamespace}' has releases disabled.");
@@ -84,24 +87,24 @@ public static class GitLabRestApi
 
     public static Task<bool> UploadGenericPackageAsync(
         this BulkUploadGenericPackageCommandArgument arg,
-        Project project, 
+        Project project,
         string filePath)
         => UploadGenericPackageAsync(new UploadGenericPackageCommandArgument(arg, filePath), project);
-    
+
     public static async Task<bool> UploadGenericPackageAsync(
         this UploadGenericPackageCommandArgument arg,
         Project project)
     {
         HttpResponseMessage response;
-        
+
         await using (var fileStream = arg.FilePath.OpenRead())
         {
             response = await arg.Http.PutAsync(
-                $"api/v4/projects/{project.Id}/packages/generic/{arg.PackageName}/{arg.PackageVersion}/{arg.FilePath.Name}", 
+                $"api/v4/projects/{project.Id}/packages/generic/{arg.PackageName}/{arg.PackageVersion}/{arg.FilePath.Name}",
                 new StreamContent(fileStream)
             );
         }
-            
+
         if (response.StatusCode == HttpStatusCode.Unauthorized)
             Logger.Error(LogSource.App, "Invalid authorization.");
         if (response.StatusCode == HttpStatusCode.Forbidden)
@@ -114,53 +117,47 @@ public static class GitLabRestApi
         this CreateReleaseFromGenericPackageFilesArgument arg,
         Project project)
     {
-        var response = await arg.Http.GetAsync($"api/v4/projects/{project.Id}/packages");
-
-        if (response.StatusCode == HttpStatusCode.Forbidden)
-        {
-            Logger.Error(LogSource.App, "Target project has the package registry disabled.");
-            return null;
-        }
-
-        var packages =
-            await response.Content.ReadFromJsonAsync(GetProjectPackagesSerializerContext.Default
-                .IEnumerableGetProjectPackagesItem);
+        var packages = await PaginateAsync(
+            arg.Http, 
+            $"api/v4/projects/{project.Id}/packages?per_page=100",
+            cont => 
+                cont.ReadFromJsonAsync(GetProjectPackagesSerializerContext.Default.IEnumerableGetProjectPackagesItem)!,
+            _ => Logger.Error(LogSource.App, "Target project has the package registry disabled.")
+        );
 
         return packages?.FirstOrDefault(it => it.Name == arg.PackageName && it.Version == arg.PackageVersion);
     }
 
-    public static async Task<IEnumerable<GetPackageFilesItem>?> GetPackageFilesAsync(
+    public static Task<IEnumerable<GetPackageFilesItem>?> GetPackageFilesAsync(
         this GetProjectPackagesItem matchingPackage,
         HttpClient http,
-        Project project)
-    {
-        var response = await http.GetAsync($"api/v4/projects/{project.Id}/packages/{matchingPackage.Id}/package_files?per_page=100");
+        Project project) =>
+        PaginateAsync(
+            http, 
+            $"api/v4/projects/{project.Id}/packages/{matchingPackage.Id}/package_files?per_page=100",
+            cont => 
+                cont.ReadFromJsonAsync(GetPackageFilesSerializerContext.Default.IEnumerableGetPackageFilesItem)!,
+            _ => Logger.Error(LogSource.App, "Target project has the package registry disabled.")
+        );
 
-        if (response.StatusCode == HttpStatusCode.Forbidden)
-        {
-            Logger.Error(LogSource.App, "Target project has the package registry disabled.");
-            return null;
-        }
-        
-        return await response.Content.ReadFromJsonAsync(GetPackageFilesSerializerContext.Default.IEnumerableGetPackageFilesItem);
-    }
-    
-    
+
     public static async Task<ReleaseInfo?> CreateReleaseFromGenericPackagesAsync(
         this CreateReleaseFromGenericPackageFilesArgument arg,
         Project project)
     {
         await arg.InitIfNeededAsync(project);
-        
-        if (await arg.FindMatchingPackageAsync(project) is not {} matchingPackage)
+
+        if (await arg.FindMatchingPackageAsync(project) is not { } matchingPackage)
         {
-            Logger.Error(LogSource.App, $"Could not create a release because a generic package matching name {arg.PackageName}, version {arg.PackageVersion} on project {arg.Options.ProjectPath} wasn't found.");
+            Logger.Error(LogSource.App,
+                $"Could not create a release because a generic package matching name {arg.PackageName}, version {arg.PackageVersion} on project {arg.Options.ProjectPath} wasn't found.");
             return null;
         }
-        
-        if (await matchingPackage.GetPackageFilesAsync(arg.Http, project) is not {} packageFiles)
+
+        if (await matchingPackage.GetPackageFilesAsync(arg.Http, project) is not { } packageFiles)
         {
-            Logger.Error(LogSource.App, $"Could not create a release because the request to get all package files for package matching name {arg.PackageName}, version {arg.PackageVersion} on project {arg.Options.ProjectPath} failed.");
+            Logger.Error(LogSource.App,
+                $"Could not create a release because the request to get all package files for package matching name {arg.PackageName}, version {arg.PackageVersion} on project {arg.Options.ProjectPath} failed.");
             return null;
         }
 
@@ -168,7 +165,8 @@ public static class GitLabRestApi
         {
             Name = x.Name,
             LinkType = ReleaseLinkType.Package,
-            Url = arg.FormatGitLabUrl($"api/v4/projects/{project.Id}/packages/generic/{arg.PackageName}/{arg.PackageVersion}/{x.Name}")
+            Url = arg.FormatGitLabUrl(
+                $"api/v4/projects/{project.Id}/packages/generic/{arg.PackageName}/{arg.PackageVersion}/{x.Name}")
         }).ToArray();
 
         try
