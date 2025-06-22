@@ -13,6 +13,3 @@ public class MilestoneItem
     [JsonPropertyName("expired")] public bool Expired { get; set; }
     [JsonPropertyName("web_url")] public string WebUrl { get; set; } = null!;
 }
-
-[JsonSerializable(typeof(MilestoneItem[]))]
-public partial class MilestoneItemSerializerContext : JsonSerializerContext;

@@ -38,6 +38,3 @@ public class GitLabReleaseJsonResponse
         [JsonPropertyName("self")] public string Self { get; set; } = null!;
     }
 }
-
-[JsonSerializable(typeof(GitLabReleaseJsonResponse))]
-internal partial class GitLabReleaseJsonResponseSerializerContext : JsonSerializerContext;

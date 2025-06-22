@@ -2,21 +2,16 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
-using GitLabCli.Commands.BulkUploadGenericPackage;
-using GitLabCli.Commands.CreateReleaseFromGenericPackageFiles;
-using GitLabCli.Commands.SendUpdateMessage;
-using GitLabCli.Commands.UploadGenericPackage;
+using System.Text.Json.Serialization.Metadata;
 using GitLabCli.Helpers;
-using Gommon;
 using NGitLab.Models;
 
 namespace GitLabCli.API.GitLab;
 
-public static partial class GitLabRestApi
+public static class GitLabRestApi
 {
-    public static HttpClient CreateHttpClient(string host, string accessToken)
-    {
-        return new HttpClient
+    public static HttpClient CreateHttpClient(string host, string accessToken) =>
+        new()
         {
             BaseAddress = new Uri(host),
             DefaultRequestHeaders =
@@ -25,13 +20,16 @@ public static partial class GitLabRestApi
                 Authorization = AuthenticationHeaderValue.Parse($"Bearer {accessToken}")
             }
         };
-    }
 
     public static async Task<MilestoneItem?> GetMilestoneByTitleAsync(HttpClient httpClient, Project project,
         string title)
     {
         var resp = await httpClient
-            .GetAsync($"api/v4/projects/{project.Id}/milestones?title={title}&include_ancestors=true");
+            .GetAsync($"api/v4/projects/{project.Id}/milestones?title={title}" +
+                      $"&include_ancestors=true" +
+                      $"&per_page=100" +
+                      $"&sort=desc" +
+                      $"&order_by=created_at");
 
         if (resp.StatusCode == HttpStatusCode.Forbidden)
         {
@@ -39,8 +37,7 @@ public static partial class GitLabRestApi
             return null;
         }
 
-        var milestones = JsonSerializer.Deserialize(await resp.Content.ReadAsStringAsync(),
-            MilestoneItemSerializerContext.Default.MilestoneItemArray);
+        var milestones = await resp.Content.ReadFromJsonAsync(SerializerContexts.Default.MilestoneItemArray);
 
         if (milestones is null || milestones.Length is 0)
         {
@@ -78,113 +75,54 @@ public static partial class GitLabRestApi
         if (responseBody is "{\"message\":\"404 Not Found\"}")
             return null;
 
-        return JsonSerializer.Deserialize(responseBody,
-            GitLabReleaseJsonResponseSerializerContext.Default.GitLabReleaseJsonResponse);
+        return JsonSerializer.Deserialize(responseBody, SerializerContexts.Default.GitLabReleaseJsonResponse);
     }
+    
+    public static Func<HttpContent, Task<T>> ReadResonseAs<T>(JsonTypeInfo<T> typeInfo) 
+        => async content => (await content.ReadFromJsonAsync(typeInfo))!;
 
-    public static Task<bool> UploadGenericPackageAsync(
-        this BulkUploadGenericPackageCommandArgument arg,
-        Project project,
-        string filePath)
-        => UploadGenericPackageAsync(new UploadGenericPackageCommandArgument(arg, filePath), project);
-
-    public static async Task<bool> UploadGenericPackageAsync(
-        this UploadGenericPackageCommandArgument arg,
-        Project project)
+    public static Task<IEnumerable<T>?> PaginateAsync<T>(
+        this HttpClient http,
+        string endpoint,
+        JsonTypeInfo<IEnumerable<T>> typeInfo,
+        Action<HttpStatusCode>? onNonSuccess = null)
+        => http.PaginateAsync(endpoint, ReadResonseAs(typeInfo), onNonSuccess);
+    
+    public static async Task<IEnumerable<T>?> PaginateAsync<T>(
+        this HttpClient http,
+        string endpoint,
+        Func<HttpContent, Task<IEnumerable<T>>> converter,
+        Action<HttpStatusCode>? onNonSuccess = null)
     {
-        HttpResponseMessage response;
+        var response = await http.GetAsync(endpoint);
 
-        await using (var fileStream = arg.FilePath.OpenRead())
+        if (!response.IsSuccessStatusCode)
         {
-            response = await arg.Http.PutAsync(
-                $"api/v4/projects/{project.Id}/packages/generic/{arg.PackageName}/{arg.PackageVersion}/{arg.FilePath.Name}",
-                new StreamContent(fileStream)
-            );
-        }
-
-        if (response.StatusCode == HttpStatusCode.Unauthorized)
-            Logger.Error(LogSource.App, "Invalid authorization.");
-        if (response.StatusCode == HttpStatusCode.Forbidden)
-            Logger.Error(LogSource.App, "Target project has the package registry disabled.");
-
-        return response.IsSuccessStatusCode;
-    }
-
-    public static async Task<GetProjectPackagesItem?> FindMatchingPackageAsync(
-        this CreateReleaseFromGenericPackageFilesArgument arg,
-        Project project)
-    {
-        var packages = await PaginateAsync(
-            arg.Http, 
-            $"api/v4/projects/{project.Id}/packages?package_type=generic&sort=desc&order_by=created_at&per_page=100",
-            cont => 
-                cont.ReadFromJsonAsync(GetProjectPackagesSerializerContext.Default.IEnumerableGetProjectPackagesItem)!,
-            _ => Logger.Error(LogSource.App, "Target project has the package registry disabled.")
-        );
-
-        return packages?.FirstOrDefault(it => it.Name == arg.PackageName && it.Version == arg.PackageVersion);
-    }
-
-    public static Task<IEnumerable<GetPackageFilesItem>?> GetPackageFilesAsync(
-        this GetProjectPackagesItem matchingPackage,
-        HttpClient http,
-        Project project) =>
-        PaginateAsync(
-            http, 
-            $"api/v4/projects/{project.Id}/packages/{matchingPackage.Id}/package_files?per_page=100",
-            cont => 
-                cont.ReadFromJsonAsync(GetPackageFilesSerializerContext.Default.IEnumerableGetPackageFilesItem)!,
-            _ => Logger.Error(LogSource.App, "Target project has the package registry disabled.")
-        );
-
-
-    public static async Task<ReleaseInfo?> CreateReleaseFromGenericPackagesAsync(
-        this CreateReleaseFromGenericPackageFilesArgument arg,
-        Project project)
-    {
-        await arg.InitIfNeededAsync(project);
-
-        if (await arg.FindMatchingPackageAsync(project) is not { } matchingPackage)
-        {
-            Logger.Error(LogSource.App,
-                $"Could not create a release because a generic package matching name {arg.PackageName}, version {arg.PackageVersion} on project {arg.Options.ProjectPath} wasn't found.");
+            onNonSuccess?.Invoke(response.StatusCode);
             return null;
         }
 
-        if (await matchingPackage.GetPackageFilesAsync(arg.Http, project) is not { } packageFiles)
-        {
-            Logger.Error(LogSource.App,
-                $"Could not create a release because the request to get all package files for package matching name {arg.PackageName}, version {arg.PackageVersion} on project {arg.Options.ProjectPath} failed.");
-            return null;
-        }
+        IEnumerable<T> accumulated = await converter(response.Content);
 
-        var gitlabAssetLinks = packageFiles.Select(x => new ReleaseLink
+        if (!response.Headers.GetValues("x-total-pages").ToString().TryParse<int>(out var pageCount) || pageCount > 1)
         {
-            Name = x.Name,
-            LinkType = ReleaseLinkType.Package,
-            Url = arg.FormatGitLabUrl(
-                $"api/v4/projects/{project.Id}/packages/generic/{arg.PackageName}/{arg.PackageVersion}/{x.Name}")
-        }).ToArray();
-
-        try
-        {
-            return await arg.CreateGitLabClient().GetReleases(project.Id).CreateAsync(new ReleaseCreate
+            var currentPage = 2;
+            do
             {
-                TagName = arg.PackageVersion,
-                Ref = arg.ReleaseRef.EqualsAnyIgnoreCase("null") ? null : arg.ReleaseRef,
-                Name = arg.ReleaseTitle ?? arg.PackageVersion,
-                Description = arg.ReleaseBody,
-                Assets = new ReleaseAssetsInfo
+                var pageResponse = await http.GetAsync($"{endpoint}&page={currentPage}");
+
+                if (!pageResponse.IsSuccessStatusCode)
                 {
-                    Count = gitlabAssetLinks.Length,
-                    Links = gitlabAssetLinks
+                    onNonSuccess?.Invoke(pageResponse.StatusCode);
+                    return null;
                 }
-            });
+
+                accumulated = accumulated.Concat(await converter(pageResponse.Content));
+
+                currentPage++;
+            } while (currentPage <= pageCount);
         }
-        catch (Exception e)
-        {
-            Logger.Error(e);
-            return null;
-        }
+
+        return accumulated;
     }
 }

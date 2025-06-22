@@ -14,6 +14,3 @@ public class GetPackageFilesItem
 
     [JsonPropertyName("size")] public long Size { get; set; }
 }
-
-[JsonSerializable(typeof(IEnumerable<GetPackageFilesItem>))]
-public partial class GetPackageFilesSerializerContext : JsonSerializerContext;

@@ -6,6 +6,13 @@ namespace GitLabCli.Commands.SendUpdateMessage;
 
 public class SendUpdateMessageArgument : CliCommandArgument
 {
+    public string ReleaseTag { get; }
+    public DiscordColor EmbedColor { get; }
+    public string WebhookUrl { get; }
+    public string? EmbedThumbnailUrl { get; }
+    
+    public bool ShowReleaseDescription { get; }
+    
     public SendUpdateMessageArgument(Options options) : base(options)
     {
         ReleaseTag = options.InputData.Split('|')[0];
@@ -17,7 +24,7 @@ public class SendUpdateMessageArgument : CliCommandArgument
         catch
         {
             throw new ArgumentException(
-                "Embed color (second, index 1) item in raw command arguments must be a hexadecimal number representing RGB.");
+                "Embed color (second, index 1) item in raw command arguments must be a hexadecimal number representing RGB. No preceding #.");
         }
         
         WebhookUrl = options.InputData.Split('|')[2];
@@ -45,14 +52,7 @@ public class SendUpdateMessageArgument : CliCommandArgument
             ShowReleaseDescription = true;
         }
     }
-    
+
     public Task<GitLabReleaseJsonResponse?> GetReleaseAsync(Project project) 
         => GitLabRestApi.GetReleaseAsync(Http, project, ReleaseTag);
-    
-    public string ReleaseTag { get; }
-    public DiscordColor EmbedColor { get; }
-    public string WebhookUrl { get; }
-    public string? EmbedThumbnailUrl { get; }
-    
-    public bool ShowReleaseDescription { get; }
 }

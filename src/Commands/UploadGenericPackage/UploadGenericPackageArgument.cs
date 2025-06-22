@@ -1,5 +1,8 @@
-﻿using GitLabCli.Commands.BulkUploadGenericPackage;
+﻿using System.Net;
+using GitLabCli.Commands.BulkUploadGenericPackage;
+using GitLabCli.Helpers;
 using Gommon;
+using NGitLab.Models;
 
 namespace GitLabCli.Commands.UploadGenericPackage;
 
@@ -21,6 +24,27 @@ public class UploadGenericPackageCommandArgument : CliCommandArgument
         PackageName = options.InputData.Split('|')[0];
         PackageVersion = options.InputData.Split('|')[1];
         FilePath = new FilePath(options.InputData.Split('|')[2], false);
+    }
+    
+    public async Task<bool> UploadGenericPackageAsync(
+        Project project)
+    {
+        HttpResponseMessage response;
+
+        await using (var fileStream = FilePath.OpenRead())
+        {
+            response = await Http.PutAsync(
+                $"api/v4/projects/{project.Id}/packages/generic/{PackageName}/{PackageVersion}/{FilePath.Name}",
+                new StreamContent(fileStream)
+            );
+        }
+
+        if (response.StatusCode == HttpStatusCode.Unauthorized)
+            Logger.Error(LogSource.App, "Invalid authorization.");
+        if (response.StatusCode == HttpStatusCode.Forbidden)
+            Logger.Error(LogSource.App, "Target project has the package registry disabled.");
+
+        return response.IsSuccessStatusCode;
     }
     
     public string PackageName { get; }
