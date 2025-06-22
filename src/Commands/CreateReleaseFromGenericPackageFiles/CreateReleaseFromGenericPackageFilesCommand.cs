@@ -5,8 +5,6 @@ namespace GitLabCli.Commands.CreateReleaseFromGenericPackageFiles;
 [Command]
 public class CreateReleaseFromGenericPackageFilesCommand() : CliCommand<CreateReleaseFromGenericPackageFilesArgument>(CliCommandName.CreateReleaseFromGenericPackageFiles)
 {
-    protected override CreateReleaseFromGenericPackageFilesArgument CreateArg(Options options) => new(options);
-
     public override async Task<ExitCode> ExecuteAsync(CreateReleaseFromGenericPackageFilesArgument arg)
     {
         var project = await arg.CreateGitLabClient().Projects.GetByNamespacedPathAsync(arg.Options.ProjectPath);

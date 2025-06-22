@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using System.ComponentModel;
 using System.Text;
 using GitLabCli.API.GitLab;
 using GitLabCli.Helpers;
@@ -11,8 +10,6 @@ namespace GitLabCli.Commands.SendUpdateMessage;
 [Command]
 public class SendUpdateMessageCommand() : CliCommand<SendUpdateMessageArgument>(CliCommandName.SendUpdateMessage)
 {
-    protected override SendUpdateMessageArgument CreateArg(Options options) => new(options);
-    
     public override async Task<ExitCode> ExecuteAsync(SendUpdateMessageArgument arg)
     {
         var project = await arg.CreateGitLabClient().Projects.GetByNamespacedPathAsync(arg.Options.ProjectPath);

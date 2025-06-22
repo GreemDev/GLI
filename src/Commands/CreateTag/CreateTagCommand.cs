@@ -6,8 +6,6 @@ namespace GitLabCli.Commands.CreateTag;
 [Command]
 public class CreateTagCommand() : CliCommand<CreateTagArgument>(CliCommandName.CreateTag)
 {
-    protected override CreateTagArgument CreateArg(Options options) => new(options);
-
     public override Task<ExitCode> ExecuteAsync(CreateTagArgument arg)
     {
         var repo = arg.CreateGitLabClient().GetRepository(arg.Options.ProjectPath);

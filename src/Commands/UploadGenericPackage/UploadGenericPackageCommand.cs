@@ -5,8 +5,6 @@ namespace GitLabCli.Commands.UploadGenericPackage;
 [Command]
 public class UploadGenericPackageCommand() : CliCommand<UploadGenericPackageCommandArgument>(CliCommandName.UploadGenericPackage)
 {
-    protected override UploadGenericPackageCommandArgument CreateArg(Options options) => new(options);
-
     public override async Task<ExitCode> ExecuteAsync(UploadGenericPackageCommandArgument arg)
     {
         if (!arg.FilePath.ExistsAsFile)

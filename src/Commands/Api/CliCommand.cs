@@ -1,6 +1,9 @@
-﻿namespace GitLabCli.Commands;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 
-public abstract class CliCommand<TArg> where TArg : CliCommandArgument
+namespace GitLabCli.Commands;
+
+public abstract class CliCommand<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TArg> where TArg : CliCommandArgument
 {
     protected CliCommand(CliCommandName name) => Name = name;
 
@@ -8,14 +11,16 @@ public abstract class CliCommand<TArg> where TArg : CliCommandArgument
     
     public abstract Task<ExitCode> ExecuteAsync(TArg arg);
 
-    protected abstract TArg CreateArg(Options options);
-
     // ReSharper disable once UnusedMember.Global
     internal CommandShim CreateShim()
         => new()
         {
             Name = Name,
-            Execute = options => ExecuteAsync(CreateArg(options))
+            Execute = options => ExecuteAsync(
+                (TArg)typeof(TArg)
+                    .GetConstructor(BindingFlags.Public | BindingFlags.Instance, [typeof(Options)])!
+                    .Invoke([options])
+                )
         };
 }
 

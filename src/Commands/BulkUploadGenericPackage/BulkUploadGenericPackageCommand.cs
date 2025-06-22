@@ -1,13 +1,10 @@
-﻿using GitLabCli.API.GitLab;
-using GitLabCli.Helpers;
+﻿using GitLabCli.Helpers;
 
 namespace GitLabCli.Commands.BulkUploadGenericPackage;
 
 [Command]
 public class BulkUploadGenericPackageCommand() : CliCommand<BulkUploadGenericPackageCommandArgument>(CliCommandName.BulkUploadGenericPackage)
 {
-    protected override BulkUploadGenericPackageCommandArgument CreateArg(Options options) => new(options);
-
     public override async Task<ExitCode> ExecuteAsync(BulkUploadGenericPackageCommandArgument arg)
     {
         var files = Directory.EnumerateFiles(Environment.CurrentDirectory, arg.FilePattern).ToArray();
