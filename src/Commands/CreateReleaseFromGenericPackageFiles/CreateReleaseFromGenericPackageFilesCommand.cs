@@ -1,5 +1,4 @@
-﻿using GitLabCli.API.GitLab;
-using GitLabCli.Helpers;
+﻿using GitLabCli.Helpers;
 
 namespace GitLabCli.Commands.CreateReleaseFromGenericPackageFiles;
 
@@ -17,10 +16,10 @@ public class CreateReleaseFromGenericPackageFilesCommand() : CliCommand<CreateRe
             return ExitCode.ProjectNotFound;
         }
 
-        var releaseInfo = await arg.CreateReleaseFromGenericPackagesAsync(project);
-        if (releaseInfo != null)
-            Logger.Info(LogSource.App, $"Release created at '{releaseInfo.Links.Self}'.");
+        if (await arg.CreateReleaseFromGenericPackagesAsync(project) is not { } releaseInfo)
+            return ExitCode.ObjectNotFound;
 
+        Logger.Info(LogSource.App, $"Release created at '{releaseInfo.Links.Self}'.");
         return ExitCode.Normal;
     }
 }
