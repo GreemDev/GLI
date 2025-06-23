@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
+using GitLabCli.API.Helpers;
 using GitLabCli.Helpers;
 using NGitLab.Models;
 
@@ -21,40 +22,21 @@ public static class GitLabRestApi
             }
         };
 
-    public static async Task<MilestoneItem?> GetMilestoneByTitleAsync(HttpClient httpClient, Project project,
+    public static Task<MilestoneItem?> GetMilestoneByTitleAsync(HttpClient httpClient, Project project,
         string title)
     {
-        var resp = await httpClient
-            .GetAsync($"api/v4/projects/{project.Id}/milestones?title={title}" +
-                      $"&include_ancestors=true" +
-                      $"&per_page=100" +
-                      $"&sort=desc" +
-                      $"&order_by=created_at");
+        var p = PaginatedEndpoint<MilestoneItem>.Builder(httpClient)
+            .WithBaseUrl($"api/v4/projects/{project.Id}/milestones")
+            .WithJsonContentParser(SerializerContexts.Default.IEnumerableMilestoneItem)
+            .WithPerPageCount(100)
+            .WithQueryStringParameters(
+                ("title", title),
+                ("include_ancestors", true),
+                ("sort", "desc"),
+                ("order_by", "created_at")
+            ).Build();
 
-        if (resp.StatusCode == HttpStatusCode.Forbidden)
-        {
-            Logger.Error(LogSource.App, $"'{project.NameWithNamespace}' has issues disabled.");
-            return null;
-        }
-
-        var milestones = await resp.Content.ReadFromJsonAsync(SerializerContexts.Default.MilestoneItemArray);
-
-        if (milestones is null || milestones.Length is 0)
-        {
-            Logger.Error(LogSource.App,
-                $"Project '{project.NameWithNamespace}' and its parents did not have a milestone matching title '{title}'.");
-            return null;
-        }
-
-        if (milestones.Length > 1)
-        {
-            Logger.Error(LogSource.App,
-                $"Project '{project.NameWithNamespace}' had multiple milestones (including group milestones) matching title '{title}'.");
-            Logger.Error(LogSource.App, "Using the one with the largest description content.");
-            return milestones.OrderByDescending(m => m.Description.Length).First();
-        }
-
-        return milestones.First();
+        return p.FindOneAsync();
     }
 
     public static Task<GitLabReleaseJsonResponse?> GetLatestReleaseAsync(HttpClient httpClient, Project project)

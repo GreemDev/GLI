@@ -1,4 +1,5 @@
 ﻿using GitLabCli.API.GitLab;
+using GitLabCli.API.Helpers;
 using GitLabCli.Helpers;
 using Gommon;
 using NGitLab.Models;
@@ -60,18 +61,19 @@ public class CreateReleaseFromGenericPackageFilesArgument : CliCommandArgument
         IsInit = true;
     }
 
-    public async Task<GetProjectPackagesItem?> FindMatchingPackageAsync(Project project)
+    public Task<GetProjectPackagesItem?> FindMatchingPackageAsync(Project project)
     {
-        var packages = await Http.PaginateAsync( 
-            $"api/v4/projects/{project.Id}/packages?package_type=generic" +
-            $"&sort=desc" +
-            $"&order_by=created_at" +
-            $"&per_page=100",
-            SerializerContexts.Default.IEnumerableGetProjectPackagesItem,
-            _ => Logger.Error(LogSource.App, "Target project has the package registry disabled.")
-        );
+        var p = PaginatedEndpoint<GetProjectPackagesItem>.Builder(Http)
+            .WithBaseUrl($"api/v4/projects/{project.Id}/packages")
+            .WithJsonContentParser(SerializerContexts.Default.IEnumerableGetProjectPackagesItem)
+            .WithPerPageCount(100)
+            .WithQueryStringParameters(
+                QueryParameters.Sort("desc"),
+                QueryParameters.OrderBy("created_at"),
+                ("package_type", "generic")
+            ).Build();
 
-        return packages?.FirstOrDefault(it => it.Name == PackageName && it.Version == PackageVersion);
+        return p.FindOneAsync(it => it.Name == PackageName && it.Version == PackageVersion);
     }
     
     public async Task<ReleaseInfo?> CreateReleaseFromGenericPackagesAsync(Project project)
@@ -85,7 +87,7 @@ public class CreateReleaseFromGenericPackageFilesArgument : CliCommandArgument
             return null;
         }
 
-        if (await matchingPackage.GetPackageFilesAsync(Http, project) is not { } packageFiles)
+        if (await matchingPackage.GetPackageFiles(Http, project).GetAllAsync() is not { } packageFiles)
         {
             Logger.Error(LogSource.App,
                 $"Could not create a release because the request to get all package files for package matching name {PackageName}, version {PackageVersion} on project {Options.ProjectPath} failed.");

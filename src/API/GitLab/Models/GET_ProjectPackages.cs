@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using GitLabCli.API.Helpers;
 using GitLabCli.Helpers;
 using NGitLab.Models;
 
@@ -15,12 +16,15 @@ public class GetProjectPackagesItem
     [JsonPropertyName("package_type")] public string PackageType { get; set; } = null!;
 
     [JsonPropertyName("created_at")] public DateTimeOffset CreatedAt { get; set; }
-    
-    public Task<IEnumerable<GetPackageFilesItem>?> GetPackageFilesAsync(
+
+    public PaginatedEndpoint<GetPackageFilesItem> GetPackageFiles(
         HttpClient http,
-        Project project) => 
-        http.PaginateAsync($"api/v4/projects/{project.Id}/packages/{Id}/package_files?per_page=100",
-            SerializerContexts.Default.IEnumerableGetPackageFilesItem,
-            _ => Logger.Error(LogSource.App, "Target project has the package registry disabled.")
-        );
+        Project project)
+    {
+        return PaginatedEndpoint<GetPackageFilesItem>.Builder(http)
+            .WithBaseUrl($"api/v4/projects/{project.Id}/packages/{Id}/package_files")
+            .WithJsonContentParser(SerializerContexts.Default.IEnumerableGetPackageFilesItem)
+            .WithPerPageCount(100)
+            .Build();
+    }
 }
