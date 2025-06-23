@@ -36,7 +36,13 @@ public static class GitLabRestApi
                 ("order_by", "created_at")
             ).Build();
 
-        return p.FindOneAsync();
+        return p.FindOneAsync(onNonSuccess: code =>
+        {
+            if (code is HttpStatusCode.Forbidden)
+            {
+                Logger.Error(LogSource.App, $"'{project.NameWithNamespace}' has issues disabled.");
+            }
+        });
     }
 
     public static Task<GitLabReleaseJsonResponse?> GetLatestReleaseAsync(HttpClient httpClient, Project project)

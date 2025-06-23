@@ -73,7 +73,10 @@ public class CreateReleaseFromGenericPackageFilesArgument : CliCommandArgument
                 ("package_type", "generic")
             ).Build();
 
-        return p.FindOneAsync(it => it.Name == PackageName && it.Version == PackageVersion);
+        return p.FindOneAsync(
+            predicate: it => it.Name == PackageName && it.Version == PackageVersion,
+            onNonSuccess: _ => Logger.Error(LogSource.App, "Target project has the package registry disabled.")
+        );
     }
     
     public async Task<ReleaseInfo?> CreateReleaseFromGenericPackagesAsync(Project project)
@@ -87,7 +90,11 @@ public class CreateReleaseFromGenericPackageFilesArgument : CliCommandArgument
             return null;
         }
 
-        if (await matchingPackage.GetPackageFiles(Http, project).GetAllAsync() is not { } packageFiles)
+        var packageFiles = await matchingPackage.GetPackageFiles(Http, project)
+            .GetAllAsync(
+                onNonSuccess: _ => Logger.Error(LogSource.App, "Target project has the package registry disabled."));
+
+        if (packageFiles is null)
         {
             Logger.Error(LogSource.App,
                 $"Could not create a release because the request to get all package files for package matching name {PackageName}, version {PackageVersion} on project {Options.ProjectPath} failed.");
