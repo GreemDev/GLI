@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitLabCli", "src\GitLabCli.csproj", "{8369F9D9-C625-49BD-8BFE-F4CEF32D0AE6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cli", "src\Cli\GitLabCli.csproj", "{8369F9D9-C625-49BD-8BFE-F4CEF32D0AE6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
