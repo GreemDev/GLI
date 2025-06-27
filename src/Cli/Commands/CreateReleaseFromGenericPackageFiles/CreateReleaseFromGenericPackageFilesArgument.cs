@@ -93,7 +93,7 @@ public class CreateReleaseFromGenericPackageFilesArgument : CliCommandArgument
         var packageFiles = await matchingPackage.GetPackageFiles(Http, project)
             .GetAllAsync(
                 onNonSuccess: _ => Logger.Error(LogSource.App, "Target project has the package registry disabled."));
-
+        
         if (packageFiles is null)
         {
             Logger.Error(LogSource.App,

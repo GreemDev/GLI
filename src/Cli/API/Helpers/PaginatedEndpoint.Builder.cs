@@ -6,16 +6,18 @@ namespace GitLabCli.API.Helpers;
 
 public partial class PaginatedEndpoint<T>
 {
-    public static BuilderApi Builder(HttpClient httpClient) => new(httpClient);
+    public static BuilderApi Builder(IHttpClientProxy httpClient) => new(httpClient);
+    
+    public static BuilderApi Builder(HttpClient httpClient) => new(new DefaultHttpClientProxy(httpClient));
     
     public class BuilderApi
     {
-        public BuilderApi(HttpClient httpClient)
+        public BuilderApi(IHttpClientProxy httpClient)
         {
             _http = httpClient;
         }
 
-        private readonly HttpClient _http;
+        private readonly IHttpClientProxy _http;
         
         public string BaseUrl { get; private set; } = null!;
         public HttpContentParser ContentParser { get; private set; } = null!;
@@ -54,5 +56,7 @@ public partial class PaginatedEndpoint<T>
         }
 
         public PaginatedEndpoint<T> Build() => new(_http, BaseUrl, ContentParser, QueryStringParameters, PerPage);
+
+        public static implicit operator PaginatedEndpoint<T>(BuilderApi builder) => builder.Build();
     }
 }

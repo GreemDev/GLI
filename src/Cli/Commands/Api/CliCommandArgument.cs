@@ -1,7 +1,8 @@
-﻿using GitLabCli.API.GitLab;
+﻿using System.Diagnostics.CodeAnalysis;
+using GitLabCli.API.GitLab;
+using GitLabCli.API.Helpers;
 using Gommon;
 using NGitLab;
-using NGitLab.Models;
 
 namespace GitLabCli.Commands;
 
@@ -26,15 +27,18 @@ public abstract class CliCommandArgument
         return fp.ReadAllText();
     }
 
+    [SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract", Justification = "Special use case")]
     protected void InitHttp()
     {
+        if (Options is null) return;
+        
         Http = GitLabRestApi.CreateHttpClient(Options.GitLabEndpoint, AccessToken);
     }
 
     public string FormatGitLabUrl(string subPath)
         => string.Concat(Options.GitLabEndpoint.TrimEnd('/'), "/", subPath);
 
-    public HttpClient Http { get; private set; } = null!;
+    public IHttpClientProxy Http { get; private set; } = null!;
 
     public Options Options { get; protected init; }
     
