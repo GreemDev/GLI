@@ -5,8 +5,6 @@ using Gommon;
 
 Logger.OutputLogToStandardOut();
 
-Logger.Info(LogSource.App, "1");
-
 await Parser.Default.ParseArguments<Options>(args)
     .WithNotParsed(errors =>
     {
