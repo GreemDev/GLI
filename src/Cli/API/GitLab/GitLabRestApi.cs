@@ -33,8 +33,8 @@ public static class GitLabRestApi
             .WithQueryStringParameters(
                 ("title", title),
                 ("include_ancestors", true),
-                ("sort", "desc"),
-                ("order_by", "created_at")
+                QueryParameters.Sort("desc"),
+                QueryParameters.OrderBy("created_at")
             ).Build();
 
         return p.FindOneAsync(onNonSuccess: code =>
