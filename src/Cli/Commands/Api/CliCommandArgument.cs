@@ -28,11 +28,11 @@ public abstract class CliCommandArgument
     }
 
     [SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract", Justification = "Special use case")]
-    protected void InitHttp()
+    protected void InitHttp(TimeSpan? timeout = null)
     {
         if (Options is null) return;
         
-        Http = GitLabRestApi.CreateHttpClient(Options.GitLabEndpoint, AccessToken);
+        Http = GitLabRestApi.CreateHttpClient(Options.GitLabEndpoint, AccessToken, timeout);
     }
 
     public string FormatGitLabUrl(string subPath)

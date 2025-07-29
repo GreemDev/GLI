@@ -1,8 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using System.Text.Json;
-using System.Text.Json.Serialization.Metadata;
 using GitLabCli.API.Helpers;
 using GitLabCli.Helpers;
 using Gommon;
@@ -12,9 +10,10 @@ namespace GitLabCli.API.GitLab;
 
 public static class GitLabRestApi
 {
-    public static IHttpClientProxy CreateHttpClient(string host, string accessToken)
+    public static IHttpClientProxy CreateHttpClient(string host, string accessToken, TimeSpan? timeout = null)
         => new DefaultHttpClientProxy(new HttpClient
         {
+            Timeout = timeout ?? TimeSpan.FromSeconds(100),
             BaseAddress = new Uri(host),
             DefaultRequestHeaders =
             {

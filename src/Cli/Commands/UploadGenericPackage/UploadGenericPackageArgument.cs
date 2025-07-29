@@ -16,7 +16,7 @@ public class UploadGenericPackageCommandArgument : CliCommandArgument
         
         Options = arg.Options;
         AccessToken = Options.AccessToken ?? ReadAccessTokenFromFile();
-        InitHttp();
+        InitHttp(TimeSpan.FromMinutes(5));
     }
     
     public UploadGenericPackageCommandArgument(Options options) : base(options)
@@ -30,8 +30,6 @@ public class UploadGenericPackageCommandArgument : CliCommandArgument
         Project project)
     {
         HttpResponseMessage response;
-
-        Http.Timeout = TimeSpan.FromMinutes(5);
         
         await using (var fileStream = FilePath.OpenRead())
         {
@@ -40,8 +38,6 @@ public class UploadGenericPackageCommandArgument : CliCommandArgument
                 new StreamContent(fileStream)
             );
         }
-        
-        Http.Timeout = TimeSpan.FromSeconds(100);
 
         if (response.StatusCode == HttpStatusCode.Unauthorized)
             Logger.Error(LogSource.App, "Invalid authorization.");
