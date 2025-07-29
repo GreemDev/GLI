@@ -31,6 +31,8 @@ public class UploadGenericPackageCommandArgument : CliCommandArgument
     {
         HttpResponseMessage response;
 
+        Http.Timeout = TimeSpan.FromMinutes(5);
+        
         await using (var fileStream = FilePath.OpenRead())
         {
             response = await Http.PutAsync(
@@ -38,6 +40,8 @@ public class UploadGenericPackageCommandArgument : CliCommandArgument
                 new StreamContent(fileStream)
             );
         }
+        
+        Http.Timeout = TimeSpan.FromSeconds(100);
 
         if (response.StatusCode == HttpStatusCode.Unauthorized)
             Logger.Error(LogSource.App, "Invalid authorization.");
