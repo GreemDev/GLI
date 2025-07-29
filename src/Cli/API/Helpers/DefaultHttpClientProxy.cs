@@ -23,6 +23,35 @@ public class DefaultHttpClientProxy : IHttpClientProxy
         _http = httpClient;
         _callback = logCallback;
     }
+    
+    public Version DefaultRequestVersion
+    {
+        get => _http.DefaultRequestVersion;
+        set => _http.DefaultRequestVersion = value;
+    }
+    public HttpVersionPolicy DefaultVersionPolicy
+    {
+        get => _http.DefaultVersionPolicy;
+        set => _http.DefaultVersionPolicy = value;
+    }
+
+    public Uri? BaseAddress
+    {
+        get => _http.BaseAddress;
+        set => _http.BaseAddress = value;
+    }
+    
+    public TimeSpan Timeout
+    {
+        get => _http.Timeout;
+        set => _http.Timeout = value;
+    }
+
+    public long MaxResponseContentBufferSize
+    {
+        get => _http.MaxResponseContentBufferSize;
+        set => _http.MaxResponseContentBufferSize = value;
+    }
 
     [SuppressMessage("ReSharper", "RedundantAssignment", Justification = "ReSharper cannot comprehend the idea of checking all combinations of 2 objects potentially being null.")]
     public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, HttpCompletionOption? option = null, CancellationToken? token = null)

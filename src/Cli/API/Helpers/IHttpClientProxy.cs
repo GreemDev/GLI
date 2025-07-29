@@ -5,6 +5,13 @@ namespace GitLabCli.API.Helpers;
 
 public interface IHttpClientProxy
 {
+    public Version DefaultRequestVersion { get; set; }
+    public HttpVersionPolicy DefaultVersionPolicy { get; set; }
+    public Uri? BaseAddress { get; set; }
+    
+    public TimeSpan Timeout { get; set; }
+    public long MaxResponseContentBufferSize { get; set; }
+    
     public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, HttpCompletionOption? option = null, CancellationToken? token = null);
 
     #region Convenience overloads for SendAsync
