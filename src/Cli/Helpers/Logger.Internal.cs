@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using GitLabCli.Entities.EventArgs;
-using Colorful;
 using Gommon;
 using Color = System.Drawing.Color;
 using Console = Colorful.Console;
@@ -9,37 +8,16 @@ namespace GitLabCli.Helpers;
 
 public static partial class Logger
 {
-    private static readonly string[] VolteAscii =
-        new Figlet().ToAscii("Volte").ConcreteValue.Split("\n", StringSplitOptions.RemoveEmptyEntries);
-        
     static Logger() => FilePath.Logs.Create();
-        
-    private static readonly object LogSync = new();
-    
-    internal static void PrintHeader()
-    {
-        Info(LogSource.App, Side);
-        VolteAscii.ForEach(static ln => Info(LogSource.App, ln));
-        Info(LogSource.App, Side);
-    }
 
-    private const string Side = "----------------------------------------------------------";
-    private static bool _logFileNoticePrinted;
+    private static readonly Lock LogSync = new();
 
-    internal static void LogFileRestartNotice()
-    {
-        if (_logFileNoticePrinted) return;
-            
-        GetLogFilePath(DateTime.Now).AppendAllText($"{Side}RESTARTING{Side}\n");
-            
-        _logFileNoticePrinted = true;
-    }
-    
-    public static void Log(LogSeverity s, LogSource from, string message, Exception e = null, InvocationInfo caller = default)
+    public static void Log(LogSeverity s, LogSource from, string message, Exception e = null,
+        InvocationInfo caller = default)
     {
         if (s is LogSeverity.Debug && !IsDebugLoggingEnabled)
             return;
-        
+
         Log(new LogEventArgs
         {
             Severity = s,
@@ -49,8 +27,46 @@ public static partial class Logger
             Invocation = caller
         });
     }
-    
-    private static void Execute(LogSeverity s, LogSource src, string message, Exception e, InvocationInfo caller)
+
+    private static void ExecuteStdOutOnly(LogSeverity s, LogSource src, string message, Exception e,
+        InvocationInfo caller)
+    {
+        if (IsDebugLoggingEnabled && caller.IsInitialized)
+        {
+            caller.ToString().IfPresent(debugInfoContent =>
+            {
+                // ReSharper disable once AccessToModifiedClosure
+                Append(debugInfoContent, Color.Aquamarine);
+                Append(" |>  ", Color.Goldenrod);
+            });
+        }
+
+        var (color, value) = VerifySeverity(s);
+        Append($"{value}:".P(), color);
+
+        (color, value) = VerifySource(src);
+        Append($"[{value}]".P(), color);
+
+        if (!message.IsNullOrWhitespace())
+            Append(message, Color.White);
+
+        if (e != null)
+        {
+            var errStr = errorString();
+            Append(errStr, Color.IndianRed);
+            if (errStr.EndsWith('\n'))
+                return;
+
+            string errorString()
+                => Environment.NewLine + (e.Message.IsNullOrEmpty() ? "No message provided" : e.Message) +
+                   Environment.NewLine + e.StackTrace;
+        }
+
+        Console.WriteLine();
+    }
+
+    private static void ExecuteWithFileWrite(LogSeverity s, LogSource src, string message, Exception e,
+        InvocationInfo caller)
     {
         var content = new StringBuilder();
 
@@ -63,7 +79,7 @@ public static partial class Logger
                 Append(" |>  ", Color.Goldenrod, ref content);
             });
         }
-        
+
         var (color, value) = VerifySeverity(s);
         Append($"{value}:".P(), color);
         var dt = DateTime.Now.ToLocalTime();
@@ -90,11 +106,11 @@ public static partial class Logger
             Console.Write(Environment.NewLine);
             content.AppendLine();
         }
-            
+
         GetLogFilePath(DateTime.Now).AppendAllText(content.ToString());
     }
 
-    public static FilePath GetLogFilePath(DateTime date) 
+    public static FilePath GetLogFilePath(DateTime date)
         => new FilePath("logs") / string.Intern($"{date.Year}-{date.Month}-{date.Day}.log");
 
     private static void Append(string m, Color c)

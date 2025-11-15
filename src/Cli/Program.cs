@@ -8,7 +8,12 @@ Logger.OutputLogToStandardOut();
 await Parser.Default.ParseArguments<Options>(args)
     .WithNotParsed(errors =>
     {
+        Logger.WriteToFile = false;
         Logger.Error(LogSource.Cli, "Error parsing command-line arguments:");
         errors.ForEach(err => Logger.Error(LogSource.Cli, $" - {err.Tag}"));
     })
-    .WithParsedAsync(CliCommandManager.DispatchAsync);
+    .WithParsedAsync(async opt =>
+    {
+        Logger.WriteToFile = opt.WriteLogFiles;
+        await CliCommandManager.DispatchAsync(opt);
+    });

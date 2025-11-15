@@ -8,6 +8,8 @@ namespace GitLabCli.Helpers;
 
 public static partial class Logger
 {
+    public static bool WriteToFile { get; set; }
+    
     public static event Action<LogEventArgs> Event
     {
         add => LogEventHandler.Add(value);
@@ -156,7 +158,16 @@ public static partial class Logger
     public static void OutputLogToStandardOut()
     {
         LogEventHandler.Clear();
-        Event += logEvent => LogSync.Lock(() => Execute(logEvent.Severity, logEvent.Source, logEvent.Message, logEvent.Error, logEvent.Invocation));
+        Event += logEvent =>
+        {
+            lock (LogSync)
+            {
+                if (WriteToFile)
+                    ExecuteWithFileWrite(logEvent.Severity, logEvent.Source, logEvent.Message, logEvent.Error, logEvent.Invocation);
+                else
+                    ExecuteStdOutOnly(logEvent.Severity, logEvent.Source, logEvent.Message, logEvent.Error, logEvent.Invocation);
+            }
+        };
     }
 }
 
