@@ -34,6 +34,13 @@ public static class CliCommandManager
             return;
         }
 
-        Environment.Exit((int)await command.Execute(options));
+        var exitCode = await command.Execute(options);
+
+        Logger.Log(
+            s: exitCode is ExitCode.Normal ? LogSeverity.Info : LogSeverity.Critical, 
+            from: LogSource.App,
+            message: $"{Enum.GetName(options.Command)} exited with result '{Enum.GetName(exitCode) ?? $"Unknown (value: {(int)exitCode})"}'");
+
+        Environment.Exit((int)exitCode);
     }
 }
