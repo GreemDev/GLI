@@ -2,23 +2,23 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <PublishSingleFile>true</PublishSingleFile>
         <TrimmerSingleWarn>false</TrimmerSingleWarn>
         <PublishTrimmed>true</PublishTrimmed>
         <TrimMode>partial</TrimMode>
-        <Version>1.3.2</Version>
+        <Version>1.4</Version>
         <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="CommandLineParser" Version="2.9.1" />
       <PackageReference Include="discord-webhook-client" Version="3.1.0" />
-      <PackageReference Include="Gommon" Version="2.7.1.1" />
-      <PackageReference Include="GreemDev.Colorful.Console" Version="1.3.1" />
-      <PackageReference Include="NGitLab" Version="8.3.0" />
+      <PackageReference Include="Gommon" Version="2.8.0.1" />
+      <PackageReference Include="GreemDev.Colorful.Console" Version="1.3.2" />
+      <PackageReference Include="NGitLab" Version="11.0.1" />
     </ItemGroup>
 
 </Project>
