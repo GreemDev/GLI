@@ -32,7 +32,7 @@ public static partial class TimeSpans
         if (match.Groups["Seconds"].Success && match.Groups["Seconds"].Value[r].TryParse<int>(out var seconds))
             timeSpan += TimeSpan.FromSeconds(seconds);
 
-        return true;
+        return !match.Groups["0"].Success || timeSpan != TimeSpan.Zero;
     }
 
     private static readonly Regex TimeSpanRegex = GeneratedTimeSpanRegex();
