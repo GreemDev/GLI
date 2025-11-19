@@ -9,7 +9,7 @@ namespace GitLabCli.Helpers;
 public static partial class Logger
 {
     public static bool WriteToFile { get; set; }
-    
+
     public static event Action<LogEventArgs> Event
     {
         add => LogEventHandler.Add(value);
@@ -203,7 +203,7 @@ public readonly struct InvocationInfo
     /// <remarks>Mostly used in the logger.</remarks>
     /// <returns>An <see cref="InvocationInfo"/> referencing the specific C# source member it was created in.</returns>
     public static InvocationInfo CurrentMember([CallerMemberName] string callerName = default!) => new(callerName);
-    
+
     public bool IsInitialized { get; }
 
     public string FilePath { get; }
@@ -247,13 +247,13 @@ public readonly struct InvocationInfo
         CallerName = caller;
     }
 
-    public new Gommon.Optional<string> ToString() 
+    public new Optional<string> ToString() 
         => Type switch
         {
             { Full: true } => $"{CallerName}:{this.GetSourceFileName()}:{LineInFile}",
             { CallerOnly: true } => CallerName,
             { FileLoc: true } => $"{this.GetSourceFileName()}:{LineInFile}",
-            _ => (Gommon.Optional<string>) default 
+            _ => (Optional<string>) default 
             //casting to ensure default branch returns a default optional and not an optional with a null string value
         };
 }
@@ -264,6 +264,4 @@ public static class InvocationInfoExt
         => invocation.FilePath[
             (invocation.FilePath.LastIndexOf(Path.DirectorySeparatorChar) + 1)..
         ];
-
-
 }

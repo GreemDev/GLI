@@ -10,13 +10,13 @@ public class SendUpdateMessageArgument : CliCommandArgument
     public DiscordColor EmbedColor { get; }
     public string WebhookUrl { get; }
     public string? EmbedThumbnailUrl { get; }
-    
+
     public bool ShowReleaseDescription { get; }
-    
+
     public SendUpdateMessageArgument(Options options) : base(options)
     {
         ReleaseTag = options.InputData.Split('|')[0];
-        
+
         try
         {
             EmbedColor = Convert.ToInt32(options.InputData.Split('|')[1], 16);
@@ -26,9 +26,9 @@ public class SendUpdateMessageArgument : CliCommandArgument
             throw new ArgumentException(
                 "Embed color (second, index 1) item in raw command arguments must be a hexadecimal number representing RGB. No preceding #.");
         }
-        
+
         WebhookUrl = options.InputData.Split('|')[2];
-        
+
         try
         {
             EmbedThumbnailUrl = options.InputData.Split('|')[3];

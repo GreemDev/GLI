@@ -19,7 +19,7 @@ public class CreateTagCommand() : CliCommand<CreateTagArgument>(CliCommandName.C
             Message = arg.Comment ?? "Tag created by GitLabCli",
             Ref = arg.TagRef
         });
-        
+
         Logger.Info(LogSource.App, $"Created tag '{arg.TagName}' on project '{arg.Options.ProjectPath}'.");
 
         return Task.FromResult(ExitCode.Normal);

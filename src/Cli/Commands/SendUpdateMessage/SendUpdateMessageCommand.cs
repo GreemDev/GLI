@@ -26,7 +26,7 @@ public class SendUpdateMessageCommand() : CliCommand<SendUpdateMessageArgument>(
         }
 
         var webhookClient = new DiscordWebhookClient(arg.WebhookUrl);
-        
+
         var message = new DiscordMessage(embeds: [CreateEmbed(arg, release)]);
 
         await webhookClient.SendToDiscord(message);
@@ -66,7 +66,7 @@ public class SendUpdateMessageCommand() : CliCommand<SendUpdateMessageArgument>(
         var androidApk = assets.Links.FirstOrDefault(x => x.AssetName.EndsWithIgnoreCase(".apk"));
 
         var arrayBuilder = ImmutableArray.CreateBuilder<DiscordMessageEmbedField>();
-        
+
         applyArtifact(windowsX64, "Windows x64");
         applyArtifact(windowsArm64, "Windows ARM64");
         applyArtifacts((linuxX64, linuxX64AppImage), "Linux x64");
@@ -75,12 +75,12 @@ public class SendUpdateMessageCommand() : CliCommand<SendUpdateMessageArgument>(
         applyArtifact(androidApk, "Android APK");
 
         return arrayBuilder.ToArray();
-        
+
         void applyArtifact(GitLabReleaseJsonResponse.AssetLink? asset, string friendlyName, bool inline = false)
         {
             if (asset is null)
                 return;
-            
+
             arrayBuilder.Add(new DiscordMessageEmbedField(friendlyName, $"[{asset.AssetName}]({asset.Url})", inline));
         }
 
@@ -89,7 +89,7 @@ public class SendUpdateMessageCommand() : CliCommand<SendUpdateMessageArgument>(
             string friendlyName, bool inline = true)
         {
             var releaseBody = new StringBuilder();
-            
+
             if (asset.Normal != null)
             {
                 releaseBody.AppendLine($"[{asset.Normal.AssetName}]({asset.Normal.Url})");
@@ -102,7 +102,7 @@ public class SendUpdateMessageCommand() : CliCommand<SendUpdateMessageArgument>(
 
             if (releaseBody.Length is 0)
                 return;
-            
+
             arrayBuilder.Add(new DiscordMessageEmbedField(friendlyName, releaseBody.ToString(), inline));
         }
     }

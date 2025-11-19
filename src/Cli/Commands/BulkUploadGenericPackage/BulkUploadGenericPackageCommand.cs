@@ -33,7 +33,7 @@ public class BulkUploadGenericPackageCommand() : CliCommand<BulkUploadGenericPac
                 completedFiles++;
             }
         }
-        
+
         Logger.Info(LogSource.App, $"Finished. {completedFiles}/{files.Length} uploads successful.");
 
         return ExitCode.Normal;

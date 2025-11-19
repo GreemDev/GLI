@@ -9,7 +9,7 @@ namespace GitLabCli.Commands.CreateReleaseFromGenericPackageFiles;
 public class CreateReleaseFromGenericPackageFilesArgument : CliCommandArgument
 {
     internal bool IsInit { get; private set; }
-    
+
     public string PackageName { get; }
     public string PackageVersion { get; }
 
@@ -17,7 +17,7 @@ public class CreateReleaseFromGenericPackageFilesArgument : CliCommandArgument
 
     public string? ReleaseTitle { get; }
     public string? ReleaseBody { get; private set; }
-    
+
     public CreateReleaseFromGenericPackageFilesArgument(Options options) : base(options)
     {
         PackageName = options.InputData.Split('|')[0];
@@ -32,7 +32,7 @@ public class CreateReleaseFromGenericPackageFilesArgument : CliCommandArgument
         {
             ReleaseTitle = null;
         }
-        
+
         try
         {
             ReleaseBody = options.InputData.Split('|')[4];
@@ -42,7 +42,7 @@ public class CreateReleaseFromGenericPackageFilesArgument : CliCommandArgument
             ReleaseBody = null;
         }
     }
-    
+
     public async Task InitIfNeededAsync(Project project)
     {
         if (ReleaseBody is null || IsInit) return;
@@ -78,7 +78,7 @@ public class CreateReleaseFromGenericPackageFilesArgument : CliCommandArgument
             onNonSuccess: _ => Logger.Error(LogSource.App, "Target project has the package registry disabled.")
         );
     }
-    
+
     public async Task<ReleaseInfo?> CreateReleaseFromGenericPackagesAsync(Project project)
     {
         await InitIfNeededAsync(project);
@@ -93,7 +93,7 @@ public class CreateReleaseFromGenericPackageFilesArgument : CliCommandArgument
         var packageFiles = await matchingPackage.GetPackageFiles(Http, project)
             .GetAllAsync(
                 onNonSuccess: _ => Logger.Error(LogSource.App, "Target project has the package registry disabled."));
-        
+
         if (packageFiles is null)
         {
             Logger.Error(LogSource.App,

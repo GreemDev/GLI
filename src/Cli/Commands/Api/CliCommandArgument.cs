@@ -31,7 +31,7 @@ public abstract class CliCommandArgument
     protected void InitHttp(TimeSpan? timeout = null)
     {
         if (Options is null) return;
-        
+
         Http = GitLabRestApi.CreateHttpClient(Options.GitLabEndpoint, AccessToken, timeout);
     }
 

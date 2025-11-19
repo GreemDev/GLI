@@ -11,12 +11,12 @@ public class BulkUploadGenericPackageCommandArgument : CliCommandArgument
         PackageVersion = options.InputData.Split('|')[1];
         FilePattern = options.InputData.Split('|')[2];
     }
-    
+
     public Task<bool> UploadGenericPackageAsync(
         Project project,
         string filePath)
         => new UploadGenericPackageCommandArgument(this, filePath).UploadGenericPackageAsync(project);
-    
+
     public string PackageName { get; }
     public string PackageVersion { get; }
     public string FilePattern { get; }

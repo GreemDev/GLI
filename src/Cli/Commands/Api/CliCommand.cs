@@ -8,7 +8,7 @@ public abstract class CliCommand<[DynamicallyAccessedMembers(DynamicallyAccessed
     protected CliCommand(CliCommandName name) => Name = name;
 
     public readonly CliCommandName Name;
-    
+
     public abstract Task<ExitCode> ExecuteAsync(TArg arg);
 
     // ReSharper disable once UnusedMember.Global

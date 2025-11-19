@@ -25,7 +25,7 @@ public class UploadGenericPackageCommand() : CliCommand<UploadGenericPackageComm
             Logger.Error(LogSource.App, $"'{arg.FilePath.FullPath}' failed to upload.");
             return ExitCode.UploadFailed;
         }
-        
+
         Logger.Info(LogSource.App, $"Uploaded '{arg.FilePath.FullPath}' to the package registry on project {project.NameWithNamespace} (id {project.Id}).");
         return ExitCode.Normal;
     }

@@ -11,7 +11,7 @@ namespace GitLabCli.Commands;
 public static class CliCommandManager
 {
     private static readonly List<CommandShim> CommandShims;
-    
+
     static CliCommandManager()
     {
         CommandShims = Assembly.GetExecutingAssembly()
