@@ -60,7 +60,8 @@ public class SendUpdateMessageCommand() : CliCommand<SendUpdateMessageArgument>(
         var windowsArm64 = assets.Links.FirstOrDefault(x => x.AssetName.ContainsIgnoreCase("win_arm64"));
         var linuxX64 = assets.Links.FirstOrDefault(x => x.AssetName.ContainsIgnoreCase("linux_x64") && !x.AssetName.EndsWithIgnoreCase(".AppImage"));
         var linuxX64AppImage = assets.Links.FirstOrDefault(x => x.AssetName.ContainsIgnoreCase("x64") && x.AssetName.EndsWithIgnoreCase(".AppImage"));
-        var macOs = assets.Links.FirstOrDefault(x => x.AssetName.ContainsIgnoreCase("macos_universal"));
+        var macOsUniversal = assets.Links.FirstOrDefault(x => x.AssetName.ContainsIgnoreCase("macos_universal"));
+        var macOsArm = assets.Links.FirstOrDefault(x => x.AssetName.ContainsIgnoreCase("macos_arm64"));
         var linuxArm64 = assets.Links.FirstOrDefault(x => x.AssetName.ContainsIgnoreCase("linux_arm64") && !x.AssetName.EndsWithIgnoreCase(".AppImage"));
         var linuxArm64AppImage = assets.Links.FirstOrDefault(x => x.AssetName.ContainsIgnoreCase("arm64") && x.AssetName.EndsWithIgnoreCase(".AppImage"));
         var androidApk = assets.Links.FirstOrDefault(x => x.AssetName.EndsWithIgnoreCase(".apk"));
@@ -71,7 +72,8 @@ public class SendUpdateMessageCommand() : CliCommand<SendUpdateMessageArgument>(
         applyArtifact(windowsArm64, "Windows ARM64");
         applyArtifacts((linuxX64, linuxX64AppImage), "Linux x64");
         applyArtifacts((linuxArm64, linuxArm64AppImage), "Linux ARM64");
-        applyArtifact(macOs, "macOS Universal");
+        applyArtifact(macOsUniversal, "macOS Universal");
+        applyArtifact(macOsArm, "macOS (Apple Silicon only)");
         applyArtifact(androidApk, "Android APK");
 
         return arrayBuilder.ToArray();
