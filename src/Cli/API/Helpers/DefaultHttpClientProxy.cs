@@ -68,9 +68,9 @@ public class DefaultHttpClientProxy : IHttpClientProxy
             response = await _http.SendAsync(request, option.Value, token.Value);
         else 
             response = await _http.SendAsync(request);
-        
+
         sw.Stop();
-        
+
         Log("{0} {1} -> {2} in {3}ms", GetLogArgs(request, response, sw));
 
         return response;
