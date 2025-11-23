@@ -16,7 +16,7 @@ public class UploadGenericPackageCommandArgument : CliCommandArgument
 
         Options = arg.Options;
         AccessToken = Options.AccessToken ?? ReadAccessTokenFromFile();
-        InitHttp(TimeSpan.FromMinutes(5));
+        InitHttp(TimeSpan.FromMinutes(10));
     }
 
     public UploadGenericPackageCommandArgument(Options options) : base(options)
