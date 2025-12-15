@@ -1,4 +1,5 @@
-﻿using GitLabCli.API.GitLab;
+﻿using CommandLine;
+using GitLabCli.API.GitLab;
 using GitLabCli.API.Helpers;
 using GitLabCli.Helpers;
 using Gommon;
@@ -9,39 +10,17 @@ namespace GitLabCli.Commands.CreateReleaseFromGenericPackageFiles;
 public class CreateReleaseFromGenericPackageFilesArgument : CliCommandArgument
 {
     internal bool IsInit { get; private set; }
-
+    
+    [Option('n', "package-name", Required = true)]
     public string PackageName { get; }
+    [Option('v', "package-version", Required = true)]
     public string PackageVersion { get; }
-
+    [Option('r', "release-ref", Required = false, HelpText = "If not passed, creates a release and tag at the same time based on the main branch.")]
     public string ReleaseRef { get; }
-
+    [Option('t', "release-title", Required = false, HelpText = "Title of the release in the GitLab UI.")]
     public string? ReleaseTitle { get; }
+    [Option('b', "release-body", Required = false, HelpText = "Body of the release in the GitLab UI.")]
     public string? ReleaseBody { get; private set; }
-
-    public CreateReleaseFromGenericPackageFilesArgument(Options options) : base(options)
-    {
-        PackageName = options.InputData.Split('|')[0];
-        PackageVersion = options.InputData.Split('|')[1];
-        ReleaseRef = options.InputData.Split('|')[2];
-
-        try
-        {
-            ReleaseTitle = options.InputData.Split('|')[3];
-        }
-        catch
-        {
-            ReleaseTitle = null;
-        }
-
-        try
-        {
-            ReleaseBody = options.InputData.Split('|')[4];
-        }
-        catch
-        {
-            ReleaseBody = null;
-        }
-    }
 
     public async Task InitIfNeededAsync(Project project)
     {
@@ -86,7 +65,7 @@ public class CreateReleaseFromGenericPackageFilesArgument : CliCommandArgument
         if (await FindMatchingPackageAsync(project) is not { } matchingPackage)
         {
             Logger.Error(LogSource.App,
-                $"Could not create a release because a generic package matching name {PackageName}, version {PackageVersion} on project {Options.ProjectPath} wasn't found.");
+                $"Could not create a release because a generic package matching name {PackageName}, version {PackageVersion} on project {ProjectPath} wasn't found.");
             return null;
         }
 
@@ -97,7 +76,7 @@ public class CreateReleaseFromGenericPackageFilesArgument : CliCommandArgument
         if (packageFiles is null)
         {
             Logger.Error(LogSource.App,
-                $"Could not create a release because the request to get all package files for package matching name {PackageName}, version {PackageVersion} on project {Options.ProjectPath} failed.");
+                $"Could not create a release because the request to get all package files for package matching name {PackageName}, version {PackageVersion} on project {ProjectPath} failed.");
             return null;
         }
 

@@ -26,20 +26,21 @@ public static class CliCommandManager
             .ToList();
     }
 
-    public static async Task DispatchAsync(Options options)
+    public static async Task DispatchAsync(CliCommandName commandName, string[] args)
     {
-        if (!CommandShims.FindFirst(x => x.Name == options.Command).TryGet(out var command))
+        if (!CommandShims.FindFirst(x => x.Name == commandName).TryGet(out var command))
         {
             Logger.Error(LogSource.App, "An invalid command was provided.");
             return;
         }
 
-        var exitCode = await command.Execute(options);
+        var exitCode = await command.Execute(args);
 
-        Logger.Log(
-            s: exitCode is ExitCode.Normal ? LogSeverity.Info : LogSeverity.Critical, 
-            from: LogSource.App,
-            message: $"{Enum.GetName(options.Command)} exited with result '{Enum.GetName(exitCode) ?? $"Unknown (value: {(int)exitCode})"}'");
+        if (exitCode is not ExitCode.NormalSilent)
+            Logger.Log(
+                s: exitCode is ExitCode.Normal ? LogSeverity.Info : LogSeverity.Critical, 
+                from: LogSource.App,
+                message: $"{Enum.GetName(commandName)} exited with result '{Enum.GetName(exitCode) ?? $"Unknown (value: {(int)exitCode})"}'");
 
         Environment.Exit((int)exitCode);
     }

@@ -8,18 +8,7 @@ namespace GitLabCli.Commands.UploadGenericPackage;
 
 public class UploadGenericPackageCommandArgument : CliCommandArgument
 {
-    public UploadGenericPackageCommandArgument(BulkUploadGenericPackageCommandArgument arg, string filePath) : base(null!)
-    {
-        PackageName = arg.PackageName;
-        PackageVersion = arg.PackageVersion;
-        FilePath = new FilePath(filePath, false);
-
-        Options = arg.Options;
-        AccessToken = Options.AccessToken ?? ReadAccessTokenFromFile();
-        InitHttp(TimeSpan.FromMinutes(10));
-    }
-
-    public UploadGenericPackageCommandArgument(Options options) : base(options)
+    public UploadGenericPackageCommandArgument(Options options)
     {
         PackageName = options.InputData.Split('|')[0];
         PackageVersion = options.InputData.Split('|')[1];

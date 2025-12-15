@@ -1,4 +1,5 @@
 ﻿using GitLabCli.Helpers;
+using Gommon;
 
 namespace GitLabCli.Commands.BulkUploadGenericPackage;
 
@@ -14,10 +15,10 @@ public class BulkUploadGenericPackageCommand() : CliCommand<BulkUploadGenericPac
             return ExitCode.FileNotFound;
         }
 
-        var project = await arg.CreateGitLabClient().Projects.GetByNamespacedPathAsync(arg.Options.ProjectPath);
+        var project = await arg.CreateGitLabClient().Projects.GetByNamespacedPathAsync(arg.ProjectPath);
         if (project is null)
         {
-            Logger.Error(LogSource.App, $"Could not find the project '{arg.Options.ProjectPath}' on '{arg.Options.GitLabEndpoint}'.");
+            Logger.Error(LogSource.App, $"Could not find the project '{arg.ProjectPath}' on '{arg.GitLabEndpoint}'.");
             return ExitCode.ProjectNotFound;
         }
 
@@ -25,7 +26,7 @@ public class BulkUploadGenericPackageCommand() : CliCommand<BulkUploadGenericPac
 
         foreach (var filePath in files)
         {
-            if (!await arg.UploadGenericPackageAsync(project, filePath))
+            if (!await arg.UploadGenericPackageAsync(project, new FilePath(filePath)))
                 Logger.Error(LogSource.App, $"'{filePath.Replace(Environment.CurrentDirectory, string.Empty)}' failed to upload.");
             else
             {

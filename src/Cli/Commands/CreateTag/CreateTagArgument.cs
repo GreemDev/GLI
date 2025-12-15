@@ -6,7 +6,7 @@ public class CreateTagArgument : CliCommandArgument
     public string TagRef { get; }
     public string? Comment { get; }
 
-    public CreateTagArgument(Options options) : base(options)
+    public CreateTagArgument(Options options)
     {
         TagName = options.InputData.Split('|')[0];
         TagRef = options.InputData.Split('|')[1];

@@ -8,7 +8,7 @@ public class CreateTagCommand() : CliCommand<CreateTagArgument>(CliCommandName.C
 {
     public override Task<ExitCode> ExecuteAsync(CreateTagArgument arg)
     {
-        var repo = arg.CreateGitLabClient().GetRepository(arg.Options.ProjectPath);
+        var repo = arg.CreateGitLabClient().GetRepository(arg.ProjectPath);
 
         if (repo == null)
             return Task.FromResult(ExitCode.ProjectNotFound);
@@ -20,7 +20,7 @@ public class CreateTagCommand() : CliCommand<CreateTagArgument>(CliCommandName.C
             Ref = arg.TagRef
         });
 
-        Logger.Info(LogSource.App, $"Created tag '{arg.TagName}' on project '{arg.Options.ProjectPath}'.");
+        Logger.Info(LogSource.App, $"Created tag '{arg.TagName}' on project '{arg.ProjectPath}'.");
 
         return Task.FromResult(ExitCode.Normal);
     }

@@ -13,7 +13,7 @@ public class SendUpdateMessageArgument : CliCommandArgument
 
     public bool ShowReleaseDescription { get; }
 
-    public SendUpdateMessageArgument(Options options) : base(options)
+    public SendUpdateMessageArgument(Options options)
     {
         ReleaseTag = options.InputData.Split('|')[0];
 

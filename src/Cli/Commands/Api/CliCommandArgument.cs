@@ -6,16 +6,12 @@ using NGitLab;
 
 namespace GitLabCli.Commands;
 
-public abstract class CliCommandArgument
+public abstract class CliCommandArgument : Options
 {
-    protected CliCommandArgument(Options options)
+    protected CliCommandArgument()
     {
-        Options = options;
-        AccessToken = options?.AccessToken ?? ReadAccessTokenFromFile();
-        InitHttp();
+        AccessToken ??= ReadAccessTokenFromFile();
     }
-
-    public string AccessToken { get; protected init; }
 
     protected static string ReadAccessTokenFromFile()
     {
@@ -28,20 +24,16 @@ public abstract class CliCommandArgument
     }
 
     [SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract", Justification = "Special use case")]
-    protected void InitHttp(TimeSpan? timeout = null)
+    internal void InitHttp(TimeSpan? timeout = null)
     {
-        if (Options is null) return;
-
-        Http = GitLabRestApi.CreateHttpClient(Options.GitLabEndpoint, AccessToken, timeout);
+        Http = GitLabRestApi.CreateHttpClient(GitLabEndpoint, AccessToken, timeout);
     }
 
     public string FormatGitLabUrl(string subPath)
-        => string.Concat(Options.GitLabEndpoint.TrimEnd('/'), "/", subPath);
+        => string.Concat(GitLabEndpoint.TrimEnd('/'), "/", subPath);
 
     public IHttpClientProxy Http { get; private set; } = null!;
-
-    public Options Options { get; protected init; }
     
     public GitLabClient CreateGitLabClient() 
-        => new(Options.GitLabEndpoint, AccessToken);
+        => new(GitLabEndpoint, AccessToken);
 }
