@@ -41,13 +41,7 @@ if (desiredCommand is null)
     return;
 }
 
-await new Parser(settings =>
-        {
-            settings.HelpWriter = Console.Error;
-            settings.IgnoreUnknownArguments = true;
-        }
-    )
-    .ParseArguments<Options>(args)
+await Parser.LenientDefault.ParseArguments<Options>(args)
     .WithNotParsed(errors =>
     {
         Logger.WriteToFile = false;
