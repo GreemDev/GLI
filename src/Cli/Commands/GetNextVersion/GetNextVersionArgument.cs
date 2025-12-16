@@ -1,7 +1,7 @@
 ﻿using CommandLine;
 using Ryujinx.Systems.Update.Common;
 
-namespace GitLabCli.Commands;
+namespace gli.Commands;
 
 public class GetNextVersionArgument : UpdateServerCliCommandArgument
 {

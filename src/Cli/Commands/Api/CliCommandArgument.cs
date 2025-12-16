@@ -1,10 +1,10 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using GitLabCli.API.GitLab;
-using GitLabCli.API.Helpers;
+using gli.API.GitLab;
+using gli.API.Helpers;
 using Gommon;
 using NGitLab;
 
-namespace GitLabCli.Commands;
+namespace gli.Commands;
 
 public sealed class DefaultCliCommandArgument : CliCommandArgument;
 

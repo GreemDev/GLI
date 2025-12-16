@@ -1,12 +1,12 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
-using GitLabCli.API.Helpers;
-using GitLabCli.Helpers;
+using gli.API.Helpers;
+using gli.Helpers;
 using Gommon;
 using NGitLab.Models;
 
-namespace GitLabCli.API.GitLab;
+namespace gli.API.GitLab;
 
 public static class GitLabRestApi
 {

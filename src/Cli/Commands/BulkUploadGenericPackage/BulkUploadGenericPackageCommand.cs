@@ -1,7 +1,7 @@
-﻿using GitLabCli.Helpers;
+﻿using gli.Helpers;
 using Gommon;
 
-namespace GitLabCli.Commands.BulkUploadGenericPackage;
+namespace gli.Commands.BulkUploadGenericPackage;
 
 [Command]
 public class BulkUploadGenericPackageCommand() : CliCommand<BulkUploadGenericPackageCommandArgument>(CliCommandName.BulkUploadGenericPackage)

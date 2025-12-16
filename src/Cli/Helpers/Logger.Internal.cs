@@ -1,10 +1,10 @@
 ﻿using System.Text;
-using GitLabCli.Entities.EventArgs;
+using gli.Entities.EventArgs;
 using Gommon;
 using Color = System.Drawing.Color;
 using Console = Colorful.Console;
 
-namespace GitLabCli.Helpers;
+namespace gli.Helpers;
 
 public static partial class Logger
 {

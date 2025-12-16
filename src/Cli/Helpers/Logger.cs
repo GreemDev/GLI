@@ -1,10 +1,10 @@
 ﻿using System.Runtime.CompilerServices;
-using GitLabCli.Entities.EventArgs;
+using gli.Entities.EventArgs;
 using Gommon;
 
 // ReSharper disable MemberCanBePrivate.Global
 
-namespace GitLabCli.Helpers;
+namespace gli.Helpers;
 
 public static partial class Logger
 {

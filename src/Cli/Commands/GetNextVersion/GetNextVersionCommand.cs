@@ -1,6 +1,6 @@
-﻿using GitLabCli.Helpers;
+﻿using gli.Helpers;
 
-namespace GitLabCli.Commands;
+namespace gli.Commands;
 
 [Command]
 public class GetNextVersionCommand() : CliCommand<GetNextVersionArgument>(CliCommandName.GetNextVersion)

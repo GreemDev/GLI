@@ -1,9 +1,9 @@
 ﻿using CommandLine;
-using GitLabCli.Helpers;
+using gli.Helpers;
 using Gommon;
 using Ryujinx.Systems.Update.Client;
 
-namespace GitLabCli.Commands;
+namespace gli.Commands;
 
 public abstract class UpdateServerCliCommandArgument : CliCommandArgument
 {

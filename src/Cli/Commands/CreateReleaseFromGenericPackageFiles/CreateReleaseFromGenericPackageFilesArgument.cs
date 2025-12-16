@@ -1,11 +1,11 @@
 ﻿using CommandLine;
-using GitLabCli.API.GitLab;
-using GitLabCli.API.Helpers;
-using GitLabCli.Helpers;
+using gli.API.GitLab;
+using gli.API.Helpers;
+using gli.Helpers;
 using Gommon;
 using NGitLab.Models;
 
-namespace GitLabCli.Commands.CreateReleaseFromGenericPackageFiles;
+namespace gli.Commands.CreateReleaseFromGenericPackageFiles;
 
 public class CreateReleaseFromGenericPackageFilesArgument : CliCommandArgument
 {

@@ -1,4 +1,4 @@
-﻿namespace GitLabCli.Helpers;
+﻿namespace gli.Helpers;
 
 public enum LogSource
 {

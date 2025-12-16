@@ -1,4 +1,4 @@
-﻿namespace GitLabCli.Commands;
+﻿namespace gli.Commands;
 
 public enum ExitCode
 {

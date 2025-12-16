@@ -1,6 +1,6 @@
-﻿using GitLabCli.Helpers;
+﻿using gli.Helpers;
 
-namespace GitLabCli.Commands.UploadGenericPackage;
+namespace gli.Commands.UploadGenericPackage;
 
 [Command]
 public class UploadGenericPackageCommand() : CliCommand<UploadGenericPackageCommandArgument>(CliCommandName.UploadGenericPackage)

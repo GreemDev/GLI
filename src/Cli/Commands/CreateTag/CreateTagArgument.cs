@@ -1,4 +1,4 @@
-﻿namespace GitLabCli.Commands.CreateTag;
+﻿namespace gli.Commands.CreateTag;
 
 public class CreateTagArgument : CliCommandArgument
 {

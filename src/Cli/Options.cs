@@ -1,6 +1,6 @@
 ﻿using CommandLine;
 
-namespace GitLabCli;
+namespace gli;
 
 public class Options
 {

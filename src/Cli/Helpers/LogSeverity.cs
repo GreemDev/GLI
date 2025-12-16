@@ -1,4 +1,4 @@
-﻿namespace GitLabCli.Helpers;
+﻿namespace gli.Helpers;
 
 
 // from Discord.Net

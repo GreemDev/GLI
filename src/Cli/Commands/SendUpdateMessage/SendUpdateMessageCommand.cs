@@ -1,11 +1,11 @@
 ﻿using System.Collections.Immutable;
 using System.Text;
-using GitLabCli.API.GitLab;
-using GitLabCli.Helpers;
+using gli.API.GitLab;
+using gli.Helpers;
 using Gommon;
 using JNogueira.Discord.Webhook.Client;
 
-namespace GitLabCli.Commands.SendUpdateMessage;
+namespace gli.Commands.SendUpdateMessage;
 
 [Command]
 public class SendUpdateMessageCommand() : CliCommand<SendUpdateMessageArgument>(CliCommandName.SendUpdateMessage)

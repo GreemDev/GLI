@@ -1,6 +1,6 @@
-﻿using GitLabCli.Helpers;
+﻿using gli.Helpers;
 
-namespace GitLabCli.Commands.CreateReleaseFromGenericPackageFiles;
+namespace gli.Commands.CreateReleaseFromGenericPackageFiles;
 
 [Command]
 public class CreateReleaseFromGenericPackageFilesCommand() : CliCommand<CreateReleaseFromGenericPackageFilesArgument>(CliCommandName.CreateReleaseFromGenericPackageFiles)

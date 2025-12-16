@@ -2,10 +2,10 @@
 using System.Reflection;
 using System.Runtime;
 using CommandLine;
-using GitLabCli.Helpers;
+using gli.Helpers;
 using Gommon;
 
-namespace GitLabCli.Commands;
+namespace gli.Commands;
 
 public abstract class CliCommand<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TArg>
     where TArg : CliCommandArgument

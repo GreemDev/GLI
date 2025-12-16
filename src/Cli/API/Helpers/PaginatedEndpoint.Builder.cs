@@ -2,7 +2,7 @@
 using System.Text.Json.Serialization.Metadata;
 using Gommon;
 
-namespace GitLabCli.API.Helpers;
+namespace gli.API.Helpers;
 
 public partial class PaginatedEndpoint<T>
 {

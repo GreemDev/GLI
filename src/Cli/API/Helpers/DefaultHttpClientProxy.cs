@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Gommon;
 
-namespace GitLabCli.API.Helpers;
+namespace gli.API.Helpers;
 
 public class DefaultHttpClientProxy : IHttpClientProxy
 {

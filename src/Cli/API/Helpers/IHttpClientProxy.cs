@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Net;
 
-namespace GitLabCli.API.Helpers;
+namespace gli.API.Helpers;
 
 public interface IHttpClientProxy
 {

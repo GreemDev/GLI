@@ -1,9 +1,9 @@
 ﻿using System.Net;
-using GitLabCli.Helpers;
+using gli.Helpers;
 using Gommon;
 using NGitLab.Models;
 
-namespace GitLabCli.Commands.BulkUploadGenericPackage;
+namespace gli.Commands.BulkUploadGenericPackage;
 
 public class BulkUploadGenericPackageCommandArgument : CliCommandArgument
 {

@@ -1,4 +1,4 @@
-﻿namespace GitLabCli.API.Helpers;
+﻿namespace gli.API.Helpers;
 
 public static class QueryParameters
 {

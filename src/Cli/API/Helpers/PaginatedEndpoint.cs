@@ -1,8 +1,8 @@
 ﻿using System.Net;
 using System.Text;
-using GitLabCli.Helpers;
+using gli.Helpers;
 
-namespace GitLabCli.API.Helpers;
+namespace gli.API.Helpers;
 
 public partial class PaginatedEndpoint<T>
 {

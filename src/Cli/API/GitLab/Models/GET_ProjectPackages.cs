@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
-using GitLabCli.API.Helpers;
+using gli.API.Helpers;
 using NGitLab.Models;
 
-namespace GitLabCli.API.GitLab;
+namespace gli.API.GitLab;
 
 public class GetProjectPackagesItem
 {

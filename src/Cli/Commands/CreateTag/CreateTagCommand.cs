@@ -1,7 +1,7 @@
-﻿using GitLabCli.Helpers;
+﻿using gli.Helpers;
 using NGitLab.Models;
 
-namespace GitLabCli.Commands.CreateTag;
+namespace gli.Commands.CreateTag;
 
 [Command]
 public class CreateTagCommand() : CliCommand<CreateTagArgument>(CliCommandName.CreateTag)

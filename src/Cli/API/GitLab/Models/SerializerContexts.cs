@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace GitLabCli.API.GitLab;
+namespace gli.API.GitLab;
 
 [JsonSerializable(typeof(IEnumerable<GitLabReleaseJsonResponse>))]
 [JsonSerializable(typeof(IEnumerable<GetProjectPackagesItem>))]

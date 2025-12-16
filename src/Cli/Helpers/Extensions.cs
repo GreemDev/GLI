@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace GitLabCli.Helpers
+namespace gli.Helpers
 {
     public static class Extensions
     {

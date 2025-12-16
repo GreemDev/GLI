@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace GitLabCli.API.GitLab;
+namespace gli.API.GitLab;
 
 public class GetPackageFilesItem
 {

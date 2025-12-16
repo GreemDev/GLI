@@ -1,7 +1,7 @@
 ﻿using CommandLine;
-using GitLabCli;
-using GitLabCli.Commands;
-using GitLabCli.Helpers;
+using gli;
+using gli.Commands;
+using gli.Helpers;
 using Gommon;
 
 Logger.OutputLogToStandardOut();

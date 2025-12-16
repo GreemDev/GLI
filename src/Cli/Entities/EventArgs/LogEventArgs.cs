@@ -1,6 +1,6 @@
-﻿using GitLabCli.Helpers;
+﻿using gli.Helpers;
 
-namespace GitLabCli.Entities.EventArgs;
+namespace gli.Entities.EventArgs;
 
 public class LogEventArgs
 {

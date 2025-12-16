@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using Gommon;
 
-namespace GitLabCli.Helpers;
+namespace gli.Helpers;
 
 public static partial class TimeSpans
 {

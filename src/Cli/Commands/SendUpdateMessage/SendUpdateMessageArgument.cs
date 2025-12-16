@@ -1,8 +1,8 @@
-﻿using GitLabCli.API.GitLab;
-using GitLabCli.Helpers;
+﻿using gli.API.GitLab;
+using gli.Helpers;
 using NGitLab.Models;
 
-namespace GitLabCli.Commands.SendUpdateMessage;
+namespace gli.Commands.SendUpdateMessage;
 
 public class SendUpdateMessageArgument : CliCommandArgument
 {
