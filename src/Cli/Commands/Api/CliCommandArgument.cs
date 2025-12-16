@@ -6,6 +6,8 @@ using NGitLab;
 
 namespace GitLabCli.Commands;
 
+public sealed class DefaultCliCommandArgument : CliCommandArgument;
+
 public abstract class CliCommandArgument : Options
 {
     protected CliCommandArgument()
@@ -24,7 +26,7 @@ public abstract class CliCommandArgument : Options
     }
 
     [SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract", Justification = "Special use case")]
-    internal void InitHttp(TimeSpan? timeout = null)
+    internal virtual void InitHttp(TimeSpan? timeout = null)
     {
         Http = GitLabRestApi.CreateHttpClient(GitLabEndpoint, AccessToken, timeout);
     }

@@ -14,9 +14,11 @@ if (string.IsNullOrEmpty(search))
     Logger.Info(LogSource.Cli, "Available commands are as follows: ");
     Enum.GetNames<CliCommandName>().ForEach(x => Logger.Info(LogSource.Cli, $"    - {x}"));
     Logger.Info(LogSource.Cli, "You can invoke it by directly putting it after the executable name.");
-    Logger.Info(LogSource.Cli, $"i.e. '{Path.GetFileName(Environment.ProcessPath)} {Enum.GetNames<CliCommandName>().GetRandomElement()}'");
+    Logger.Info(LogSource.Cli,
+        $"i.e. '{Path.GetFileName(Environment.ProcessPath)} {Enum.GetNames<CliCommandName>().GetRandomElement()}'");
     return;
 }
+
 args = args[1..];
 
 foreach (CliCommandName name in Enum.GetValuesAsUnderlyingType<CliCommandName>().Cast<CliCommandName>())
@@ -34,7 +36,13 @@ if (desiredCommand is null)
     return;
 }
 
-await Parser.Default.ParseArguments<Options>(args)
+await new Parser(settings =>
+        {
+            settings.HelpWriter = Console.Error;
+            settings.IgnoreUnknownArguments = true;
+        }
+    )
+    .ParseArguments<Options>(args)
     .WithNotParsed(errors =>
     {
         Logger.WriteToFile = false;

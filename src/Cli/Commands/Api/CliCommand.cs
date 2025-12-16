@@ -59,5 +59,6 @@ public enum CliCommandName
     BulkUploadGenericPackage,
     UploadGenericPackage,
     SendUpdateMessage,
-    CreateReleaseFromGenericPackageFiles
+    CreateReleaseFromGenericPackageFiles,
+    GetNextVersion
 }

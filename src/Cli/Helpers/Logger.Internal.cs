@@ -131,6 +131,7 @@ public static partial class Logger
         {
             LogSource.App => (Color.LawnGreen, "CORE"),
             LogSource.Cli => (Color.SteelBlue, "CLI"),
+            LogSource.UpdateClient => (Color.Coral, "UCLIENT"),
             LogSource.Unknown => (Color.Fuchsia, "UNKNOWN"),
             _ => throw new InvalidOperationException($"The specified LogSource {source} is invalid.")
         };

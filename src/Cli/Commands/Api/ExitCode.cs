@@ -9,4 +9,5 @@ public enum ExitCode
     ProjectNotFound = 2,
     ObjectNotFound = 3,
     ArgumentParseFailed = 4,
+    OperationFailure = 5,
 }
