@@ -6,7 +6,7 @@ namespace gli.Commands.CreateTag;
 [Command]
 public class CreateTagCommand() : CliCommand<CreateTagArgument>(CliCommandName.CreateTag)
 {
-    public override Task<ExitCode> ExecuteAsync(CreateTagArgument arg)
+    protected override Task<ExitCode> ExecuteAsync(CreateTagArgument arg)
     {
         var repo = arg.CreateGitLabClient().GetRepository(arg.ProjectPath);
 

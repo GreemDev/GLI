@@ -48,6 +48,8 @@ public class BulkUploadGenericPackageCommandArgument : CliCommandArgument
         }
     }
 
+    public override TimeSpan? HttpRequestTimeout => TimeSpan.FromMinutes(10); //accomodate shitass internet
+
     public string PackageName { get; }
     public string PackageVersion { get; }
     public string FilePattern { get; }

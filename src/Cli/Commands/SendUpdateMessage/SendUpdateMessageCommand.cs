@@ -10,7 +10,7 @@ namespace gli.Commands.SendUpdateMessage;
 [Command]
 public class SendUpdateMessageCommand() : CliCommand<SendUpdateMessageArgument>(CliCommandName.SendUpdateMessage)
 {
-    public override async Task<ExitCode> ExecuteAsync(SendUpdateMessageArgument arg)
+    protected override async Task<ExitCode> ExecuteAsync(SendUpdateMessageArgument arg)
     {
         var project = await arg.CreateGitLabClient().Projects.GetByNamespacedPathAsync(arg.ProjectPath);
         if (project is null)

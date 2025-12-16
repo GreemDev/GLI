@@ -25,10 +25,12 @@ public abstract class CliCommandArgument : Options
         return fp.ReadAllText();
     }
 
-    [SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract", Justification = "Special use case")]
-    internal virtual void InitHttp(TimeSpan? timeout = null)
+    public virtual TimeSpan? HttpRequestTimeout { get; } = null;
+    
+    /// <remarks>ALWAYS call the base implementation when overriding! If you don't, <see cref="Http"/> will be null and any HTTP requests will error with null reference exceptions.</remarks>
+    internal virtual void BeforeExecution()
     {
-        Http = GitLabRestApi.CreateHttpClient(GitLabEndpoint, AccessToken, timeout);
+        Http = GitLabRestApi.CreateHttpClient(GitLabEndpoint, AccessToken!, HttpRequestTimeout);
     }
 
     public string FormatGitLabUrl(string subPath)

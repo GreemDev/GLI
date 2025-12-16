@@ -6,7 +6,7 @@ namespace gli.Commands.BulkUploadGenericPackage;
 [Command]
 public class BulkUploadGenericPackageCommand() : CliCommand<BulkUploadGenericPackageCommandArgument>(CliCommandName.BulkUploadGenericPackage)
 {
-    public override async Task<ExitCode> ExecuteAsync(BulkUploadGenericPackageCommandArgument arg)
+    protected override async Task<ExitCode> ExecuteAsync(BulkUploadGenericPackageCommandArgument arg)
     {
         var files = Directory.EnumerateFiles(Environment.CurrentDirectory, arg.FilePattern).ToArray();
         if (files.Length is 0)

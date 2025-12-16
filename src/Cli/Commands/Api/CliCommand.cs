@@ -1,53 +1,56 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime;
+﻿using System.Runtime;
 using CommandLine;
 using gli.Helpers;
 using Gommon;
 
 namespace gli.Commands;
 
-public abstract class CliCommand<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TArg>
-    where TArg : CliCommandArgument
+public abstract class CliCommand<TArg> : ICommandShimHolder where TArg : CliCommandArgument
 {
-    protected CliCommand(CliCommandName name) => Name = name;
+    protected CliCommand(CliCommandName name)
+    {
+        Name = name;
+    }
+
+    public async Task<ExitCode> InvokeAsync(string[] args)
+    {
+        var parserResult = Parser.Default.ParseArguments<TArg>(args);
+
+        switch (parserResult)
+        {
+            case NotParsed<TArg> notParsedResult:
+                Logger.WriteToFile = false;
+                Logger.Error(LogSource.Cli, $"Error parsing arguments for {Enum.GetName(Name)}:");
+
+                notParsedResult.Errors.ForEach(err => Logger.Error(LogSource.Cli, $" - {err.Tag}"));
+
+                return ExitCode.ArgumentParseFailed;
+            case Parsed<TArg> parsedResult:
+                parsedResult.Value.BeforeExecution();
+                return await ExecuteAsync(parsedResult.Value);
+            default:
+                // Should not be possible. Just here to shut up the compiler.
+                throw new AmbiguousImplementationException();
+        }
+    }
 
     public readonly CliCommandName Name;
 
-    public abstract Task<ExitCode> ExecuteAsync(TArg arg);
-
-    // ReSharper disable once UnusedMember.Global
-    internal CommandShim CreateShim()
-        => new()
-        {
-            Name = Name,
-            Execute = async args =>
-            {
-                var parserResult = Parser.Default.ParseArguments<TArg>(args);
-
-                if (parserResult is NotParsed<TArg> notParsedResult)
-                {
-                    Logger.WriteToFile = false;
-                    Logger.Error(LogSource.Cli, $"Error parsing arguments for {Enum.GetName(Name)}:");
-
-                    notParsedResult.Errors.ForEach(err => Logger.Error(LogSource.Cli, $" - {err.Tag}"));
-
-                    return ExitCode.ArgumentParseFailed;
-                }
-
-                if (parserResult is Parsed<TArg> parsedResult)
-                {
-                    parsedResult.Value.InitHttp();
-                    return await ExecuteAsync(parsedResult.Value);
-                }
-
-                // Should not be possible. Just here to shut up the compiler.
-                throw new AmbiguousImplementationException();
-            }
-        };
+    protected abstract Task<ExitCode> ExecuteAsync(TArg arg);
+    
+    CommandShim ICommandShimHolder.Shim => new()
+    {
+        Name = Name,
+        Execute = InvokeAsync
+    };
 }
 
-internal struct CommandShim
+public interface ICommandShimHolder
+{
+    internal CommandShim Shim { get; }
+}
+
+public struct CommandShim
 {
     public required CliCommandName Name { get; init; }
     public required Func<string[], Task<ExitCode>> Execute { get; init; }

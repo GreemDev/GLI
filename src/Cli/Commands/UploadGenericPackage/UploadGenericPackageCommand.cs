@@ -5,7 +5,7 @@ namespace gli.Commands.UploadGenericPackage;
 [Command]
 public class UploadGenericPackageCommand() : CliCommand<UploadGenericPackageCommandArgument>(CliCommandName.UploadGenericPackage)
 {
-    public override async Task<ExitCode> ExecuteAsync(UploadGenericPackageCommandArgument arg)
+    protected override async Task<ExitCode> ExecuteAsync(UploadGenericPackageCommandArgument arg)
     {
         if (!arg.FilePath.ExistsAsFile)
         {

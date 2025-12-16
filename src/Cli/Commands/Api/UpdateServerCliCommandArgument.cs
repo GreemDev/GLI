@@ -45,9 +45,11 @@ public abstract class UpdateServerCliCommandArgument : CliCommandArgument
 
     public UpdateClient UpdateClient { get; private set; }
 
-    internal override void InitHttp(TimeSpan? timeout = null)
+    public override TimeSpan? HttpRequestTimeout => TimeSpan.FromMinutes(10); //accomodate shitass internet
+
+    internal override void BeforeExecution()
     {
-        base.InitHttp(timeout);
+        base.BeforeExecution();
         UpdateClient = UpdateClient.Builder()
             .WithServerEndpoint(UpdateServerEndpoint)
             .WithAccessToken(AdminToken!)
