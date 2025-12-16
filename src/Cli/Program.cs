@@ -20,6 +20,11 @@ if (string.IsNullOrEmpty(search))
 }
 
 args = args[1..];
+if (args is ["--help"])
+    args = []; // Passing --help after the command name causes it to trigger help for the first time it's parsed,
+               // which doesn't have any of the contextual arguments for the command specified.
+               // If the only argument is "--help", reset the arg array,
+               // as this will pass initial parsing just fine but trigger help on the special options type.
 
 foreach (CliCommandName name in Enum.GetValuesAsUnderlyingType<CliCommandName>().Cast<CliCommandName>())
 {
