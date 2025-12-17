@@ -10,7 +10,7 @@ public class GitLabCliCommandArgument : CliCommandArgument
 {
     [Option('S', "server-url", Required = false, Default = "https://git.ryujinx.app",
         HelpText = "The target GitLab instance to use.")]
-    public string GitLabEndpoint { get; set; }
+    public string GitLabEndpoint { get; set; } = null!;
 
     [Option('t', "access-token", Required = false, Default = null,
         HelpText =
@@ -19,7 +19,7 @@ public class GitLabCliCommandArgument : CliCommandArgument
 
     [Option('p', "project", Required = true,
         HelpText = "The 'owner/project' you are requesting. For example, ryubing/ryujinx.")]
-    public string ProjectPath { get; set; }
+    public string ProjectPath { get; set; } = null!;
     
     public string FormatGitLabUrl(string subPath)
         => string.Concat(GitLabEndpoint.TrimEnd('/'), "/", subPath);

@@ -11,11 +11,11 @@ public class SendUpdateMessageArgument : GitLabCliCommandArgument
 {
     [Option('t', "release-tag",
         Required = true, HelpText = "The tag the release was made with.")]
-    public string ReleaseTag { get; set; }
+    public string ReleaseTag { get; set; } = null!;
 
     [Option('w', "webhook",
         Required = true, HelpText = "Your Discord webhook URL.")]
-    public string WebhookUrl { get; set; }
+    public string WebhookUrl { get; set; } = null!;
 
     public DiscordColor EmbedColor { get; private set; }
 
@@ -32,7 +32,7 @@ public class SendUpdateMessageArgument : GitLabCliCommandArgument
 
     [Option('c', "embed-color",
         Required = true, HelpText = "The name of a color or a raw #RRGGBB hexadecimal number.")]
-    public string EmbedColorStr { get; set; }
+    public string EmbedColorStr { get; set; } = null!;
 
     internal override Result BeforeExecution()
     {
@@ -40,20 +40,21 @@ public class SendUpdateMessageArgument : GitLabCliCommandArgument
 
         foreach (KnownColor kc in KnownColor.Values)
         {
-            if (!search.EqualsIgnoreCase(kc.Name))
+            if (!search.EqualsIgnoreCase(kc.Name) || kc is KnownColor.Transparent)
                 continue;
 
             EmbedColor = new DiscordColor(Color.FromKnownColor(kc));
             return base.BeforeExecution();
         }
-        
+
         try
         {
             EmbedColor = Convert.ToInt32(EmbedColorStr.TrimStart('#'), 16);
         }
         catch
         {
-            return Result.Failure(new MessageError("Embed color must be a hexadecimal number representing RGB, or a color by name, e.g. 'green'"));
+            return Result.Failure(new MessageError(
+                "Embed color must be a hexadecimal number representing RGB, or a color by name, e.g. 'green'"));
         }
 
         return base.BeforeExecution();
