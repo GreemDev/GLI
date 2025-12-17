@@ -45,8 +45,6 @@ public abstract class UpdateServerCliCommandArgument : CliCommandArgument
 
     public UpdateClient UpdateClient { get; private set; }
 
-    public override TimeSpan? HttpRequestTimeout => TimeSpan.FromMinutes(10); //accomodate shitass internet
-
     internal override void BeforeExecution()
     {
         base.BeforeExecution();

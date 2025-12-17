@@ -13,7 +13,9 @@ public class BulkUploadGenericPackageCommandArgument : CliCommandArgument
         PackageVersion = options.InputData.Split('|')[1];
         FilePattern = options.InputData.Split('|')[2];
     }
-    
+
+    public override TimeSpan? HttpRequestTimeout => TimeSpan.FromMinutes(10); //accomodate shitass internet
+
     public async Task<bool> UploadGenericPackageAsync(Project project, FilePath filePath)
     {
         try
@@ -47,8 +49,6 @@ public class BulkUploadGenericPackageCommandArgument : CliCommandArgument
             return false;
         }
     }
-
-    public override TimeSpan? HttpRequestTimeout => TimeSpan.FromMinutes(10); //accomodate shitass internet
 
     public string PackageName { get; }
     public string PackageVersion { get; }

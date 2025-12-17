@@ -15,6 +15,8 @@ public class UploadGenericPackageCommandArgument : CliCommandArgument
         FilePath = new FilePath(options.InputData.Split('|')[2], false);
     }
 
+    public override TimeSpan? HttpRequestTimeout => TimeSpan.FromMinutes(10); //accomodate shitass internet
+
     public async Task<bool> UploadGenericPackageAsync(
         Project project)
     {
