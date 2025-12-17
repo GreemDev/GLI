@@ -36,21 +36,24 @@ public class SendUpdateMessageArgument : GitLabCliCommandArgument
 
     internal override Result BeforeExecution()
     {
-        if (Enum.TryParse(EmbedColorStr, out KnownColor kc))
+        var search = EmbedColorStr.Replace("-", string.Empty);
+
+        foreach (KnownColor kc in KnownColor.Values)
         {
+            if (!search.EqualsIgnoreCase(kc.Name))
+                continue;
+
             EmbedColor = new DiscordColor(Color.FromKnownColor(kc));
+            return base.BeforeExecution();
         }
-        else
+        
+        try
         {
-            try
-            {
-                EmbedColor = Convert.ToInt32(EmbedColorStr.TrimStart('#'), 16);
-            }
-            catch
-            {
-                return Result.Failure(new MessageError(
-                    "Embed color (second, index 1) item in raw command arguments must be a hexadecimal number representing RGB. No preceding #."));
-            }
+            EmbedColor = Convert.ToInt32(EmbedColorStr.TrimStart('#'), 16);
+        }
+        catch
+        {
+            return Result.Failure(new MessageError("Embed color (second, index 1) item in raw command arguments must be a hexadecimal number representing RGB. No preceding #."));
         }
 
         return base.BeforeExecution();
