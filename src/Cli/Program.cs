@@ -20,7 +20,6 @@ public static class Program
 
     public static async Task Main(string[] args)
     {
-        CliCommandName? desiredCommand = null;
         SearchString = args.ElementAtOrDefault(0);
         var search = SearchString?.Replace("-", string.Empty);
         if (string.IsNullOrEmpty(search))
@@ -42,6 +41,7 @@ public static class Program
         // If the only argument is "--help", reset the arg array,
         // as this will pass initial parsing just fine but trigger help on the special options type.
 
+        CliCommandName? desiredCommand = null;
         foreach (CliCommandName name in CliCommandName.Values)
         {
             if (!search.EqualsIgnoreCase(name.Name))
