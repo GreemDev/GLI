@@ -5,51 +5,50 @@ using Gommon;
 
 namespace gli.Commands;
 
-[SuppressMessage("Trimming", "IL2026:Members annotated with \'RequiresUnreferencedCodeAttribute\' require dynamic access otherwise can break functionality when trimming application code")]
-[SuppressMessage("Trimming", "IL2111:Method with parameters or return value with `DynamicallyAccessedMembersAttribute` is accessed via reflection. Trimmer can\'t guarantee availability of the requirements of the method.")]
-public static class CliCommandManager
+[SuppressMessage("Trimming",
+    "IL2026:Members annotated with \'RequiresUnreferencedCodeAttribute\' require dynamic access otherwise can break functionality when trimming application code")]
+[SuppressMessage("Trimming",
+    "IL2111:Method with parameters or return value with `DynamicallyAccessedMembersAttribute` is accessed via reflection. Trimmer can\'t guarantee availability of the requirements of the method.")]
+public class CliCommandManager
 {
-    private static readonly List<CommandShim> CommandShims;
+    private readonly SafeDictionary<CliCommandName, Func<string[], Task<ExitCode>>?> _shims;
 
-    static CliCommandManager()
+    public CliCommandManager()
     {
-        CommandShims = Assembly.GetExecutingAssembly()
-            .GetTypes()
-            .Where(x => x.Inherits<ICliCommand>() && x is { IsAbstract: false, IsInterface: false })
-            .Where(x => x.IsPublic)
-            .Select(Activator.CreateInstance)
-            .Where(x => x != null)
-            .OfType<ICommandShimHolder>()
-            .Select(x => x.Shim)
-            .ToList();
+        _shims = new SafeDictionary<CliCommandName, Func<string[], Task<ExitCode>>>(
+            Assembly.GetExecutingAssembly()
+                .GetTypes()
+                .Where(x => x.Inherits<ICliCommand>() && x is { IsAbstract: false, IsInterface: false })
+                .Where(x => x.IsPublic)
+                .Select(Activator.CreateInstance)
+                .Where(x => x != null)
+                .OfType<ICommandShimHolder>()
+                .Select(x => x.Shim)
+                .ToDictionary(x => x.Name, x => x.Execute)
+        );
     }
 
-    public static async Task DispatchAsync(CliCommandName commandName, string[] args)
+    public async Task DispatchAsync(CliCommandName commandName, string[] args)
     {
-        if (!CommandShims.FindFirst(x => x.Name == commandName).TryGet(out var command))
-        {
-            Logger.Error(LogSource.App, "An invalid command was provided.");
-            return;
-        }
-
-        if (command.Execute is null)
+        if (_shims[commandName] is not { } execution)
         {
             Logger.Error(LogSource.App, "An unregistered command was provided.");
             return;
         }
 
-        var exitCode = await command.Execute!(args);
+        var exitCode = await execution(args);
 
         if (exitCode is not ExitCode.NormalSilent)
             Logger.Log(
-                s: exitCode is ExitCode.Normal ? LogSeverity.Info : LogSeverity.Critical, 
+                s: exitCode is ExitCode.Normal ? LogSeverity.Info : LogSeverity.Critical,
                 from: LogSource.App,
-                message: $"{Enum.GetName(commandName)} exited with result '{Enum.GetName(exitCode) ?? $"Unknown (value: {(int)exitCode})"}'");
+                message:
+                $"{Enum.GetName(commandName)} exited with result '{Enum.GetName(exitCode) ?? $"Unknown (value: {(int)exitCode})"}'");
 
         Environment.Exit((int)(
-            exitCode is ExitCode.NormalSilent 
-                ? ExitCode.Normal 
-                : exitCode)
-            );
+                exitCode is ExitCode.NormalSilent
+                    ? ExitCode.Normal
+                    : exitCode)
+        );
     }
 }

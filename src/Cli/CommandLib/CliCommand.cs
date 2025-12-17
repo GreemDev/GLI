@@ -39,10 +39,7 @@ public abstract class CliCommand<TArg> : ICommandShimHolder, ICliCommand where T
                     Logger.Error(LogSource.App, me.Content);
                     return ExitCode.ArgumentParseFailed;
                 }
-#if DEBUG
-                Logger.Debug(LogSource.Cli,
-                    $"> ./{Path.GetFileName(Environment.ProcessPath)} {Program.SearchString} {Parser.Default.FormatCommandLine(parsedResult.Value)}");
-#endif
+
                 return await ExecuteAsync(parsedResult.Value);
             default:
                 // Should not be possible. Just here to shut up the compiler.

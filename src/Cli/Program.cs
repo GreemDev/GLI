@@ -6,12 +6,19 @@ using Gommon;
 
 public static class Program
 {
-    public static string? SearchString { get; private set; }
-    
-    public static async Task Main(string[] args)
+    static Program()
     {
         Logger.OutputLogToStandardOut();
 
+        CommandManager = new CliCommandManager();
+    }
+
+    public static CliCommandManager CommandManager { get; private set; }
+
+    public static string? SearchString { get; private set; }
+
+    public static async Task Main(string[] args)
+    {
         CliCommandName? desiredCommand = null;
         SearchString = args.ElementAtOrDefault(0);
         var search = SearchString?.Replace("-", string.Empty);
@@ -22,21 +29,21 @@ public static class Program
             Enum.GetNames<CliCommandName>().ForEach(x => Logger.Info(LogSource.Cli, $"    - {x}"));
             Logger.Info(LogSource.Cli, "You can invoke it by directly putting it after the executable name.");
             Logger.Info(LogSource.Cli,
-                $"i.e. '{Path.GetFileName(Environment.ProcessPath)} {Enum.GetNames<CliCommandName>().GetRandomElement()}'");
+                $"i.e. '{Path.GetFileName(Environment.ProcessPath)} {CliCommandName.ValueNames.GetRandomElement()}'");
             return;
         }
 
         args = args[1..];
         if (args is ["--help"])
-            args = []; 
+            args = [];
         // Passing --help after the command name causes it to trigger help for the first time it's parsed,
         // which doesn't have any of the contextual arguments for the command specified.
         // If the only argument is "--help", reset the arg array,
         // as this will pass initial parsing just fine but trigger help on the special options type.
 
-        foreach (CliCommandName name in Enum.GetValuesAsUnderlyingType<CliCommandName>().Cast<CliCommandName>())
+        foreach (CliCommandName name in CliCommandName.Values)
         {
-            if (!search.EqualsIgnoreCase(Enum.GetName(name)))
+            if (!search.EqualsIgnoreCase(name.Name))
                 continue;
 
             desiredCommand = name;
@@ -59,13 +66,7 @@ public static class Program
             .WithParsedAsync(async opt =>
             {
                 Logger.WriteToFile = opt.WriteLogFiles;
-
-#if DEBUG
-                Logger.Debug(LogSource.Cli,
-                    $"> ./{Path.GetFileName(Environment.ProcessPath)} {SearchString} {Parser.LenientDefault.FormatCommandLine(opt)}");
-#endif
-
-                await CliCommandManager.DispatchAsync(desiredCommand.Value, args);
+                await CommandManager.DispatchAsync(desiredCommand.Value, args);
             });
     }
 }

@@ -5,6 +5,14 @@ namespace gli.Helpers
 {
     public static class Extensions
     {
+        extension<TEnum>(TEnum en) where TEnum : struct, Enum
+        {
+            public static TEnum[] Values => Enum.GetValues<TEnum>();
+            public static string[] ValueNames => Enum.GetNames<TEnum>();
+
+            public string? Name => Enum.GetName(en);
+        }
+
         public static bool TryParse<T>(this string? s, [MaybeNullWhen(false)] out T result, IFormatProvider? formatProvider = null) where T : IParsable<T>
             => T.TryParse(s, formatProvider, out result);
 
