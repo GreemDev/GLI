@@ -25,9 +25,7 @@ public class BulkUploadGenericPackageCommand() : CliCommand<BulkUploadGenericPac
 
         foreach (var filePath in files)
         {
-            if (!await arg.UploadGenericPackageAsync(project, new FilePath(filePath)))
-                Logger.Error(LogSource.App, $"'{filePath.Replace(Environment.CurrentDirectory, string.Empty)}' failed to upload.");
-            else
+            if (await arg.UploadGenericPackageAsync(project, new FilePath(filePath)))
             {
                 Logger.Info(LogSource.App, $"'Uploaded {filePath.Replace(Environment.CurrentDirectory, string.Empty)}' to the package registry on project '{project.NameWithNamespace}' (id {project.Id}).");
                 completedFiles++;
