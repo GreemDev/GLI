@@ -5,7 +5,15 @@ using Gommon;
 
 namespace gli.Commands;
 
-public abstract class CliCommand<TArg> : ICommandShimHolder where TArg : CliCommandArgument
+/// <summary>
+///     Marker interface for reflective access.
+/// </summary>
+public interface ICliCommand
+{
+    public CliCommandName Name { get; }
+}
+
+public abstract class CliCommand<TArg> : ICommandShimHolder, ICliCommand where TArg : CliCommandArgument
 {
     protected CliCommand(CliCommandName name)
     {
@@ -34,7 +42,7 @@ public abstract class CliCommand<TArg> : ICommandShimHolder where TArg : CliComm
         }
     }
 
-    public readonly CliCommandName Name;
+    public CliCommandName Name { get; }
 
     protected abstract Task<ExitCode> ExecuteAsync(TArg arg);
     
@@ -53,5 +61,5 @@ public interface ICommandShimHolder
 public struct CommandShim
 {
     public required CliCommandName Name { get; init; }
-    public required Func<string[], Task<ExitCode>> Execute { get; init; }
+    public required Func<string[], Task<ExitCode>>? Execute { get; init; }
 }

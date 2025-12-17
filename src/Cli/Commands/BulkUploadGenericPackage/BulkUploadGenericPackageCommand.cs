@@ -3,7 +3,6 @@ using Gommon;
 
 namespace gli.Commands.BulkUploadGenericPackage;
 
-[Command]
 public class BulkUploadGenericPackageCommand() : CliCommand<BulkUploadGenericPackageCommandArgument>(CliCommandName.BulkUploadGenericPackage)
 {
     protected override async Task<ExitCode> ExecuteAsync(BulkUploadGenericPackageCommandArgument arg)

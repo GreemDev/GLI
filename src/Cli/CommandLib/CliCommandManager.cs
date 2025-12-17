@@ -15,7 +15,8 @@ public static class CliCommandManager
     {
         CommandShims = Assembly.GetExecutingAssembly()
             .GetTypes()
-            .Where(x => x.HasAttribute<CommandAttribute>())
+            .Where(x => x.Inherits<ICliCommand>() && x is { IsAbstract: false, IsInterface: false })
+            .Where(x => x.IsPublic)
             .Select(Activator.CreateInstance)
             .Where(x => x != null)
             .OfType<ICommandShimHolder>()
@@ -31,7 +32,13 @@ public static class CliCommandManager
             return;
         }
 
-        var exitCode = await command.Execute(args);
+        if (command.Execute is null)
+        {
+            Logger.Error(LogSource.App, "An unregistered command was provided.");
+            return;
+        }
+
+        var exitCode = await command.Execute!(args);
 
         if (exitCode is not ExitCode.NormalSilent)
             Logger.Log(

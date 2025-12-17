@@ -2,7 +2,6 @@
 
 namespace gli.Commands;
 
-[Command]
 public class IncrementVersionCommand() : CliCommand<IncrementVersionArgument>(CliCommandName.IncrementVersion)
 {
     protected override async Task<ExitCode> ExecuteAsync(IncrementVersionArgument arg)

@@ -2,7 +2,6 @@
 
 namespace gli.Commands.CreateReleaseFromGenericPackageFiles;
 
-[Command]
 public class CreateReleaseFromGenericPackageFilesCommand() : CliCommand<CreateReleaseFromGenericPackageFilesArgument>(CliCommandName.CreateReleaseFromGenericPackageFiles)
 {
     protected override async Task<ExitCode> ExecuteAsync(CreateReleaseFromGenericPackageFilesArgument arg)

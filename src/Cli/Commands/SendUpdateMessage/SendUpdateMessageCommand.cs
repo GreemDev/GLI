@@ -7,7 +7,6 @@ using JNogueira.Discord.Webhook.Client;
 
 namespace gli.Commands.SendUpdateMessage;
 
-[Command]
 public class SendUpdateMessageCommand() : CliCommand<SendUpdateMessageArgument>(CliCommandName.SendUpdateMessage)
 {
     protected override async Task<ExitCode> ExecuteAsync(SendUpdateMessageArgument arg)

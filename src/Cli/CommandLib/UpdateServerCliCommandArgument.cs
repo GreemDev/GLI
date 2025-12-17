@@ -16,7 +16,7 @@ public abstract class UpdateServerCliCommandArgument : CliCommandArgument
     [Option('S', "update-server-endpoint", Required = false, Default = "https://update.ryujinx.app",
         HelpText =
             "The publicly accessible URL of your Ryubing UpdateServer instance.")]
-    public string UpdateServerEndpoint { get; set; }
+    public string UpdateServerEndpoint { get; set; } = null!;
 
     [Option('T', "admin-token", Required = false, Default = null,
         HelpText =
@@ -38,7 +38,7 @@ public abstract class UpdateServerCliCommandArgument : CliCommandArgument
         return fp.ReadAllText();
     }
 
-    public UpdateClient UpdateClient { get; private set; }
+    public UpdateClient UpdateClient { get; private set; } = null!;
 
     internal override void BeforeExecution()
     {
@@ -46,7 +46,7 @@ public abstract class UpdateServerCliCommandArgument : CliCommandArgument
         AdminToken ??= ReadAdminTokenFromFile();
         UpdateClient = UpdateClient.Builder()
             .WithServerEndpoint(UpdateServerEndpoint)
-            .WithAccessToken(AdminToken!)
+            .WithAccessToken(AdminToken)
             .WithLogger((format, args, caller) =>
             {
                 string message = args.Length is 0 ? format : format.Format(args);
@@ -58,7 +58,7 @@ public abstract class UpdateServerCliCommandArgument : CliCommandArgument
                 {
                     Logger.Info(LogSource.UpdateClient,
                         message,
-                        InvocationInfo.CurrentMember(caller));
+                        new InvocationInfo(caller));
                 }
             });
     }

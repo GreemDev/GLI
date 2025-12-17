@@ -17,7 +17,7 @@ public static class GitLabRestApi
             BaseAddress = new Uri(host),
             DefaultRequestHeaders =
             {
-                UserAgent = { new ProductInfoHeaderValue("GitLabCli", "1.0.0") },
+                UserAgent = { new ProductInfoHeaderValue("gli", "1.0.0") },
                 Authorization = AuthenticationHeaderValue.Parse($"Bearer {accessToken}")
             }
         }, (fmt, args, caller) => Logger.Info(LogSource.App, args.Length is 0 ? fmt : fmt.Format(args), new InvocationInfo(caller)));

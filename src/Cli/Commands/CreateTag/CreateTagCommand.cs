@@ -3,7 +3,6 @@ using NGitLab.Models;
 
 namespace gli.Commands.CreateTag;
 
-[Command]
 public class CreateTagCommand() : CliCommand<CreateTagArgument>(CliCommandName.CreateTag)
 {
     protected override Task<ExitCode> ExecuteAsync(CreateTagArgument arg)
