@@ -27,7 +27,7 @@ public static class Program
         {
             Logger.Error(LogSource.Cli, "Please provide a command to invoke.");
             Logger.Info(LogSource.Cli, "Available commands are as follows: ");
-            Enum.GetNames<CliCommandName>().ForEach(x => Logger.Info(LogSource.Cli, $"    - {x}"));
+            CliCommandName.ValueNames.ForEach(x => Logger.Info(LogSource.Cli, $"    - {x}"));
             Logger.Info(LogSource.Cli, "You can invoke it by directly putting it after the executable name.");
             Logger.Info(LogSource.Cli,
                 $"i.e. '{Path.GetFileName(Environment.ProcessPath)} {CliCommandName.ValueNames.GetRandomElement()}'");

@@ -44,7 +44,7 @@ public class CliCommandManager
                 s: exitCode is ExitCode.Normal ? LogSeverity.Info : LogSeverity.Critical,
                 from: LogSource.App,
                 message:
-                $"{Enum.GetName(commandName)} exited with result '{Enum.GetName(exitCode) ?? $"Unknown (value: {(int)exitCode})"}'");
+                $"{commandName.Name} exited with result '{exitCode.Name ?? $"Unknown (value: {(int)exitCode})"}'");
 
         Environment.Exit((int)(
                 exitCode is ExitCode.NormalSilent
