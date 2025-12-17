@@ -1,5 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
-using gli.Entities.EventArgs;
+using gli.Entities;
 using Gommon;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -8,17 +8,19 @@ namespace gli.Helpers;
 
 public static partial class Logger
 {
+    public static readonly TextWriter TextWriter = new LoggerWriter();
+
     public static bool WriteToFile { get; set; }
 
-    public static event Action<LogEventArgs> Event
+    public static event Action<EventArgs> Event
     {
         add => LogEventHandler.Add(value);
         remove => LogEventHandler.Remove(value);
     }
 
-    private static readonly EventWithQueue<LogEventArgs> LogEventHandler = new();
+    private static readonly EventWithQueue<EventArgs> LogEventHandler = new();
 
-    public static void Log(LogEventArgs eventArgs) => LogEventHandler.Call(eventArgs);
+    public static void Log(EventArgs eventArgs) => LogEventHandler.Call(eventArgs);
 
     public static bool IsDebugLoggingEnabled =>
 #if DEBUG
@@ -256,6 +258,15 @@ public readonly struct InvocationInfo
             _ => (Optional<string>) default 
             //casting to ensure default branch returns a default optional and not an optional with a null string value
         };
+}
+
+public class EventArgs : System.EventArgs
+{
+    public LogSeverity Severity { get; init; }
+    public LogSource Source { get; init; }
+    public string? Message { get; init; }
+    public Exception? Error { get; init; }
+    public InvocationInfo Invocation { get; init; } = default;
 }
 
 public static class InvocationInfoExt

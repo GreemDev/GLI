@@ -1,10 +1,10 @@
 ﻿using CommandLine;
-using gli.API.GitLab;
-using gli.API.Helpers;
+using gli.Helpers;
+using gli.REST.GitLab;
 using Gommon;
 using NGitLab;
 
-namespace gli.Commands;
+namespace gli.CommandLib;
 
 public class GitLabCliCommandArgument : CliCommandArgument
 {
@@ -20,19 +20,19 @@ public class GitLabCliCommandArgument : CliCommandArgument
     [Option('p', "project", Required = true,
         HelpText = "The 'owner/project' you are requesting. For example, ryubing/ryujinx.")]
     public string ProjectPath { get; set; } = null!;
-    
+
     public string FormatGitLabUrl(string subPath)
         => string.Concat(GitLabEndpoint.TrimEnd('/'), "/", subPath);
 
     public IHttpClientProxy Http { get; private set; } = null!;
-    
-    public GitLabClient CreateGitLabClient() 
+
+    public GitLabClient CreateGitLabClient()
         => new(GitLabEndpoint, AccessToken);
 
     /// <remarks>ALWAYS call the base implementation when overriding! Respect the returned result so long as the derived type needs to authenticate with GitLab.</remarks>
     internal override Result BeforeExecution()
     {
-        Http = GitLabRestApi.CreateHttpClient(GitLabEndpoint, AccessToken!, HttpRequestTimeout);
+        Http = GitLabApi.CreateHttpClient(GitLabEndpoint, AccessToken!, HttpRequestTimeout);
         try
         {
             AccessToken ??= ReadAccessTokenFromFile();
@@ -44,7 +44,7 @@ public class GitLabCliCommandArgument : CliCommandArgument
 
         return Result.Success;
     }
-    
+
     private static string ReadAccessTokenFromFile()
     {
         var fp = new FilePath(Environment.CurrentDirectory) / ".accesstoken";

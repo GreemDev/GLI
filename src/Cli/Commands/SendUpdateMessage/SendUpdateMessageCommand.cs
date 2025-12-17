@@ -2,7 +2,8 @@
 using System.Drawing;
 using System.Text;
 using Colorful;
-using gli.API.GitLab;
+using gli.CommandLib;
+using gli.REST.GitLab;
 using gli.Helpers;
 using Gommon;
 using JNogueira.Discord.Webhook.Client;

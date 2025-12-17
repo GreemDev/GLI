@@ -1,4 +1,4 @@
-﻿namespace gli.Commands;
+﻿namespace gli.CommandLib;
 
 public enum CliCommandName
 {

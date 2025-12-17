@@ -1,5 +1,6 @@
 ﻿using CommandLine;
 using gli;
+using gli.CommandLib;
 using gli.Commands;
 using gli.Helpers;
 using Gommon;

@@ -1,8 +1,9 @@
 ﻿using System.Net.Http.Json;
 using System.Text.Json.Serialization.Metadata;
+using gli.Helpers;
 using Gommon;
 
-namespace gli.API.Helpers;
+namespace gli.REST.Helpers;
 
 public partial class PaginatedEndpoint<T>
 {

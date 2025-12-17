@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Net;
 
-namespace gli.API.Helpers;
+namespace gli.Helpers;
 
 public interface IHttpClientProxy
 {

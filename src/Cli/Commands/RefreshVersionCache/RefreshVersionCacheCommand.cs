@@ -1,4 +1,5 @@
-﻿using gli.Helpers;
+﻿using gli.CommandLib;
+using gli.Helpers;
 
 namespace gli.Commands.RefreshVersionCache;
 

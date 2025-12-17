@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using CommandLine;
-using gli.API.GitLab;
+using gli.CommandLib;
+using gli.REST.GitLab;
 using gli.Helpers;
 using Gommon;
 using NGitLab.Models;
@@ -61,5 +62,5 @@ public class SendUpdateMessageArgument : GitLabCliCommandArgument
     }
 
     public Task<GitLabReleaseJsonResponse?> GetReleaseAsync(Project project)
-        => GitLabRestApi.GetReleaseAsync(Http, project, ReleaseTag);
+        => GitLabApi.GetReleaseAsync(Http, project, ReleaseTag);
 }

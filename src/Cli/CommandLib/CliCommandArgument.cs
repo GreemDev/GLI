@@ -1,6 +1,6 @@
 ﻿using Gommon;
 
-namespace gli.Commands;
+namespace gli.CommandLib;
 
 public abstract class CliCommandArgument : Options
 {

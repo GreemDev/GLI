@@ -1,14 +1,14 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
-using gli.API.Helpers;
 using gli.Helpers;
+using gli.REST.Helpers;
 using Gommon;
 using NGitLab.Models;
 
-namespace gli.API.GitLab;
+namespace gli.REST.GitLab;
 
-public static class GitLabRestApi
+public static class GitLabApi
 {
     public static IHttpClientProxy CreateHttpClient(string host, string accessToken, TimeSpan? timeout = null)
         => new DefaultHttpClientProxy(new HttpClient

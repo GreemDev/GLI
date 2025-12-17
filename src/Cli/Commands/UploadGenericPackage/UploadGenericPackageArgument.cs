@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using CommandLine;
+using gli.CommandLib;
 using gli.Commands.BulkUploadGenericPackage;
 using gli.Helpers;
 using Gommon;

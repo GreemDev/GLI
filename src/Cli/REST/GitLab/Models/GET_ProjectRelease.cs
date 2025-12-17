@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace gli.API.GitLab;
+namespace gli.REST.GitLab;
 
 public class GitLabReleaseJsonResponse
 {

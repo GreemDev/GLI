@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using gli.Entities.EventArgs;
 using Gommon;
 using Color = System.Drawing.Color;
 using Console = Colorful.Console;
@@ -18,7 +17,7 @@ public static partial class Logger
         if (s is LogSeverity.Debug && !IsDebugLoggingEnabled)
             return;
 
-        Log(new LogEventArgs
+        Log(new EventArgs
         {
             Severity = s,
             Source = from,

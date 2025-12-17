@@ -3,7 +3,7 @@ using gli.Helpers;
 using Gommon;
 using Ryujinx.Systems.Update.Client;
 
-namespace gli.Commands;
+namespace gli.CommandLib;
 
 public abstract class UpdateServerCliCommandArgument : CliCommandArgument
 {

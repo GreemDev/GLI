@@ -1,4 +1,4 @@
-﻿namespace gli.API.Helpers;
+﻿namespace gli.REST.Helpers;
 
 public static class QueryParameters
 {

@@ -3,17 +3,9 @@ using CommandLine;
 using gli.Helpers;
 using Gommon;
 
-namespace gli.Commands;
+namespace gli.CommandLib;
 
-/// <summary>
-///     Marker interface for reflective access.
-/// </summary>
-public interface ICliCommand
-{
-    public CliCommandName Name { get; }
-}
-
-public abstract class CliCommand<TArg> : ICommandShimHolder, ICliCommand where TArg : CliCommandArgument
+public abstract class CliCommand<TArg> : ICliCommand where TArg : CliCommandArgument
 {
     protected CliCommand(CliCommandName name)
     {
@@ -50,21 +42,13 @@ public abstract class CliCommand<TArg> : ICommandShimHolder, ICliCommand where T
     public CliCommandName Name { get; }
 
     protected abstract Task<ExitCode> ExecuteAsync(TArg arg);
-
-    CommandShim ICommandShimHolder.Shim => new()
-    {
-        Name = Name,
-        Execute = InvokeAsync
-    };
 }
 
-public interface ICommandShimHolder
+/// <summary>
+///     Marker interface for reflective access.
+/// </summary>
+public interface ICliCommand
 {
-    internal CommandShim Shim { get; }
-}
-
-public struct CommandShim
-{
-    public required CliCommandName Name { get; init; }
-    public required Func<string[], Task<ExitCode>>? Execute { get; init; }
+    public CliCommandName Name { get; }
+    public Task<ExitCode> InvokeAsync(string[] args);
 }

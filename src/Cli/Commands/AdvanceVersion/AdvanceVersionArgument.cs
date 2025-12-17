@@ -1,4 +1,6 @@
-﻿namespace gli.Commands;
+﻿using gli.CommandLib;
+
+namespace gli.Commands;
 
 public class AdvanceVersionArgument : UpdateServerCliCommandArgument
 {

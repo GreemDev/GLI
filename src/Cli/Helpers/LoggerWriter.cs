@@ -16,6 +16,4 @@ public class LoggerWriter : TextWriter
             .Split(Console.Error.NewLine)
             .ForEach(line => Logger.Info(LogSource.Cli, line));
     }
-
-    public static readonly TextWriter Shared = new LoggerWriter();
 }

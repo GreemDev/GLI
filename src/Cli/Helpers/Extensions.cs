@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using gli.Entities;
+using gli.Helpers;
 
 namespace gli.Helpers
 {
@@ -34,7 +34,7 @@ namespace CommandLine
         private static readonly Lazy<Parser> LenientParser = new(
             () => new Parser(settings =>
             {
-                settings.HelpWriter = LoggerWriter.Shared;
+                settings.HelpWriter = Logger.TextWriter;
                 settings.IgnoreUnknownArguments = true;
                 settings.MaximumDisplayWidth -= (int)(settings.MaximumDisplayWidth * 0.175);
             }));
@@ -42,7 +42,7 @@ namespace CommandLine
         private static readonly Lazy<Parser> DefaultParser = new(
             () => new Parser(settings =>
             {
-                settings.HelpWriter = LoggerWriter.Shared;
+                settings.HelpWriter = Logger.TextWriter;
                 settings.IgnoreUnknownArguments = true;
                 settings.MaximumDisplayWidth -= (int)(settings.MaximumDisplayWidth * 0.175);
             }));

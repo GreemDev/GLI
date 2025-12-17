@@ -1,6 +1,7 @@
 ﻿using CommandLine;
-using gli.API.GitLab;
-using gli.API.Helpers;
+using gli.CommandLib;
+using gli.REST.GitLab;
+using gli.REST.Helpers;
 using gli.Helpers;
 using Gommon;
 using NGitLab.Models;
@@ -39,7 +40,7 @@ public class CreateReleaseFromGenericPackageFilesArgument : GitLabCliCommandArgu
         {
             var milestoneTitle = ReleaseBody[4..];
 
-            if (await GitLabRestApi.GetMilestoneByTitleAsync(Http, project, milestoneTitle) is { } milestone)
+            if (await GitLabApi.GetMilestoneByTitleAsync(Http, project, milestoneTitle) is { } milestone)
                 ReleaseBody = milestone.Description;
         }
 

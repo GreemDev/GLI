@@ -1,6 +1,7 @@
 ﻿using System.Text;
+using gli.Helpers;
 
-namespace gli.API.Helpers;
+namespace gli.REST.Helpers;
 
 public partial class PaginatedEndpoint<T>
 {

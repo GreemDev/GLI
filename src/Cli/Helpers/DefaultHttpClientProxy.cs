@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Gommon;
 
-namespace gli.API.Helpers;
+namespace gli.Helpers;
 
 public class DefaultHttpClientProxy : IHttpClientProxy
 {

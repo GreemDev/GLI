@@ -1,9 +1,10 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using gli.Commands;
 using gli.Helpers;
 using Gommon;
 
-namespace gli.Commands;
+namespace gli.CommandLib;
 
 [SuppressMessage("Trimming",
     "IL2026:Members annotated with \'RequiresUnreferencedCodeAttribute\' require dynamic access otherwise can break functionality when trimming application code")]
@@ -11,26 +12,26 @@ namespace gli.Commands;
     "IL2111:Method with parameters or return value with `DynamicallyAccessedMembersAttribute` is accessed via reflection. Trimmer can\'t guarantee availability of the requirements of the method.")]
 public class CliCommandManager
 {
-    private readonly SafeDictionary<CliCommandName, Func<string[], Task<ExitCode>>?> _shims;
+    private readonly SafeDictionary<CliCommandName, Func<string[], Task<ExitCode>>?> _commandMap;
 
     public CliCommandManager()
     {
-        _shims = new SafeDictionary<CliCommandName, Func<string[], Task<ExitCode>>>(
+        _commandMap = new SafeDictionary<CliCommandName, Func<string[], Task<ExitCode>>>(
             Assembly.GetExecutingAssembly()
                 .GetTypes()
-                .Where(x => x.Inherits<ICliCommand>() && x is { IsAbstract: false, IsInterface: false })
-                .Where(x => x.IsPublic)
+                .Where(x => x.Inherits<ICliCommand>() 
+                            && x is { IsAbstract: false, IsInterface: false, IsPublic: true })
                 .Select(Activator.CreateInstance)
                 .Where(x => x != null)
-                .OfType<ICommandShimHolder>()
-                .Select(x => x.Shim)
-                .ToDictionary(x => x.Name, x => x.Execute)
+                .OfType<ICliCommand>()
+                .ToDictionary<ICliCommand, CliCommandName, Func<string[], Task<ExitCode>>?>
+                    (x => x.Name, x => x.InvokeAsync)
         );
     }
 
     public async Task DispatchAsync(CliCommandName commandName, string[] args)
     {
-        if (_shims[commandName] is not { } execution)
+        if (_commandMap[commandName] is not { } execution)
         {
             Logger.Error(LogSource.App, "An unregistered command was provided.");
             return;
