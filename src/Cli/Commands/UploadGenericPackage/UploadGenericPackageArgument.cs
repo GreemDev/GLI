@@ -36,12 +36,12 @@ public class UploadGenericPackageCommandArgument : GitLabCliCommandArgument
         }
         catch (TaskCanceledException)
         {
-            Logger.Error(LogSource.App, $"Timed out uploading '{FilePath}'; moving onto the next file.");
+            Logger.Error(LogSource.App, $"Timed out uploading '{FilePath}'.");
             return false;
         }
         catch (Exception e)
         {
-            Logger.Error(LogSource.App, $"Errored uploading '{FilePath}'; moving onto the next file.", e);
+            Logger.Error(LogSource.App, $"Errored uploading '{FilePath}'.", e);
             return false;
         }
     }
