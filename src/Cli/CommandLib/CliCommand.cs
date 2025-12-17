@@ -22,19 +22,27 @@ public abstract class CliCommand<TArg> : ICommandShimHolder, ICliCommand where T
 
     public async Task<ExitCode> InvokeAsync(string[] args)
     {
-        var parserResult = Parser.Default.ParseArguments<TArg>(args);
+        var parserResult = Parser.CustomDefault.ParseArguments<TArg>(args);
 
         switch (parserResult)
         {
             case NotParsed<TArg> notParsedResult:
                 Logger.WriteToFile = false;
-                Logger.Error(LogSource.Cli, $"Error parsing arguments for {Enum.GetName(Name)}:");
 
                 notParsedResult.Errors.ForEach(err => Logger.Error(LogSource.Cli, $" - {err.Tag}"));
 
                 return ExitCode.ArgumentParseFailed;
             case Parsed<TArg> parsedResult:
-                parsedResult.Value.BeforeExecution();
+                Result preconditionResult = parsedResult.Value.BeforeExecution();
+                if (preconditionResult.IsOf<MessageError>(out var me))
+                {
+                    Logger.Error(LogSource.App, me.Content);
+                    return ExitCode.ArgumentParseFailed;
+                }
+#if DEBUG
+                Logger.Debug(LogSource.Cli,
+                    $"> ./{Path.GetFileName(Environment.ProcessPath)} {Program.SearchString} {Parser.Default.FormatCommandLine(parsedResult.Value)}");
+#endif
                 return await ExecuteAsync(parsedResult.Value);
             default:
                 // Should not be possible. Just here to shut up the compiler.
@@ -45,7 +53,7 @@ public abstract class CliCommand<TArg> : ICommandShimHolder, ICliCommand where T
     public CliCommandName Name { get; }
 
     protected abstract Task<ExitCode> ExecuteAsync(TArg arg);
-    
+
     CommandShim ICommandShimHolder.Shim => new()
     {
         Name = Name,

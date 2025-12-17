@@ -1,23 +1,18 @@
-﻿namespace gli.Commands.CreateTag;
+﻿using CommandLine;
+
+namespace gli.Commands.CreateTag;
 
 public class CreateTagArgument : CliCommandArgument
 {
-    public string TagName { get; }
-    public string TagRef { get; }
-    public string? Comment { get; }
+    [Option('n', "name", Required = true, HelpText = "The desired name of the tag.")]
+    public string TagName { get; set; } = null!;
 
-    public CreateTagArgument(Options options)
-    {
-        TagName = options.InputData.Split('|')[0];
-        TagRef = options.InputData.Split('|')[1];
+    [Option('r', "ref", Required = false,
+        HelpText = "The git ref to use. Defaults to the latest commit on your default branch.")]
+    public string? TagRef { get; set; } = null!;
 
-        try
-        {
-            Comment = options.InputData.Split('|')[2];
-        }
-        catch
-        {
-            // ignored
-        }
-    }
+    [Option('c', "comment",
+        Default = "Tag created by gli",
+        Required = false, HelpText = "The comment to appear when viewing tag details in GitLab UI.")]
+    public string? Comment { get; set; } = null!;
 }

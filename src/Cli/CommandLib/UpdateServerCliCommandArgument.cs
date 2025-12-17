@@ -9,7 +9,7 @@ public abstract class UpdateServerCliCommandArgument : CliCommandArgument
 {
     protected abstract bool NeedsAuthorization { get; }
 
-    [Option('r', "raw", Required = false,
+    [Option('R', "raw", Required = false,
         HelpText = "Causes the logger to output directly to stdout instead of using the custom logger.")]
     public bool LogRaw { get; set; }
 
@@ -40,10 +40,19 @@ public abstract class UpdateServerCliCommandArgument : CliCommandArgument
 
     public UpdateClient UpdateClient { get; private set; } = null!;
 
-    internal override void BeforeExecution()
+    internal override Result BeforeExecution()
     {
-        base.BeforeExecution();
-        AdminToken ??= ReadAdminTokenFromFile();
+        _ = base.BeforeExecution();
+
+        try
+        {
+            AdminToken ??= ReadAdminTokenFromFile();
+        }
+        catch (FileNotFoundException fnfe)
+        {
+            return Result.Failure(new MessageError(fnfe.Message));
+        }
+
         UpdateClient = UpdateClient.Builder()
             .WithServerEndpoint(UpdateServerEndpoint)
             .WithAccessToken(AdminToken)
@@ -61,5 +70,7 @@ public abstract class UpdateServerCliCommandArgument : CliCommandArgument
                         new InvocationInfo(caller));
                 }
             });
+
+        return Result.Success;
     }
 }

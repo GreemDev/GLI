@@ -21,11 +21,20 @@ public abstract class CliCommandArgument : Options
 
     public virtual TimeSpan? HttpRequestTimeout => null;
 
-    /// <remarks>ALWAYS call the base implementation when overriding!</remarks>
-    internal virtual void BeforeExecution()
+    /// <remarks>ALWAYS call the base implementation when overriding! Respect the returned result so long as the derived type needs to authenticate with GitLab.</remarks>
+    internal virtual Result BeforeExecution()
     {
         Http = GitLabRestApi.CreateHttpClient(GitLabEndpoint, AccessToken!, HttpRequestTimeout);
-        AccessToken ??= ReadAccessTokenFromFile();
+        try
+        {
+            AccessToken ??= ReadAccessTokenFromFile();
+        }
+        catch (FileNotFoundException fnfe)
+        {
+            return Result.Failure(new MessageError(fnfe.Message));
+        }
+
+        return Result.Success;
     }
 
     public string FormatGitLabUrl(string subPath)

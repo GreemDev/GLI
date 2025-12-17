@@ -1,5 +1,7 @@
 ﻿using System.Collections.Immutable;
+using System.Drawing;
 using System.Text;
+using Colorful;
 using gli.API.GitLab;
 using gli.Helpers;
 using Gommon;
@@ -112,6 +114,11 @@ public class SendUpdateMessageCommand() : CliCommand<SendUpdateMessageArgument>(
 public struct DiscordColor
 {
     public DiscordColor(int rawValue) => RawValue = rawValue;
+
+    public DiscordColor(Color drawingColor)
+    {
+        RawValue = drawingColor.R + (drawingColor.G << 8) + (drawingColor.B << 16);
+    }
 
     public int RawValue { get; }
 

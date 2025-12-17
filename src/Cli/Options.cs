@@ -17,9 +17,6 @@ public class Options
         HelpText = "The 'owner/project' you are requesting. For example, ryubing/ryujinx.")]
     public string ProjectPath { get; set; }
 
-    [Option("write-logs-to-file", Required = false, Default = false, HelpText = "Do you want logs written to files?")]
+    [Option('l', "write-logs-to-file", Required = false, Default = false, HelpText = "Do you want logs written to files?")]
     public bool WriteLogFiles { get; set; }
-
-    //[Value(0, MetaName = "input", HelpText = "The raw string passed to the action you are performing.")]
-    public string InputData { get; set; }
 }

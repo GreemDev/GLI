@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using CommandLine;
 using gli.Commands.BulkUploadGenericPackage;
 using gli.Helpers;
 using Gommon;
@@ -8,13 +9,6 @@ namespace gli.Commands.UploadGenericPackage;
 
 public class UploadGenericPackageCommandArgument : CliCommandArgument
 {
-    public UploadGenericPackageCommandArgument(Options options)
-    {
-        PackageName = options.InputData.Split('|')[0];
-        PackageVersion = options.InputData.Split('|')[1];
-        FilePath = new FilePath(options.InputData.Split('|')[2], false);
-    }
-
     public override TimeSpan? HttpRequestTimeout => TimeSpan.FromMinutes(10); //accomodate shitass internet
 
     public async Task<bool> UploadGenericPackageAsync(
@@ -52,7 +46,28 @@ public class UploadGenericPackageCommandArgument : CliCommandArgument
         }
     }
 
-    public string PackageName { get; }
-    public string PackageVersion { get; }
-    public FilePath FilePath { get; }
+    internal override Result BeforeExecution()
+    {
+        FilePath = new FilePath(FilePathRaw);
+
+        if (FilePath.IsDirectory)
+            return Result.Failure(new MessageError(
+                $"Cannot upload a directory. Use the {nameof(CliCommandName.BulkUploadGenericPackage)} command for that use case; as it lets you finely choose which files to upload with a pattern; and you can match everything in a folder if you want to as well."));
+
+        return base.BeforeExecution();
+    }
+
+    [Option('n', "package-name",
+        Required = true, HelpText = "The desired name of the generic package.")]
+    public string PackageName { get; set; } = null!;
+
+    [Option('v', "package-version",
+        Required = true, HelpText = "The desired version of the generic package.")]
+    public string PackageVersion { get; set; } = null!;
+
+    public FilePath FilePath { get; private set; }
+
+    [Option('p', "path",
+        Required = true, HelpText = "The path of the file to upload.")]
+    public string FilePathRaw { get; set; } = null!;
 }

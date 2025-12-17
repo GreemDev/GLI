@@ -10,17 +10,23 @@ namespace gli.Commands.CreateReleaseFromGenericPackageFiles;
 public class CreateReleaseFromGenericPackageFilesArgument : CliCommandArgument
 {
     internal bool IsInit { get; private set; }
-    
-    [Option('n', "package-name", Required = true)]
-    public string PackageName { get; }
-    [Option('v', "package-version", Required = true)]
-    public string PackageVersion { get; }
-    [Option('r', "release-ref", Required = false, HelpText = "If not passed, creates a release and tag at the same time based on the main branch.")]
-    public string ReleaseRef { get; }
+
+    [Option('n', "package-name", Required = true, HelpText = "The name of the generic package to list the items of.")]
+    public string PackageName { get; set; } = null!;
+
+    [Option('v', "package-version", Required = true, HelpText = "The desired version of the generic package.")]
+    public string PackageVersion { get; set; } = null!;
+
+    [Option('r', "release-ref", Required = false,
+        HelpText =
+            "The Git ref this release should be tied to. If not passed, creates a release and tag at the same time based on the main branch.")]
+    public string? ReleaseRef { get; set; } = null;
+
     [Option('t', "release-title", Required = false, HelpText = "Title of the release in the GitLab UI.")]
-    public string? ReleaseTitle { get; }
+    public string? ReleaseTitle { get; set; } = null;
+
     [Option('b', "release-body", Required = false, HelpText = "Body of the release in the GitLab UI.")]
-    public string? ReleaseBody { get; private set; }
+    public string? ReleaseBody { get; set; }
 
     public async Task InitIfNeededAsync(Project project)
     {

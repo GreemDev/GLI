@@ -15,7 +15,7 @@ public class CreateTagCommand() : CliCommand<CreateTagArgument>(CliCommandName.C
         repo.Tags.Create(new TagCreate
         {
             Name = arg.TagName,
-            Message = arg.Comment ?? "Tag created by GitLabCli",
+            Message = arg.Comment,
             Ref = arg.TagRef
         });
 

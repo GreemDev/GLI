@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using CommandLine;
 using gli.Helpers;
 using Gommon;
 using NGitLab.Models;
@@ -7,13 +8,6 @@ namespace gli.Commands.BulkUploadGenericPackage;
 
 public class BulkUploadGenericPackageCommandArgument : CliCommandArgument
 {
-    public BulkUploadGenericPackageCommandArgument(Options options)
-    {
-        PackageName = options.InputData.Split('|')[0];
-        PackageVersion = options.InputData.Split('|')[1];
-        FilePattern = options.InputData.Split('|')[2];
-    }
-
     public override TimeSpan? HttpRequestTimeout => TimeSpan.FromMinutes(10); //accomodate shitass internet
 
     public async Task<bool> UploadGenericPackageAsync(Project project, FilePath filePath)
@@ -50,7 +44,15 @@ public class BulkUploadGenericPackageCommandArgument : CliCommandArgument
         }
     }
 
-    public string PackageName { get; }
-    public string PackageVersion { get; }
-    public string FilePattern { get; }
+    [Option('n', "package-name",
+        Required = true, HelpText = "The desired name of the generic package.")]
+    public string PackageName { get; set; } = null!;
+
+    [Option('v', "package-version",
+        Required = true, HelpText = "The desired version of the generic package.")]
+    public string PackageVersion { get; set; } = null!;
+
+    [Option('p', "pattern",
+        Required = true, HelpText = "The file pattern to match against the working directory for files to upload.")]
+    public string FilePattern { get; set; } = null!;
 }
