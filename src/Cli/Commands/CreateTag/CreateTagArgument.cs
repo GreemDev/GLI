@@ -2,7 +2,7 @@
 
 namespace gli.Commands.CreateTag;
 
-public class CreateTagArgument : CliCommandArgument
+public class CreateTagArgument : GitLabCliCommandArgument
 {
     [Option('n', "name", Required = true, HelpText = "The desired name of the tag.")]
     public string TagName { get; set; } = null!;

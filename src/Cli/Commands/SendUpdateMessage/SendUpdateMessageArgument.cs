@@ -7,7 +7,7 @@ using NGitLab.Models;
 
 namespace gli.Commands.SendUpdateMessage;
 
-public class SendUpdateMessageArgument : CliCommandArgument
+public class SendUpdateMessageArgument : GitLabCliCommandArgument
 {
     [Option('t', "release-tag",
         Required = true, HelpText = "The tag the release was made with.")]

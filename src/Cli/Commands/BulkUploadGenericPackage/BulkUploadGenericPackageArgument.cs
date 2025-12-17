@@ -6,7 +6,7 @@ using NGitLab.Models;
 
 namespace gli.Commands.BulkUploadGenericPackage;
 
-public class BulkUploadGenericPackageCommandArgument : CliCommandArgument
+public class BulkUploadGenericPackageCommandArgument : GitLabCliCommandArgument
 {
     public override TimeSpan? HttpRequestTimeout => TimeSpan.FromMinutes(10); //accomodate shitass internet
 

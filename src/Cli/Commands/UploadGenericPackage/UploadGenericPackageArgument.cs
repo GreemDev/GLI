@@ -7,7 +7,7 @@ using NGitLab.Models;
 
 namespace gli.Commands.UploadGenericPackage;
 
-public class UploadGenericPackageCommandArgument : CliCommandArgument
+public class UploadGenericPackageCommandArgument : GitLabCliCommandArgument
 {
     public override TimeSpan? HttpRequestTimeout => TimeSpan.FromMinutes(10); //accomodate shitass internet
 

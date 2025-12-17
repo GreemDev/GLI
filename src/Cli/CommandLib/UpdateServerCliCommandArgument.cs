@@ -13,12 +13,12 @@ public abstract class UpdateServerCliCommandArgument : CliCommandArgument
         HelpText = "Causes the logger to output directly to stdout instead of using the custom logger.")]
     public bool LogRaw { get; set; }
 
-    [Option('S', "update-server-endpoint", Required = false, Default = "https://update.ryujinx.app",
+    [Option('S', "server-url", Required = false, Default = "https://update.ryujinx.app",
         HelpText =
             "The publicly accessible URL of your Ryubing UpdateServer instance.")]
     public string UpdateServerEndpoint { get; set; } = null!;
 
-    [Option('T', "admin-token", Required = false, Default = null,
+    [Option('t', "access-token", Required = false, Default = null,
         HelpText =
             "Your custom admin token in your Ryubing UpdateServer instance. If a file next to the executable named '.admintoken' exists, the contents of that file will be used here. An error will be thrown if that file does not exist and this argument is not provided.")]
     public string? AdminToken { get; set; }
@@ -40,6 +40,7 @@ public abstract class UpdateServerCliCommandArgument : CliCommandArgument
 
     public UpdateClient UpdateClient { get; private set; } = null!;
 
+    /// <remarks>ALWAYS call the base implementation when overriding! Respect the returned result so long as the derived type needs to authenticate with the Update Server.</remarks>
     internal override Result BeforeExecution()
     {
         _ = base.BeforeExecution();

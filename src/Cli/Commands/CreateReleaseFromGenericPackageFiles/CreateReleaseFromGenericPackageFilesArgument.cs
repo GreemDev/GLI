@@ -7,7 +7,7 @@ using NGitLab.Models;
 
 namespace gli.Commands.CreateReleaseFromGenericPackageFiles;
 
-public class CreateReleaseFromGenericPackageFilesArgument : CliCommandArgument
+public class CreateReleaseFromGenericPackageFilesArgument : GitLabCliCommandArgument
 {
     internal bool IsInit { get; private set; }
 
