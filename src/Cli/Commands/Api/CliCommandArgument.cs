@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using gli.API.GitLab;
+﻿using gli.API.GitLab;
 using gli.API.Helpers;
 using Gommon;
 using NGitLab;
@@ -20,13 +19,13 @@ public abstract class CliCommandArgument : Options
         var fp = new FilePath(Environment.CurrentDirectory) / ".accesstoken";
         if (!fp.ExistsAsFile)
             throw new FileNotFoundException(
-                    "Could not find an .accesstoken file. Either provide the argument or create the file.");
+                    "Could not find an .accesstoken file. Either provide the argument (--access-token) or create the file.");
 
         return fp.ReadAllText();
     }
 
-    public virtual TimeSpan? HttpRequestTimeout { get; } = null;
-    
+    public virtual TimeSpan? HttpRequestTimeout => null;
+
     /// <remarks>ALWAYS call the base implementation when overriding! If you don't, <see cref="Http"/> will be null and any HTTP requests will error with null reference exceptions.</remarks>
     internal virtual void BeforeExecution()
     {

@@ -37,7 +37,7 @@ public abstract class UpdateServerCliCommandArgument : CliCommandArgument
                 return null!;
 
             throw new FileNotFoundException(
-                "Could not find an .admintoken file. Either provide the argument or create the file.");
+                "Could not find an .admintoken file. Either provide the argument '--admin-token' or create the file.");
         }
 
         return fp.ReadAllText();
