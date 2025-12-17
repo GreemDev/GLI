@@ -55,13 +55,3 @@ public struct CommandShim
     public required CliCommandName Name { get; init; }
     public required Func<string[], Task<ExitCode>> Execute { get; init; }
 }
-
-public enum CliCommandName
-{
-    CreateTag,
-    BulkUploadGenericPackage,
-    UploadGenericPackage,
-    SendUpdateMessage,
-    CreateReleaseFromGenericPackageFiles,
-    GetNextVersion
-}

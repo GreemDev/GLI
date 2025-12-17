@@ -8,22 +8,17 @@ namespace gli.Commands;
 public abstract class UpdateServerCliCommandArgument : CliCommandArgument
 {
     protected abstract bool NeedsAuthorization { get; }
-    
-    protected UpdateServerCliCommandArgument()
-    {
-        AdminToken ??= ReadAdminTokenFromFile();
-    }
-    
+
     [Option('r', "raw", Required = false,
         HelpText = "Causes the logger to output directly to stdout instead of using the custom logger.")]
     public bool LogRaw { get; set; }
 
-    [Option("update-server-endpoint", Required = false, Default = "https://update.ryujinx.app",
+    [Option('S', "update-server-endpoint", Required = false, Default = "https://update.ryujinx.app",
         HelpText =
             "The publicly accessible URL of your Ryubing UpdateServer instance.")]
     public string UpdateServerEndpoint { get; set; }
 
-    [Option("admin-token", Required = false, Default = null,
+    [Option('T', "admin-token", Required = false, Default = null,
         HelpText =
             "Your custom admin token in your Ryubing UpdateServer instance. If a file next to the executable named '.admintoken' exists, the contents of that file will be used here. An error will be thrown if that file does not exist and this argument is not provided.")]
     public string? AdminToken { get; set; }
@@ -48,6 +43,7 @@ public abstract class UpdateServerCliCommandArgument : CliCommandArgument
     internal override void BeforeExecution()
     {
         base.BeforeExecution();
+        AdminToken ??= ReadAdminTokenFromFile();
         UpdateClient = UpdateClient.Builder()
             .WithServerEndpoint(UpdateServerEndpoint)
             .WithAccessToken(AdminToken!)

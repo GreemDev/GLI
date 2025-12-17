@@ -9,12 +9,7 @@ public sealed class DefaultCliCommandArgument : CliCommandArgument;
 
 public abstract class CliCommandArgument : Options
 {
-    protected CliCommandArgument()
-    {
-        AccessToken ??= ReadAccessTokenFromFile();
-    }
-
-    protected static string ReadAccessTokenFromFile()
+    private static string ReadAccessTokenFromFile()
     {
         var fp = new FilePath(Environment.CurrentDirectory) / ".accesstoken";
         if (!fp.ExistsAsFile)
@@ -26,10 +21,11 @@ public abstract class CliCommandArgument : Options
 
     public virtual TimeSpan? HttpRequestTimeout => null;
 
-    /// <remarks>ALWAYS call the base implementation when overriding! If you don't, <see cref="Http"/> will be null and any HTTP requests will error with null reference exceptions.</remarks>
+    /// <remarks>ALWAYS call the base implementation when overriding!</remarks>
     internal virtual void BeforeExecution()
     {
         Http = GitLabRestApi.CreateHttpClient(GitLabEndpoint, AccessToken!, HttpRequestTimeout);
+        AccessToken ??= ReadAccessTokenFromFile();
     }
 
     public string FormatGitLabUrl(string subPath)
