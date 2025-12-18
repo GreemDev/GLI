@@ -12,7 +12,7 @@ namespace gli.CommandLib;
     "IL2111:Method with parameters or return value with `DynamicallyAccessedMembersAttribute` is accessed via reflection. Trimmer can\'t guarantee availability of the requirements of the method.")]
 public class CliCommandManager
 {
-    private readonly SafeDictionary<CliCommandName, Func<string[], Task<ExitCode>>?> _commandMap;
+    private readonly SafeDictionary<CliCommandName, Func<string[], Task<ExitCode>>> _commandMap;
 
     public CliCommandManager()
     {
@@ -24,7 +24,7 @@ public class CliCommandManager
                 .Select(Activator.CreateInstance)
                 .Where(x => x != null)
                 .OfType<ICliCommand>()
-                .ToDictionary<ICliCommand, CliCommandName, Func<string[], Task<ExitCode>>?>
+                .ToDictionary<ICliCommand, CliCommandName, Func<string[], Task<ExitCode>>>
                     (x => x.Name, x => x.InvokeAsync)
         );
     }
