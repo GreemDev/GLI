@@ -8,27 +8,28 @@ namespace gli.Helpers;
 public class DefaultHttpClientProxy : IHttpClientProxy
 {
     public delegate void LogCallback(string fmt, object[] fmtArgs, string caller);
-    
+
     private readonly HttpClient _http;
     private readonly LogCallback? _callback;
 
-    public static DefaultHttpClientProxy CreateStdOut(HttpClient backingClient) 
-        => new(backingClient, 
-            (format, args, caller) 
+    public static DefaultHttpClientProxy CreateStdOut(HttpClient backingClient)
+        => new(backingClient,
+            (format, args, caller)
                 => Console.WriteLine($"{caller}: {(args.Length == 0 ? format : format.Format(args))}")
         );
-    
+
     public DefaultHttpClientProxy(HttpClient httpClient, LogCallback? logCallback = null)
     {
         _http = httpClient;
         _callback = logCallback;
     }
-    
+
     public Version DefaultRequestVersion
     {
         get => _http.DefaultRequestVersion;
         set => _http.DefaultRequestVersion = value;
     }
+
     public HttpVersionPolicy DefaultVersionPolicy
     {
         get => _http.DefaultVersionPolicy;
@@ -40,7 +41,7 @@ public class DefaultHttpClientProxy : IHttpClientProxy
         get => _http.BaseAddress;
         set => _http.BaseAddress = value;
     }
-    
+
     public TimeSpan Timeout
     {
         get => _http.Timeout;
@@ -53,11 +54,14 @@ public class DefaultHttpClientProxy : IHttpClientProxy
         set => _http.MaxResponseContentBufferSize = value;
     }
 
-    [SuppressMessage("ReSharper", "RedundantAssignment", Justification = "ReSharper cannot comprehend the idea of checking all combinations of 2 objects potentially being null.")]
-    public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, HttpCompletionOption? option = null, CancellationToken? token = null)
+    [SuppressMessage("ReSharper", "RedundantAssignment",
+        Justification =
+            "ReSharper cannot comprehend the idea of checking all combinations of 2 objects potentially being null.")]
+    public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, HttpCompletionOption? option = null,
+        CancellationToken? token = null)
     {
         HttpResponseMessage response;
-        
+
         var sw = Stopwatch.StartNew();
 
         if (option is null && token is not null)
@@ -66,7 +70,7 @@ public class DefaultHttpClientProxy : IHttpClientProxy
             response = await _http.SendAsync(request, option.Value);
         if (option is not null && token is not null)
             response = await _http.SendAsync(request, option.Value, token.Value);
-        else 
+        else
             response = await _http.SendAsync(request);
 
         sw.Stop();
@@ -75,8 +79,8 @@ public class DefaultHttpClientProxy : IHttpClientProxy
 
         return response;
     }
-    
-    private void Log(string messageFormat, object[]? formatArgs = null, [CallerMemberName] string caller = null!) 
+
+    private void Log(string messageFormat, object[]? formatArgs = null, [CallerMemberName] string caller = null!)
         => _callback?.Invoke(messageFormat, formatArgs ?? [], caller);
 
     private object[] GetLogArgs(HttpRequestMessage request, HttpResponseMessage response, Stopwatch sw)

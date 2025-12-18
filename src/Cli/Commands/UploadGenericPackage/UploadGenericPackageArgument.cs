@@ -56,7 +56,7 @@ public class UploadGenericPackageCommandArgument : GitLabCliCommandArgument
                 $"Cannot upload a directory. Use the {nameof(CliCommandName.BulkUploadGenericPackage)} " +
                 $"command for that use case; as it lets you finely choose which files to upload with a pattern; " +
                 $"and you can match everything in a folder if you want to as well."
-                );
+            );
 
         return base.BeforeExecution();
     }

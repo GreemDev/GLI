@@ -4,14 +4,16 @@ using Gommon;
 
 namespace gli.Commands.BulkUploadGenericPackage;
 
-public class BulkUploadGenericPackageCommand() : CliCommand<BulkUploadGenericPackageCommandArgument>(CliCommandName.BulkUploadGenericPackage)
+public class BulkUploadGenericPackageCommand()
+    : CliCommand<BulkUploadGenericPackageCommandArgument>(CliCommandName.BulkUploadGenericPackage)
 {
     protected override async ValueTask<ExitCode> ExecuteAsync(BulkUploadGenericPackageCommandArgument arg)
     {
         var files = Directory.EnumerateFiles(Environment.CurrentDirectory, arg.FilePattern).ToArray();
         if (files.Length is 0)
         {
-            Logger.Error(LogSource.App, $"Search pattern '{arg.FilePattern}' did not match any files in '{Environment.CurrentDirectory}'");
+            Logger.Error(LogSource.App,
+                $"Search pattern '{arg.FilePattern}' did not match any files in '{Environment.CurrentDirectory}'");
             return ExitCode.FileNotFound;
         }
 
@@ -28,7 +30,8 @@ public class BulkUploadGenericPackageCommand() : CliCommand<BulkUploadGenericPac
         {
             if (await arg.UploadGenericPackageAsync(project, new FilePath(filePath)))
             {
-                Logger.Info(LogSource.App, $"'Uploaded {filePath.Replace(Environment.CurrentDirectory, string.Empty)}' to the package registry on project '{project.NameWithNamespace}' (id {project.Id}).");
+                Logger.Info(LogSource.App,
+                    $"'Uploaded {filePath.Replace(Environment.CurrentDirectory, string.Empty)}' to the package registry on project '{project.NameWithNamespace}' (id {project.Id}).");
                 completedFiles++;
             }
         }

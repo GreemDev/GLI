@@ -54,7 +54,8 @@ public class SendUpdateMessageArgument : GitLabCliCommandArgument
         }
         catch
         {
-            return Result.MessageFailure("Embed color must be a hexadecimal number representing RGB, or a color by name, e.g. 'green'");
+            return Result.MessageFailure(
+                "Embed color must be a hexadecimal number representing RGB, or a color by name, e.g. 'green'");
         }
 
         return base.BeforeExecution();

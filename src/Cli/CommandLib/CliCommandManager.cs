@@ -19,7 +19,7 @@ public class CliCommandManager
         _commandMap = new SafeDictionary<CliCommandName, Func<string[], ValueTask<ExitCode>>>(
             Assembly.GetExecutingAssembly()
                 .GetTypes()
-                .Where(x => x.Inherits<ICliCommand>() 
+                .Where(x => x.Inherits<ICliCommand>()
                             && x is { IsAbstract: false, IsInterface: false, IsPublic: true })
                 .Select(Activator.CreateInstance)
                 .Where(x => x != null)

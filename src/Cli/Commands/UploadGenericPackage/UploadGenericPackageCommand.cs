@@ -3,7 +3,8 @@ using gli.Helpers;
 
 namespace gli.Commands.UploadGenericPackage;
 
-public class UploadGenericPackageCommand() : CliCommand<UploadGenericPackageCommandArgument>(CliCommandName.UploadGenericPackage)
+public class UploadGenericPackageCommand()
+    : CliCommand<UploadGenericPackageCommandArgument>(CliCommandName.UploadGenericPackage)
 {
     protected override async ValueTask<ExitCode> ExecuteAsync(UploadGenericPackageCommandArgument arg)
     {
@@ -26,7 +27,8 @@ public class UploadGenericPackageCommand() : CliCommand<UploadGenericPackageComm
             return ExitCode.UploadFailed;
         }
 
-        Logger.Info(LogSource.App, $"Uploaded '{arg.FilePath.FullPath}' to the package registry on project {project.NameWithNamespace} (id {project.Id}).");
+        Logger.Info(LogSource.App,
+            $"Uploaded '{arg.FilePath.FullPath}' to the package registry on project {project.NameWithNamespace} (id {project.Id}).");
         return ExitCode.Normal;
     }
 }

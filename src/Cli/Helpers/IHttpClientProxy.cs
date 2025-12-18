@@ -8,11 +8,12 @@ public interface IHttpClientProxy
     public Version DefaultRequestVersion { get; set; }
     public HttpVersionPolicy DefaultVersionPolicy { get; set; }
     public Uri? BaseAddress { get; set; }
-    
+
     public TimeSpan Timeout { get; set; }
     public long MaxResponseContentBufferSize { get; set; }
-    
-    public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, HttpCompletionOption? option = null, CancellationToken? token = null);
+
+    public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, HttpCompletionOption? option = null,
+        CancellationToken? token = null);
 
     #region Convenience overloads for SendAsync
 
@@ -21,7 +22,7 @@ public interface IHttpClientProxy
         string requestUri,
         HttpCompletionOption? option = null, CancellationToken? token = null
     ) => GetAsync(CreateUri(requestUri)!, option, token);
-    
+
     public Task<HttpResponseMessage> PostAsync(
         [StringSyntax(StringSyntaxAttribute.Uri)]
         string requestUri,
@@ -49,14 +50,14 @@ public interface IHttpClientProxy
         HttpContent? content = null,
         HttpCompletionOption? option = null, CancellationToken? token = null
     ) => DeleteAsync(CreateUri(requestUri)!, content, option, token);
-    
+
     #region Uri overloads
-    
+
     public Task<HttpResponseMessage> GetAsync(
         Uri requestUri,
         HttpCompletionOption? option = null, CancellationToken? token = null
     ) => SendAsync(CreateRequestMessage(HttpMethod.Get, requestUri), option, token);
-    
+
     public Task<HttpResponseMessage> PostAsync(
         Uri requestUri,
         HttpContent? content = null,
@@ -74,7 +75,7 @@ public interface IHttpClientProxy
         HttpContent? content = null,
         HttpCompletionOption? option = null, CancellationToken? token = null
     ) => SendAsync(CreateRequestMessageWithContent(HttpMethod.Patch, requestUri, content), option, token);
-    
+
     public Task<HttpResponseMessage> DeleteAsync(
         Uri requestUri,
         HttpContent? content = null,
@@ -87,16 +88,18 @@ public interface IHttpClientProxy
 
     #region Overload Helpers
 
-    private static HttpRequestMessage CreateRequestMessage(HttpMethod method, Uri? uri) 
-        => new(method, uri) { Version = HttpVersion.Version11, VersionPolicy = HttpVersionPolicy.RequestVersionOrLower };
+    private static HttpRequestMessage CreateRequestMessage(HttpMethod method, Uri? uri)
+        => new(method, uri)
+            { Version = HttpVersion.Version11, VersionPolicy = HttpVersionPolicy.RequestVersionOrLower };
 
-    private static HttpRequestMessage CreateRequestMessageWithContent(HttpMethod method, Uri? uri, HttpContent? requestContent)
+    private static HttpRequestMessage CreateRequestMessageWithContent(HttpMethod method, Uri? uri,
+        HttpContent? requestContent)
     {
         var req = CreateRequestMessage(method, uri);
         req.Content = requestContent;
         return req;
     }
-    
+
     private static Uri? CreateUri(string? uri) =>
         string.IsNullOrEmpty(uri) ? null : new Uri(uri, UriKind.RelativeOrAbsolute);
 

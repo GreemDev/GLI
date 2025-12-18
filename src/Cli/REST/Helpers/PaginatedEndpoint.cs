@@ -6,10 +6,10 @@ namespace gli.REST.Helpers;
 
 public partial class PaginatedEndpoint<T>
 {
-    private PaginatedEndpoint(IHttpClientProxy client, 
-        string baseUrl, 
-        HttpContentParser parsePage, 
-        Dictionary<string, object> queryStringParams, 
+    private PaginatedEndpoint(IHttpClientProxy client,
+        string baseUrl,
+        HttpContentParser parsePage,
+        Dictionary<string, object> queryStringParams,
         int perPage = 100)
     {
         _http = client;
@@ -18,7 +18,7 @@ public partial class PaginatedEndpoint<T>
         _queryStringParams = queryStringParams;
         _queryStringParams["per_page"] = perPage;
     }
-    
+
     public async Task<T?> FindOneAsync(Func<T, bool> predicate,
         Action<HttpStatusCode>? onNonSuccess = null)
     {
@@ -35,8 +35,9 @@ public partial class PaginatedEndpoint<T>
 
         if (returned.TryGetFirst(predicate, out var matched))
             return matched;
-        
-        if ((response.Headers.GetValues("x-total-pages").FirstOrDefault()?.TryParse<int>(out var pageCount) ?? false) && pageCount > 1)
+
+        if ((response.Headers.GetValues("x-total-pages").FirstOrDefault()?.TryParse<int>(out var pageCount) ?? false) &&
+            pageCount > 1)
         {
             currentPage++;
             do
@@ -50,7 +51,7 @@ public partial class PaginatedEndpoint<T>
                 }
 
                 returned = await _parsePage(response.Content);
-                
+
                 if (returned.TryGetFirst(predicate, out matched))
                     return matched;
 
@@ -60,7 +61,7 @@ public partial class PaginatedEndpoint<T>
 
         return default;
     }
-    
+
     public async Task<T?> FindOneAsync(Action<HttpStatusCode>? onNonSuccess = null)
     {
         var currentPage = 1;
@@ -75,8 +76,9 @@ public partial class PaginatedEndpoint<T>
         var returned = (await _parsePage(response.Content)).ToArray();
         if (returned.Length > 0)
             return returned[0];
-        
-        if ((response.Headers.GetValues("x-total-pages").FirstOrDefault()?.TryParse<int>(out var pageCount) ?? false) && pageCount > 1)
+
+        if ((response.Headers.GetValues("x-total-pages").FirstOrDefault()?.TryParse<int>(out var pageCount) ?? false) &&
+            pageCount > 1)
         {
             currentPage++;
             do
@@ -99,7 +101,7 @@ public partial class PaginatedEndpoint<T>
 
         return default;
     }
-    
+
     public async Task<IEnumerable<T>?> GetAllAsync(Func<T, bool> predicate,
         Action<HttpStatusCode>? onNonSuccess = null)
     {
@@ -114,7 +116,8 @@ public partial class PaginatedEndpoint<T>
 
         IEnumerable<T> accumulated = await _parsePage(response.Content);
 
-        if ((response.Headers.GetValues("x-total-pages").FirstOrDefault()?.TryParse<int>(out var pageCount) ?? false) && pageCount > 1)
+        if ((response.Headers.GetValues("x-total-pages").FirstOrDefault()?.TryParse<int>(out var pageCount) ?? false) &&
+            pageCount > 1)
         {
             currentPage++;
             do
@@ -135,7 +138,7 @@ public partial class PaginatedEndpoint<T>
 
         return accumulated.Where(predicate);
     }
-    
+
     public async Task<IEnumerable<T>?> GetAllAsync(
         Action<HttpStatusCode>? onNonSuccess = null)
     {
@@ -150,7 +153,8 @@ public partial class PaginatedEndpoint<T>
 
         IEnumerable<T> accumulated = await _parsePage(response.Content);
 
-        if ((response.Headers.GetValues("x-total-pages").FirstOrDefault()?.TryParse<int>(out var pageCount) ?? false) && pageCount > 1)
+        if ((response.Headers.GetValues("x-total-pages").FirstOrDefault()?.TryParse<int>(out var pageCount) ?? false) &&
+            pageCount > 1)
         {
             currentPage++;
             do

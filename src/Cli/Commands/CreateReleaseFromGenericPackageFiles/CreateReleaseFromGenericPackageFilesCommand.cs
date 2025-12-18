@@ -3,7 +3,8 @@ using gli.Helpers;
 
 namespace gli.Commands.CreateReleaseFromGenericPackageFiles;
 
-public class CreateReleaseFromGenericPackageFilesCommand() : CliCommand<CreateReleaseFromGenericPackageFilesArgument>(CliCommandName.CreateReleaseFromGenericPackageFiles)
+public class CreateReleaseFromGenericPackageFilesCommand()
+    : CliCommand<CreateReleaseFromGenericPackageFilesArgument>(CliCommandName.CreateReleaseFromGenericPackageFiles)
 {
     protected override async ValueTask<ExitCode> ExecuteAsync(CreateReleaseFromGenericPackageFilesArgument arg)
     {

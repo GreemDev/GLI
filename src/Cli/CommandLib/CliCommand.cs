@@ -27,7 +27,8 @@ public abstract class CliCommand<TArg> : ICliCommand where TArg : CliCommandArgu
         {
             if (ioe.TargetSite?.Name is "ThrowMoreThanOneMatchException")
             {
-                Logger.Info(LogSource.App, $"{Name} has options with names that conflict with the type it's derived from. Check the implementation.");
+                Logger.Info(LogSource.App,
+                    $"{Name} has options with names that conflict with the type it's derived from. Check the implementation.");
                 return new(ExitCode.OperationFailure);
             }
 
