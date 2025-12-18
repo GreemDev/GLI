@@ -12,12 +12,12 @@ public class GitLabCliCommandArgument : CliCommandArgument
         HelpText = "The target GitLab instance to use.")]
     public string GitLabEndpoint { get; set; } = null!;
 
-    [Option('t', "access-token", Required = false, Default = null,
+    [Option('T', "access-token", Required = false, Default = null,
         HelpText =
             "https://git.ryujinx.app/-/user_settings/personal_access_tokens | If a file next to the executable named '.accesstoken' exists, the contents of that file will be used here. An error will be thrown if that file does not exist and this argument is not provided.")]
     public string? AccessToken { get; set; }
 
-    [Option('p', "project", Required = true,
+    [Option('P', "project", Required = true,
         HelpText = "The 'owner/project' you are requesting. For example, ryubing/ryujinx.")]
     public string ProjectPath { get; set; } = null!;
 

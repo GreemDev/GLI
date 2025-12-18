@@ -18,7 +18,7 @@ public abstract class UpdateServerCliCommandArgument : CliCommandArgument
             "The publicly accessible URL of your Ryubing UpdateServer instance.")]
     public string UpdateServerEndpoint { get; set; } = null!;
 
-    [Option('t', "access-token", Required = false, Default = null,
+    [Option('T', "access-token", Required = false, Default = null,
         HelpText =
             "Your custom admin token in your Ryubing UpdateServer instance. If a file next to the executable named '.admintoken' exists, the contents of that file will be used here. An error will be thrown if that file does not exist and this argument is not provided.")]
     public string? AdminToken { get; set; }
