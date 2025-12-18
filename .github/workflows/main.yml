@@ -3,18 +3,18 @@ name: GLI CI
 on:
   workflow_dispatch:
     inputs: {}
-#  push:
-#    branches: [ v2 ]
-#    paths-ignore:
-#      - '.github/**'
-#      - 'docs/**'
-#      - 'assets/**'
-#      - '.vscode/**'
-#      - '*.yml'
-#      - '*.json'
-#      - '*.md'
-#      - '.gitignore'
-#      - '.gitattributes'
+  push:
+    branches: [ v2 ]
+    paths-ignore:
+      - '.github/**'
+      - 'docs/**'
+      - 'assets/**'
+      - '.vscode/**'
+      - '*.yml'
+      - '*.json'
+      - '*.md'
+      - '.gitignore'
+      - '.gitattributes'
 
 
 env:
