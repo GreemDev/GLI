@@ -5,7 +5,7 @@ namespace gli.Commands;
 
 public class AdvanceVersionCommand() : CliCommand<AdvanceVersionArgument>(CliCommandName.AdvanceVersion)
 {
-    protected override async Task<ExitCode> ExecuteAsync(AdvanceVersionArgument arg)
+    protected override async ValueTask<ExitCode> ExecuteAsync(AdvanceVersionArgument arg)
     {
         var result = await arg.UpdateClient.AdvanceVersionAsync();
 

@@ -5,7 +5,7 @@ namespace gli.Commands;
 
 public class GetNextVersionCommand() : CliCommand<GetNextVersionArgument>(CliCommandName.GetNextVersion)
 {
-    protected override async Task<ExitCode> ExecuteAsync(GetNextVersionArgument arg)
+    protected override async ValueTask<ExitCode> ExecuteAsync(GetNextVersionArgument arg)
     {
         if (await arg.UpdateClient.GetNextVersionAsync(arg.ReleaseChannel) is not { } versionString)
         {

@@ -6,12 +6,12 @@ namespace gli.Commands.CreateTag;
 
 public class CreateTagCommand() : CliCommand<CreateTagArgument>(CliCommandName.CreateTag)
 {
-    protected override Task<ExitCode> ExecuteAsync(CreateTagArgument arg)
+    protected override ValueTask<ExitCode> ExecuteAsync(CreateTagArgument arg)
     {
         var repo = arg.CreateGitLabClient().GetRepository(arg.ProjectPath);
 
         if (repo == null)
-            return Task.FromResult(ExitCode.ProjectNotFound);
+            return new(ExitCode.ProjectNotFound);
 
         repo.Tags.Create(new TagCreate
         {
@@ -22,6 +22,6 @@ public class CreateTagCommand() : CliCommand<CreateTagArgument>(CliCommandName.C
 
         Logger.Info(LogSource.App, $"Created tag '{arg.TagName}' on project '{arg.ProjectPath}'.");
 
-        return Task.FromResult(ExitCode.Normal);
+        return new(ExitCode.Normal);
     }
 }

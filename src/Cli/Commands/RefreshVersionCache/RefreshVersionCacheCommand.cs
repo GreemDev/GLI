@@ -5,7 +5,7 @@ namespace gli.Commands.RefreshVersionCache;
 
 public class RefreshVersionCacheCommand() : CliCommand<RefreshVersionCacheArgument>(CliCommandName.RefreshVersionCache)
 {
-    protected override async Task<ExitCode> ExecuteAsync(RefreshVersionCacheArgument arg)
+    protected override async ValueTask<ExitCode> ExecuteAsync(RefreshVersionCacheArgument arg)
     {
         var result = await arg.UpdateClient.RefreshVersionCacheAsync(arg.ReleaseChannel);
 

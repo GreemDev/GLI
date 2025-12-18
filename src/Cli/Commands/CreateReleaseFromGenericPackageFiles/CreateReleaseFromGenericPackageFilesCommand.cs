@@ -5,7 +5,7 @@ namespace gli.Commands.CreateReleaseFromGenericPackageFiles;
 
 public class CreateReleaseFromGenericPackageFilesCommand() : CliCommand<CreateReleaseFromGenericPackageFilesArgument>(CliCommandName.CreateReleaseFromGenericPackageFiles)
 {
-    protected override async Task<ExitCode> ExecuteAsync(CreateReleaseFromGenericPackageFilesArgument arg)
+    protected override async ValueTask<ExitCode> ExecuteAsync(CreateReleaseFromGenericPackageFilesArgument arg)
     {
         var project = await arg.CreateGitLabClient().Projects.GetByNamespacedPathAsync(arg.ProjectPath);
         if (project is null)

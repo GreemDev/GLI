@@ -5,7 +5,7 @@ namespace gli.Commands;
 
 public class IncrementVersionCommand() : CliCommand<IncrementVersionArgument>(CliCommandName.IncrementVersion)
 {
-    protected override async Task<ExitCode> ExecuteAsync(IncrementVersionArgument arg)
+    protected override async ValueTask<ExitCode> ExecuteAsync(IncrementVersionArgument arg)
     {
         var result = await arg.UpdateClient.IncrementVersionAsync(arg.ReleaseChannel);
 
