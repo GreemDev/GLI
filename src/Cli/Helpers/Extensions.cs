@@ -52,7 +52,6 @@ namespace CommandLine
         private static readonly Lazy<Parser> DefaultParser = new(() => new Parser(settings =>
         {
             settings.HelpWriter = Logger.TextWriter;
-            settings.IgnoreUnknownArguments = true;
             settings.MaximumDisplayWidth -= (int)(settings.MaximumDisplayWidth * 0.175);
         }));
 
