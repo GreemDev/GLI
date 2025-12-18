@@ -7,7 +7,7 @@ public class GetNextVersionCommand() : CliCommand<GetNextVersionArgument>(CliCom
 {
     protected override async ValueTask<ExitCode> ExecuteAsync(GetNextVersionArgument arg)
     {
-        if (await arg.UpdateClient.GetNextVersionAsync(arg.ReleaseChannel) is not { } versionString)
+        if (await arg.UpdateClient.GetNextVersionAsync(arg.ReleaseChannel, arg.IsMajorRelease) is not { } versionString)
         {
             // error logs are handled by the update client
             return ExitCode.OperationFailure;

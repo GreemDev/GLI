@@ -11,4 +11,8 @@ public class GetNextVersionArgument : UpdateServerCliCommandArgument
     [Option('c', "release-channel", Required = true,
         HelpText = "The release channel you are requesting the version for.")]
     public ReleaseChannel ReleaseChannel { get; set; }
+    
+    [Option('m', "major", Required = false, Default = false,
+        HelpText = "Should the next version be a major release?")]
+    public bool IsMajorRelease { get; set; }
 }
