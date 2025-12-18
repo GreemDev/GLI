@@ -85,7 +85,6 @@ public static partial class Logger
 
     /// <summary>
     ///     Prints a <see cref="LogSeverity.Error"/> message to the console from the specified <paramref name="e"/> exception.
-    ///     This method calls <see cref="SentrySdk"/>'s CaptureException, so it is logged to Sentry.
     /// </summary>
     /// <param name="e">Exception to print.</param>
     /// <param name="src">Source to print the message from.</param>
@@ -148,12 +147,19 @@ public static partial class Logger
         => Log(LogSeverity.Verbose, src, message);
 
     /// <summary>
-    ///     Prints a <see cref="LogSeverity.Error"/> message to the console from the specified <paramref name="e"/> exception.
-    ///     This method calls <see cref="SentrySdk"/>'s CaptureException, so it is logged to Sentry.
+    ///     Prints a <see cref="LogSeverity.Error"/> message to the console from the specified <see cref="LogSource"/> for
+    ///     the specified <paramref name="e"/> exception.
+    /// </summary>
+    /// <param name="source">Source of the log message.</param>
+    /// <param name="e">Exception to print.</param>
+    public static void Error(LogSource source, Exception e)
+        => Error(source, string.Empty, e);
+
+    /// <summary>
+    ///     Prints a <see cref="LogSeverity.Error"/> message to the console for the specified <paramref name="e"/> exception.
     /// </summary>
     /// <param name="e">Exception to print.</param>
-    public static void Error(Exception e)
-        => Error(LogSource.App, string.Empty, e);
+    public static void Error(Exception e) => Error(LogSource.App, e);
 
     #endregion
 
@@ -165,9 +171,11 @@ public static partial class Logger
             lock (LogSync)
             {
                 if (WriteToFile)
-                    ExecuteWithFileWrite(logEvent.Severity, logEvent.Source, logEvent.Message, logEvent.Error, logEvent.Invocation);
+                    ExecuteWithFileWrite(logEvent.Severity, logEvent.Source, logEvent.Message, logEvent.Error,
+                        logEvent.Invocation);
                 else
-                    ExecuteStdOutOnly(logEvent.Severity, logEvent.Source, logEvent.Message, logEvent.Error, logEvent.Invocation);
+                    ExecuteStdOutOnly(logEvent.Severity, logEvent.Source, logEvent.Message, logEvent.Error,
+                        logEvent.Invocation);
             }
         };
     }
@@ -249,13 +257,13 @@ public readonly struct InvocationInfo
         CallerName = caller;
     }
 
-    public new Optional<string> ToString() 
+    public new Optional<string> ToString()
         => Type switch
         {
             { Full: true } => $"{CallerName}:{this.GetSourceFileName()}:{LineInFile}",
             { CallerOnly: true } => CallerName,
             { FileLoc: true } => $"{this.GetSourceFileName()}:{LineInFile}",
-            _ => (Optional<string>) default 
+            _ => (Optional<string>)default
             //casting to ensure default branch returns a default optional and not an optional with a null string value
         };
 }

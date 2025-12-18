@@ -16,27 +16,35 @@ public abstract class CliCommand<TArg> : ICliCommand where TArg : CliCommandArgu
     {
         var parserResult = Parser.CustomDefault.ParseArguments<TArg>(args);
 
-        switch (parserResult)
+        if (parserResult is NotParsed<TArg> notParsedResult)
         {
-            case NotParsed<TArg> notParsedResult:
-                Logger.WriteToFile = false;
+            Logger.WriteToFile = false;
 
-                notParsedResult.Errors.ForEach(err => Logger.Error(LogSource.Cli, $" - {err.Tag}"));
+            notParsedResult.Errors.ForEach(err => Logger.Error(LogSource.Cli, $" - {err.Tag}"));
 
-                return ExitCode.ArgumentParseFailed;
-            case Parsed<TArg> parsedResult:
-                Result preconditionResult = parsedResult.Value.BeforeExecution();
-                if (preconditionResult.IsOf<MessageError>(out var me))
-                {
-                    Logger.Error(LogSource.App, me.Content);
-                    return ExitCode.ArgumentParseFailed;
-                }
-
-                return await ExecuteAsync(parsedResult.Value);
-            default:
-                // Should not be possible. Just here to shut up the compiler.
-                throw new AmbiguousImplementationException();
+            return ExitCode.ArgumentParseFailed;
         }
+
+        TArg parsedArg = parserResult is Parsed<TArg> parsed ? parsed.Value : null!;
+
+        Result pResult = parsedArg.BeforeExecution();
+
+        if (pResult.IsOf<ExitCodeState>(out var ecs))
+            return ecs.Code;
+
+        if (pResult.IsOf<ExitCodeAndMessageState>(out var ecms))
+        {
+            Logger.Error(LogSource.App, ecms.Message);
+            return ecms.Code;
+        }
+
+        if (pResult.TryUnwrapError(out var exc))
+        {
+            Logger.Error(LogSource.App, exc);
+            return ExitCode.ArgumentParseFailed;
+        }
+
+        return await ExecuteAsync(parsedArg);
     }
 
     public CliCommandName Name { get; }

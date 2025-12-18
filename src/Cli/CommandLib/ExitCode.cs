@@ -1,4 +1,30 @@
-﻿namespace gli.CommandLib;
+﻿using Gommon;
+
+namespace gli.CommandLib;
+
+public struct ExitCodeState : IErrorState
+{
+    public readonly ExitCode Code;
+
+    public ExitCodeState(ExitCode exitCode)
+    {
+        Code = exitCode;
+    }
+
+    public static implicit operator ExitCodeState(ExitCode exitCode) => new(exitCode);
+}
+
+public struct ExitCodeAndMessageState : IErrorState
+{
+    public readonly ExitCode Code;
+    public readonly string Message;
+
+    public ExitCodeAndMessageState(ExitCode exitCode, string message)
+    {
+        Code = exitCode;
+        Message = message;
+    }
+}
 
 public enum ExitCode
 {

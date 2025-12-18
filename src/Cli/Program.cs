@@ -1,7 +1,6 @@
 ﻿using CommandLine;
 using gli;
 using gli.CommandLib;
-using gli.Commands;
 using gli.Helpers;
 using Gommon;
 
@@ -14,7 +13,7 @@ public static class Program
         CommandManager = new CliCommandManager();
     }
 
-    public static CliCommandManager CommandManager { get; private set; }
+    public static CliCommandManager CommandManager { get; }
 
     public static string? SearchString { get; private set; }
 
