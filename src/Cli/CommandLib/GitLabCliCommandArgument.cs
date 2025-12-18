@@ -39,7 +39,7 @@ public class GitLabCliCommandArgument : CliCommandArgument
         }
         catch (FileNotFoundException fnfe)
         {
-            return Result.Failure(new MessageError(fnfe.Message));
+            return Result.MessageFailure(fnfe.Message);
         }
 
         return Result.Success;

@@ -51,7 +51,7 @@ public abstract class UpdateServerCliCommandArgument : CliCommandArgument
         }
         catch (FileNotFoundException fnfe)
         {
-            return Result.Failure(new MessageError(fnfe.Message));
+            return Result.MessageFailure(fnfe.Message);
         }
 
         UpdateClient = UpdateClient.Builder()
