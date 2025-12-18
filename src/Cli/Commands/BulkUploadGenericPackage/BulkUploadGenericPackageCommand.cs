@@ -2,7 +2,7 @@
 using gli.Helpers;
 using Gommon;
 
-namespace gli.Commands.BulkUploadGenericPackage;
+namespace gli.Commands;
 
 public class BulkUploadGenericPackageCommand()
     : CliCommand<BulkUploadGenericPackageCommandArgument>(CliCommandName.BulkUploadGenericPackage)

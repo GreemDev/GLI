@@ -5,7 +5,7 @@ using gli.Helpers;
 using Gommon;
 using NGitLab.Models;
 
-namespace gli.Commands.BulkUploadGenericPackage;
+namespace gli.Commands;
 
 public class BulkUploadGenericPackageCommandArgument : GitLabCliCommandArgument
 {

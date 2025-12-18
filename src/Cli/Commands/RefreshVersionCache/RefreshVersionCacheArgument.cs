@@ -2,7 +2,7 @@
 using gli.CommandLib;
 using Ryujinx.Systems.Update.Common;
 
-namespace gli.Commands.RefreshVersionCache;
+namespace gli.Commands;
 
 public class RefreshVersionCacheArgument : UpdateServerCliCommandArgument
 {

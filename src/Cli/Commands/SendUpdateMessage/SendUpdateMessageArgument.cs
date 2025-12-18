@@ -6,7 +6,7 @@ using gli.Helpers;
 using Gommon;
 using NGitLab.Models;
 
-namespace gli.Commands.SendUpdateMessage;
+namespace gli.Commands;
 
 public class SendUpdateMessageArgument : GitLabCliCommandArgument
 {

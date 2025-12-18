@@ -1,7 +1,7 @@
 ﻿using gli.CommandLib;
 using gli.Helpers;
 
-namespace gli.Commands.RefreshVersionCache;
+namespace gli.Commands;
 
 public class RefreshVersionCacheCommand() : CliCommand<RefreshVersionCacheArgument>(CliCommandName.RefreshVersionCache)
 {

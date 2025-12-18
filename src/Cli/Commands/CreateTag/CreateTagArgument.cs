@@ -1,7 +1,7 @@
 ﻿using CommandLine;
 using gli.CommandLib;
 
-namespace gli.Commands.CreateTag;
+namespace gli.Commands;
 
 public class CreateTagArgument : GitLabCliCommandArgument
 {

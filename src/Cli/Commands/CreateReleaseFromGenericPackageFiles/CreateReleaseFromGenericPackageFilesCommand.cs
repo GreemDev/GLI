@@ -1,7 +1,7 @@
 ﻿using gli.CommandLib;
 using gli.Helpers;
 
-namespace gli.Commands.CreateReleaseFromGenericPackageFiles;
+namespace gli.Commands;
 
 public class CreateReleaseFromGenericPackageFilesCommand()
     : CliCommand<CreateReleaseFromGenericPackageFilesArgument>(CliCommandName.CreateReleaseFromGenericPackageFiles)

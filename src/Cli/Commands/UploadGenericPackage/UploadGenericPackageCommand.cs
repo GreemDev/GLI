@@ -1,7 +1,7 @@
 ﻿using gli.CommandLib;
 using gli.Helpers;
 
-namespace gli.Commands.UploadGenericPackage;
+namespace gli.Commands;
 
 public class UploadGenericPackageCommand()
     : CliCommand<UploadGenericPackageCommandArgument>(CliCommandName.UploadGenericPackage)

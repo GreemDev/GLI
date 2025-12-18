@@ -2,7 +2,7 @@
 using gli.Helpers;
 using NGitLab.Models;
 
-namespace gli.Commands.CreateTag;
+namespace gli.Commands;
 
 public class CreateTagCommand() : CliCommand<CreateTagArgument>(CliCommandName.CreateTag)
 {

@@ -1,12 +1,11 @@
 ﻿using System.Net;
 using CommandLine;
 using gli.CommandLib;
-using gli.Commands.BulkUploadGenericPackage;
 using gli.Helpers;
 using Gommon;
 using NGitLab.Models;
 
-namespace gli.Commands.UploadGenericPackage;
+namespace gli.Commands;
 
 public class UploadGenericPackageCommandArgument : GitLabCliCommandArgument
 {

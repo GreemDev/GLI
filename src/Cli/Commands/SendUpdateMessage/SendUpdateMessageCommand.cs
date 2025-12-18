@@ -1,14 +1,13 @@
 ﻿using System.Collections.Immutable;
 using System.Drawing;
 using System.Text;
-using Colorful;
 using gli.CommandLib;
 using gli.REST.GitLab;
 using gli.Helpers;
 using Gommon;
 using JNogueira.Discord.Webhook.Client;
 
-namespace gli.Commands.SendUpdateMessage;
+namespace gli.Commands;
 
 public class SendUpdateMessageCommand() : CliCommand<SendUpdateMessageArgument>(CliCommandName.SendUpdateMessage)
 {
