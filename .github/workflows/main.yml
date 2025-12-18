@@ -44,9 +44,9 @@ jobs:
       - name: Create release
         uses: ncipollo/release-action@v1
         with:
-          name: "Volte V${{ steps.version_info.outputs.build_version }}"
+          name: "GLI V${{ steps.version_info.outputs.build_version }}"
           tag: ${{ steps.version_info.outputs.build_version }}
-          artifacts: "artifacts/*.tar.gz,artifacts/*.7z"
+          artifacts: "artifacts/*"
           body: "**[Changes since last build](https://github.com/GreemDev/GLI/compare/${{ steps.version_info.outputs.prev_build_version }}...${{ steps.version_info.outputs.build_version }})**"
           omitBodyDuringUpdate: true
           token: ${{ secrets.GITHUB_TOKEN }}
