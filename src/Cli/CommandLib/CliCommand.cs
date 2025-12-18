@@ -7,7 +7,8 @@ namespace gli.CommandLib;
 
 [SuppressMessage("Trimming",
     "IL2026:Members annotated with \'RequiresUnreferencedCodeAttribute\' require dynamic access otherwise can break functionality when trimming application code")]
-public abstract class CliCommand<TArg> : ICliCommand where TArg : CliCommandArgument
+public abstract class CliCommand<TArg> : ICliCommand 
+    where TArg : CliCommandArgument, new() //not directly instantiated via TArg(), but is via Activator
 {
     public CliCommandName Name { get; }
 
