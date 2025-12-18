@@ -9,6 +9,8 @@ namespace gli.CommandLib;
     "IL2026:Members annotated with \'RequiresUnreferencedCodeAttribute\' require dynamic access otherwise can break functionality when trimming application code")]
 public abstract class CliCommand<TArg> : ICliCommand where TArg : CliCommandArgument
 {
+    public CliCommandName Name { get; }
+
     protected CliCommand(CliCommandName name)
     {
         Name = name;
@@ -62,8 +64,6 @@ public abstract class CliCommand<TArg> : ICliCommand where TArg : CliCommandArgu
 
         return ExecuteAsync(parsedArg);
     }
-
-    public CliCommandName Name { get; }
 
     protected abstract ValueTask<ExitCode> ExecuteAsync(TArg arg);
 }

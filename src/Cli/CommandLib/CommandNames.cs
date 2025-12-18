@@ -8,6 +8,7 @@ public enum CliCommandName
     SendUpdateMessage,
     CreateReleaseFromGenericPackageFiles,
     GetNextVersion,
+    GetCurrentVersion,
     IncrementVersion,
     AdvanceVersion,
     RefreshVersionCache,

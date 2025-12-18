@@ -3,11 +3,11 @@ using gli.Helpers;
 
 namespace gli.Commands;
 
-public class GetNextVersionCommand() : CliCommand<GetNextVersionArgument>(CliCommandName.GetNextVersion)
+public class GetCurrentVersionCommand() : CliCommand<GetCurrentVersionArgument>(CliCommandName.GetCurrentVersion)
 {
-    protected override async ValueTask<ExitCode> ExecuteAsync(GetNextVersionArgument arg)
+    protected override async ValueTask<ExitCode> ExecuteAsync(GetCurrentVersionArgument arg)
     {
-        if (await arg.UpdateClient.GetNextVersionAsync(arg.ReleaseChannel) is not { } versionString)
+        if (await arg.UpdateClient.GetCurrentVersionAsync(arg.ReleaseChannel) is not { } versionString)
         {
             // error logs are handled by the update client
             return ExitCode.OperationFailure;
