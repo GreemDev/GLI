@@ -34,14 +34,33 @@ public class CreateReleaseFromGenericPackageFilesArgument : GitLabCliCommandArgu
         if (ReleaseBody is null || IsInit) return;
 
         if (ReleaseBody.StartsWithIgnoreCase("rf:"))
-            ReleaseBody = await File.ReadAllTextAsync(ReleaseBody[3..]);
+        {
+            var path = ReleaseBody[3..];
+
+            try
+            {
+                ReleaseBody = await File.ReadAllTextAsync(path);
+            }
+            catch (Exception e)
+            {
+                Logger.Warn(LogSource.App, $"Could not read the file at the path '{path}':", e);
+                ReleaseBody = null;
+            }
+        }
 
         if (ReleaseBody.StartsWithIgnoreCase("msd:"))
         {
             var milestoneTitle = ReleaseBody[4..];
-
-            if (await GitLabApi.GetMilestoneByTitleAsync(Http, project, milestoneTitle) is { } milestone)
+            
+            if (await GitLabApi.GetMilestoneByTitleAsync(Http, project, ReleaseBody[4..]) is { } milestone)
+            {
                 ReleaseBody = milestone.Description;
+            }
+            else
+            {
+                Logger.Warn(LogSource.App, $"Could not find the milestone '{milestoneTitle}' on the target project or its parent group. Continuing with no release body.");
+                ReleaseBody = null;
+            }
         }
 
         IsInit = true;
