@@ -64,7 +64,7 @@ public class CheckForUpdateCommand() : CliCommand<CheckForUpdateArgument>(CliCom
                         {
                             try
                             {
-                                File.SetUnixFileMode(binaryPath.FullPath, UnixFileMode.UserExecute);
+                                File.SetUnixFileMode(binaryPath.FullPath, File.GetUnixFileMode(binaryPath.FullPath) | UnixFileMode.UserExecute);
                             }
                             catch (UnauthorizedAccessException uae)
                             {
