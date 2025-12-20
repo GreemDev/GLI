@@ -20,7 +20,7 @@ public class GetProjectPackagesItem
     public PaginatedEndpoint<GetPackageFilesItem> GetPackageFiles(IHttpClientProxy http, Project project)
         => PaginatedEndpoint<GetPackageFilesItem>.Builder(http)
             .WithBaseUrl($"api/v4/projects/{project.Id}/packages/{Id}/package_files")
-            .WithJsonContentParser(SerializerContexts.Default.IEnumerableGetPackageFilesItem)
+            .WithJsonContentParser(GitLabSerializerContexts.Default.IEnumerableGetPackageFilesItem)
             .WithPerPageCount(100)
             .Build();
 }

@@ -10,4 +10,4 @@ namespace gli.REST.GitLab;
 [JsonSerializable(typeof(GetProjectPackagesItem[]))]
 [JsonSerializable(typeof(GetPackageFilesItem[]))]
 [JsonSerializable(typeof(MilestoneItem[]))]
-public partial class SerializerContexts : JsonSerializerContext;
+public partial class GitLabSerializerContexts : JsonSerializerContext;

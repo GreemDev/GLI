@@ -35,7 +35,7 @@ public static class GitLabApi
     {
         var p = PaginatedEndpoint<MilestoneItem>.Builder(httpClient)
             .WithBaseUrl($"api/v4/projects/{project.Id}/milestones")
-            .WithJsonContentParser(SerializerContexts.Default.IEnumerableMilestoneItem)
+            .WithJsonContentParser(GitLabSerializerContexts.Default.IEnumerableMilestoneItem)
             .WithPerPageCount(100)
             .WithQueryStringParameters(
                 ("title", title),
@@ -71,6 +71,6 @@ public static class GitLabApi
         if (responseBody is "{\"message\":\"404 Not Found\"}")
             return null;
 
-        return JsonSerializer.Deserialize(responseBody, SerializerContexts.Default.GitLabReleaseJsonResponse);
+        return JsonSerializer.Deserialize(responseBody, GitLabSerializerContexts.Default.GitLabReleaseJsonResponse);
     }
 }

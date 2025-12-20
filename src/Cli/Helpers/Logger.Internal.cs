@@ -30,21 +30,21 @@ public static partial class Logger
     private static void ExecuteStdOutOnly(LogSeverity s, LogSource src, string message, Exception e,
         InvocationInfo caller)
     {
+        var (color, value) = VerifySeverity(s);
+        Append($"{value}:".P(), color);
+
+        (color, value) = VerifySource(src);
+        Append($"[{value}]".P(), color);
+
         if (IsDebugLoggingEnabled && caller.IsInitialized)
         {
-            caller.ToString().IfPresent(debugInfoContent =>
+            caller.IfPresent(debugInfoContent =>
             {
                 // ReSharper disable once AccessToModifiedClosure
                 Append(debugInfoContent, Color.Aquamarine);
                 Append(" |>  ", Color.Goldenrod);
             });
         }
-
-        var (color, value) = VerifySeverity(s);
-        Append($"{value}:".P(), color);
-
-        (color, value) = VerifySource(src);
-        Append($"[{value}]".P(), color);
 
         if (!message.IsNullOrWhitespace())
             Append(message, Color.White);
@@ -69,16 +69,6 @@ public static partial class Logger
     {
         var content = new StringBuilder();
 
-        if (IsDebugLoggingEnabled && caller.IsInitialized)
-        {
-            caller.ToString().IfPresent(debugInfoContent =>
-            {
-                // ReSharper disable once AccessToModifiedClosure
-                Append(debugInfoContent, Color.Aquamarine, ref content);
-                Append(" |>  ", Color.Goldenrod, ref content);
-            });
-        }
-
         var (color, value) = VerifySeverity(s);
         Append($"{value}:".P(), color);
         var dt = DateTime.Now.ToLocalTime();
@@ -87,6 +77,16 @@ public static partial class Logger
         (color, value) = VerifySource(src);
         Append($"[{value}]".P(), color);
         content.Append(string.Intern($"{value} -> "));
+        
+        if (IsDebugLoggingEnabled && caller.IsInitialized)
+        {
+            caller.IfPresent(debugInfoContent =>
+            {
+                // ReSharper disable once AccessToModifiedClosure
+                Append(debugInfoContent, Color.Aquamarine, ref content);
+                Append(" |>  ", Color.Goldenrod, ref content);
+            });
+        }
 
         if (!message.IsNullOrWhitespace())
             Append(message, Color.White, ref content);

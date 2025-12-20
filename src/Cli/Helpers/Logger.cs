@@ -257,7 +257,14 @@ public readonly struct InvocationInfo
         CallerName = caller;
     }
 
-    public new Optional<string> ToString()
+    public void IfPresent(Action<string> action)
+    {
+        if (!IsInitialized) return;
+        
+        FormattedString.IfPresent(action);
+    }
+
+    public Optional<string> FormattedString
         => Type switch
         {
             { Full: true } => $"{CallerName}:{this.GetSourceFileName()}:{LineInFile}",

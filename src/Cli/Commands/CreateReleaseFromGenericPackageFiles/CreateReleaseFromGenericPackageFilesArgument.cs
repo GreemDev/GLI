@@ -51,7 +51,7 @@ public class CreateReleaseFromGenericPackageFilesArgument : GitLabCliCommandArgu
     {
         var p = PaginatedEndpoint<GetProjectPackagesItem>.Builder(Http)
             .WithBaseUrl($"api/v4/projects/{project.Id}/packages")
-            .WithJsonContentParser(SerializerContexts.Default.IEnumerableGetProjectPackagesItem)
+            .WithJsonContentParser(GitLabSerializerContexts.Default.IEnumerableGetProjectPackagesItem)
             .WithPerPageCount(100)
             .WithQueryStringParameters(
                 QueryParameters.Sort("desc"),

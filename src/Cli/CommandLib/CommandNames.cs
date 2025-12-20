@@ -12,4 +12,5 @@ public enum CliCommandName
     IncrementVersion,
     AdvanceVersion,
     RefreshVersionCache,
+    CheckForUpdate,
 }
