@@ -22,11 +22,11 @@ public class CheckForUpdateCommand() : CliCommand<CheckForUpdateArgument>(CliCom
             return ExitCode.OperationFailure;
         }
 
-        var currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
+        var currentVersion = Assembly.GetExecutingAssembly().GetName().Version!;
 
         if (currentVersion >= latestVersion)
         {
-            Logger.Info(LogSource.App, $"{currentVersion} is up to date.");
+            Logger.Info(LogSource.App, $"{currentVersion.ToString()[..^2]} is up to date.");
             if (arg.Download)
             {
                 Logger.Info(LogSource.App, "Nothing new to download; ignoring download flag.");
@@ -34,7 +34,7 @@ public class CheckForUpdateCommand() : CliCommand<CheckForUpdateArgument>(CliCom
         }
         else
         {
-            Logger.Info(LogSource.App, $"{currentVersion} is out of date, {latestVersion} is now available.");
+            Logger.Info(LogSource.App, $"{currentVersion.ToString()[..^2]} is out of date, {latestVersion} is now available.");
             if (arg.Download)
             {
                 var binaryPath = new FilePath(GetRequiredGliBinaryName(), isDirectory: false);
