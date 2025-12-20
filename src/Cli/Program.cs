@@ -17,6 +17,8 @@ public static class Program
 
     public static string? SearchString { get; private set; }
 
+    public static bool RequestHelp { get; private set; }
+
     public static async Task Main(string[] args)
     {
         SearchString = args.ElementAtOrDefault(0);
@@ -33,8 +35,11 @@ public static class Program
         }
 
         args = args[1..];
-        if (args is ["--help"])
+        if (args is ["--help"] or ["help"])
+        {
+            RequestHelp = true;
             args = [];
+        }
         // Passing --help after the command name causes it to trigger help for the first time it's parsed,
         // which doesn't have any of the contextual arguments for the command specified.
         // If the only argument is "--help", reset the arg array,
@@ -66,7 +71,11 @@ public static class Program
             .WithParsedAsync(async opt =>
             {
                 Logger.WriteToFile = opt.WriteLogFiles;
-                await CommandManager.DispatchAsync(desiredCommand.Value, args);
+                await CommandManager.DispatchAsync(desiredCommand.Value,
+                    RequestHelp
+                        ? args.Prepend("--help")
+                        : args
+                );
             });
     }
 }

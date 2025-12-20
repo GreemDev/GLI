@@ -28,15 +28,15 @@ public class CliCommandManager
         );
     }
 
-    public async Task DispatchAsync(CliCommandName commandName, string[] args)
+    public async Task DispatchAsync(CliCommandName commandName, IEnumerable<string> argsEnumerable)
     {
         if (_commandMap[commandName] is not { } execution)
         {
             Logger.Error(LogSource.App, "An unregistered command was provided.");
             return;
         }
-
-        var exitCode = await execution(args);
+        
+        var exitCode = await execution(argsEnumerable.ToArray());
 
         if (exitCode is not ExitCode.NormalSilent)
             Logger.Log(
