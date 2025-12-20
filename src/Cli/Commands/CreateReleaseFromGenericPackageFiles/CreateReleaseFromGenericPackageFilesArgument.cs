@@ -43,22 +43,25 @@ public class CreateReleaseFromGenericPackageFilesArgument : GitLabCliCommandArgu
             }
             catch (Exception e)
             {
-                Logger.Warn(LogSource.App, $"Could not read the file at the path '{path}':", e);
+                Logger.Warn(LogSource.App, $"Could not read the file at the path '{path}' for release description, continuing with no release body.", e);
                 ReleaseBody = null;
+                IsInit = true;
+                return;
             }
         }
 
         if (ReleaseBody.StartsWithIgnoreCase("msd:"))
         {
             var milestoneTitle = ReleaseBody[4..];
-            
+
             if (await GitLabApi.GetMilestoneByTitleAsync(Http, project, ReleaseBody[4..]) is { } milestone)
             {
                 ReleaseBody = milestone.Description;
             }
             else
             {
-                Logger.Warn(LogSource.App, $"Could not find the milestone '{milestoneTitle}' on the target project or its parent group. Continuing with no release body.");
+                Logger.Warn(LogSource.App,
+                    $"Could not find the milestone '{milestoneTitle}' on the target project or its parent group. Continuing with no release body.");
                 ReleaseBody = null;
             }
         }
