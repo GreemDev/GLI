@@ -32,7 +32,6 @@ public class GitLabCliCommandArgument : CliCommandArgument
     /// <remarks>ALWAYS call the base implementation when overriding! Respect the returned result so long as the derived type needs to authenticate with GitLab.</remarks>
     internal override Result BeforeExecution()
     {
-        Http = GitLabApi.CreateHttpClient(GitLabEndpoint, AccessToken!, HttpRequestTimeout);
         try
         {
             AccessToken ??= ReadAccessTokenFromFile();
@@ -41,6 +40,8 @@ public class GitLabCliCommandArgument : CliCommandArgument
         {
             return Result.MessageFailure(fnfe.Message);
         }
+
+        Http = GitLabApi.CreateHttpClient(GitLabEndpoint, AccessToken, HttpRequestTimeout);
 
         return Result.Success;
     }

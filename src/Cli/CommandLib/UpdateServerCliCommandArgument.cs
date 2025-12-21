@@ -43,8 +43,6 @@ public abstract class UpdateServerCliCommandArgument : CliCommandArgument
     /// <remarks>ALWAYS call the base implementation when overriding! Respect the returned result so long as the derived type needs to authenticate with the Update Server.</remarks>
     internal override Result BeforeExecution()
     {
-        _ = base.BeforeExecution();
-
         try
         {
             AdminToken ??= ReadAdminTokenFromFile();
