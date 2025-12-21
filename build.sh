@@ -17,10 +17,8 @@ function pub {
   setup $1
   dotnet publish -c release -r $1 --self-contained -o ../../build/$1 --p:Version="$2"
   cleanup
-}
-
-function pack {
-  cd build/$1/
+  
+  cd ../../build/$1/
   if stringContain "win" $1; then
     mv gli.exe ../../artifacts/gli-$1.exe
   else
@@ -40,22 +38,18 @@ echo "Building..."
 
 cd src/Cli
 
-pub linux-arm64 $1
-pub linux-x64 $1
-pub win-arm64 $1
 pub win-x64 $1
+pub linux-x64 $1
+pub linux-arm64 $1
+pub win-arm64 $1
 pub osx-arm64 $1
 pub osx-x64 $1
-
-cd ../../
-echo "'Packaging' builds..."
-
-pack linux-arm64
-pack linux-x64
-pack win-arm64
-pack win-x64
-pack osx-arm64
-pack osx-x64
+pub win-x86 $1
+pub linux-arm $1
+pub linux-musl-x64 $1
+pub linux-musl-arm64 $1
+pub linux-bionic-arm64 $1
+pub linux-loongarch64 $1
 
 echo "Complete. You can find builds for all platforms in artifacts/."
 
