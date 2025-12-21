@@ -12,16 +12,18 @@ public class UploadGenericPackageCommandArgument : GitLabCliCommandArgument
     public override TimeSpan? HttpRequestTimeout => TimeSpan.FromMinutes(10); //accomodate shitass internet
 
     public async Task<bool> UploadGenericPackageAsync(
-        Project project)
+        Project project, FilePath? path = null)
     {
+        var toUpload = path ?? FilePath;
+
         try
         {
             HttpResponseMessage response;
 
-            await using (var fileStream = FilePath.OpenRead())
+            await using (var fileStream = toUpload.OpenRead())
             {
                 response = await Http.PutAsync(
-                    $"api/v4/projects/{project.Id}/packages/generic/{PackageName}/{PackageVersion}/{FilePath.Name}",
+                    $"api/v4/projects/{project.Id}/packages/generic/{PackageName}/{PackageVersion}/{toUpload.Name}",
                     new StreamContent(fileStream)
                 );
             }
@@ -36,26 +38,29 @@ public class UploadGenericPackageCommandArgument : GitLabCliCommandArgument
         }
         catch (TaskCanceledException)
         {
-            Logger.Error(LogSource.App, $"Timed out uploading '{FilePath}'.");
+            Logger.Error(LogSource.App, $"Timed out uploading '{toUpload}'.");
             return false;
         }
         catch (Exception e)
         {
-            Logger.Error(LogSource.App, $"Errored uploading '{FilePath}'.", e);
+            Logger.Error(LogSource.App, $"Errored uploading '{toUpload}'.", e);
             return false;
         }
     }
 
     internal override Result BeforeExecution()
     {
-        FilePath = new FilePath(FilePathRaw);
+        if (!Bulk)
+        {
+            FilePath = new FilePath(FilePathRaw);
 
-        if (FilePath.IsDirectory)
-            return Result.ExitCode(ExitCode.FileNotFound,
-                $"Cannot upload a directory. Use the {nameof(CliCommandName.BulkUploadGenericPackage)} " +
-                $"command for that use case; as it lets you finely choose which files to upload with a pattern; " +
-                $"and you can match everything in a folder if you want to as well."
-            );
+            if (FilePath.IsDirectory)
+                return Result.ExitCode(ExitCode.FileNotFound,
+                    $"Cannot upload a directory. Use the -b/--bulk " +
+                    $"flag for that use case; as it lets you finely choose which files to upload with a pattern; " +
+                    $"and you can match everything in a folder if you want to as well."
+                );
+        }
 
         return base.BeforeExecution();
     }
@@ -68,9 +73,16 @@ public class UploadGenericPackageCommandArgument : GitLabCliCommandArgument
         Required = true, HelpText = "The desired version of the generic package.")]
     public string PackageVersion { get; set; } = null!;
 
+    [Option('b', "bulk",
+        Required = false, Default = false,
+        HelpText = "If true, this will upload multiple files matching the pattern provided in the -p/--path argument. Path can be relative.")]
+    public bool Bulk { get; set; }
+
     public FilePath FilePath { get; private set; }
 
     [Option('p', "path",
-        Required = true, HelpText = "The path of the file to upload.")]
+        Required = true,
+        HelpText =
+            "The path of the file to upload. If this is a bulk upload operation, this turns into a file pattern instead of a direct path.")]
     public string FilePathRaw { get; set; } = null!;
 }
