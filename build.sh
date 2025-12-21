@@ -5,7 +5,7 @@ if [ $# != 2 ]; then
 fi
 
 function setup {
-   sed -r --in-place "s/\%\%GLI_PLATFORM_EXTENSION\%\%/$1/g;" src/Cli/Program.cs
+   sed -r --in-place "s/\%\%GLI_PLATFORM_EXTENSION\%\%/$1/g;" Program.cs
 }
 
 function cleanup {
