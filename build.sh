@@ -46,8 +46,6 @@ pub win-x86 $1
 pub linux-arm $1
 pub linux-musl-x64 $1
 pub linux-musl-arm64 $1
-pub linux-bionic-arm64 $1
-pub linux-loongarch64 $1
 
 echo "Complete. You can find builds for all platforms in artifacts/."
 
