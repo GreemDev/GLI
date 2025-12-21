@@ -4,9 +4,19 @@ if [ $# != 2 ]; then
    exit 1
 fi
 
+function setup {
+   sed -r --in-place "s/\%\%GLI_PLATFORM_EXTENSION\%\%/$1/g;" src/Cli/Program.cs
+}
+
+function cleanup {
+   git restore .
+}
+
 function pub {
   echo "Compiling for $1..."
+  setup $1
   dotnet publish -c release -r $1 --self-contained -o ../../build/$1 --p:Version="$2"
+  cleanup
 }
 
 function pack {
@@ -47,7 +57,7 @@ pack win-x64
 pack osx-arm64
 pack osx-x64
 
-echo "Complete. You can find builds for all 6 OSes in build/."
+echo "Complete. You can find builds for all platforms in artifacts/."
 
 if [ $2 != "false" ]; then
   read -n1 -r -p "Press any key to exit."  
