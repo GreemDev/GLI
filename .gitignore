@@ -1,6 +1,7 @@
 bin/
 obj/
-buildOutput/
+build/
+artifacts/
 .idea/
 /packages/
 riderModule.iml
