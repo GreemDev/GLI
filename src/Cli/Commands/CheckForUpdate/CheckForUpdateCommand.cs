@@ -60,20 +60,6 @@ public class CheckForUpdateCommand() : CliCommand<CheckForUpdateArgument>(CliCom
 
                         sw.Stop();
 
-                        if (!OperatingSystem.IsWindows())
-                        {
-                            try
-                            {
-                                File.SetUnixFileMode(binaryPath.FullPath, File.GetUnixFileMode(binaryPath.FullPath) | UnixFileMode.UserExecute);
-                            }
-                            catch (UnauthorizedAccessException uae)
-                            {
-                                Logger.Error(LogSource.App,
-                                    "Tried to give the downloaded file execute permission for owner, but it failed due to missing permissions.",
-                                    uae);
-                            }
-                        }
-
                         Logger.Info(LogSource.App,
                             $"Done in {sw.ElapsedMilliseconds}ms. Release was written to '{binaryPath.FullPath}'");
                     }
