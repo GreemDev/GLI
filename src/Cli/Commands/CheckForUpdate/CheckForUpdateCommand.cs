@@ -77,13 +77,22 @@ public class CheckForUpdateCommand() : CliCommand<CheckForUpdateArgument>(CliCom
 
     public static string GetRequiredGliBinaryName()
     {
-        var arch = RuntimeInformation.OSArchitecture == Architecture.Arm64 ? "arm64" : "x64";
+#pragma warning disable CS8520 // The given expression always matches the provided constant.
+        if (Program.PlatformExtension is "%%GLI_PLATFORM_EXTENSION%%")
+#pragma warning restore CS8520 // The given expression always matches the provided constant.
+        {
+            var arch = RuntimeInformation.OSArchitecture == Architecture.Arm64 ? "arm64" : "x64";
 
-        if (OperatingSystem.IsWindows())
-            return $"gli-win-{arch}.exe";
+            if (OperatingSystem.IsWindows())
+                return $"gli-win-{arch}.exe";
 
-        string os = OperatingSystem.IsLinux() ? "linux" : "osx"; //windows is handled above because of .exe
+            string os = OperatingSystem.IsLinux() ? "linux" : "osx"; //windows is handled above because of .exe
 
-        return $"gli-{os}-{arch}";
+            return $"gli-{os}-{arch}";
+        }
+
+        // ReSharper disable once HeuristicUnreachableCode
+        const string result = $"gli-{Program.PlatformExtension}";
+        return OperatingSystem.IsWindows() ? $"{result}.exe" : result;
     }
 }
