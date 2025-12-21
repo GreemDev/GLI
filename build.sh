@@ -17,14 +17,12 @@ function pub {
   setup $1
   dotnet publish -c release -r $1 --self-contained -o ../../build/$1 --p:Version="$2"
   cleanup
-  
-  cd ../../build/$1/
+
   if stringContain "win" $1; then
-    mv gli.exe ../../artifacts/gli-$1.exe
+    mv ../../build/$1/gli.exe ../../artifacts/gli-$1.exe
   else
-    mv gli ../../artifacts/gli-$1
+    mv ../../build/$1/gli ../../artifacts/gli-$1
   fi
-  cd ../../
 }
 
 stringContain() { case $2 in *$1* ) return 0;; *) return 1;; esac ;}
