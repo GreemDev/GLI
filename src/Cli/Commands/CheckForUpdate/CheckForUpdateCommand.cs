@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using gli.CommandLib;
@@ -75,24 +76,33 @@ public class CheckForUpdateCommand() : CliCommand<CheckForUpdateArgument>(CliCom
         return ExitCode.Normal;
     }
 
+    [SuppressMessage("ReSharper", "HeuristicUnreachableCode")]
     public static string GetRequiredGliBinaryName()
     {
-#pragma warning disable CS8520 // The given expression always matches the provided constant.
-        if (Program.PlatformExtension is "%%GLI_PLATFORM_EXTENSION%%")
-#pragma warning restore CS8520 // The given expression always matches the provided constant.
+#pragma warning disable CS8519 // The given expression never matches the provided constant.
+        if (Program.PlatformExtension is not "%%GLI_PLATFORM_EXTENSION%%")
+#pragma warning restore CS8519 // The given expression never matches the provided constant.
+
         {
-            var arch = RuntimeInformation.OSArchitecture == Architecture.Arm64 ? "arm64" : "x64";
-
-            if (OperatingSystem.IsWindows())
-                return $"gli-win-{arch}.exe";
-
-            string os = OperatingSystem.IsLinux() ? "linux" : "osx"; //windows is handled above because of .exe
-
-            return $"gli-{os}-{arch}";
+            const string result = $"gli-{Program.PlatformExtension}";
+            return OperatingSystem.IsWindows() ? $"{result}.exe" : result;
         }
 
-        // ReSharper disable once HeuristicUnreachableCode
-        const string result = $"gli-{Program.PlatformExtension}";
-        return OperatingSystem.IsWindows() ? $"{result}.exe" : result;
+        var archString = RuntimeInformation.OSArchitecture switch
+        {
+            Architecture.X86 => "x86",
+            Architecture.X64 => "x64",
+            Architecture.Arm => "arm",
+            Architecture.Arm64 => "arm64",
+            Architecture.LoongArch64 => "loongarch64",
+            _ => throw new ArgumentOutOfRangeException(RuntimeInformation.OSArchitecture.Name)
+        };
+
+        if (OperatingSystem.IsWindows())
+            return $"gli-win-{archString}.exe";
+
+        string os = OperatingSystem.IsLinux() ? "linux" : "osx"; //windows is handled above because of .exe
+
+        return $"gli-{os}-{archString}";
     }
 }
