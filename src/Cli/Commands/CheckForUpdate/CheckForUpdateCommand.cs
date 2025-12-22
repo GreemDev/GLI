@@ -56,7 +56,7 @@ public class CheckForUpdateCommand() : CliCommand<CheckForUpdateArgument>(CliCom
 
                         await arg.Http.GetAsync(relevantAsset.DownloadUrl)
                             .Then(x => x.Content.ReadAsStreamAsync())
-                            .Then(x => x.CopyToAsync(fs));
+                            .ThenUse(x => x.CopyToAsync(fs));
 
                         sw.Stop();
 
