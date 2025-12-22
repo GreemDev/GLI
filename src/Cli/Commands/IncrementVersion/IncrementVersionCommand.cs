@@ -3,7 +3,7 @@ using gli.Helpers;
 
 namespace gli.Commands;
 
-public class IncrementVersionCommand() : CliCommand<IncrementVersionArgument>(CliCommandName.IncrementVersion)
+public class IncrementVersionCommand : CliCommand<IncrementVersionArgument>
 {
     protected override async ValueTask<ExitCode> ExecuteAsync(IncrementVersionArgument arg)
     {

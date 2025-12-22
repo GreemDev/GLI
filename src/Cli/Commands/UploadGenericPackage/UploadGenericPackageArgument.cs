@@ -7,6 +7,7 @@ using NGitLab.Models;
 
 namespace gli.Commands;
 
+[Verb("upload-generic-package", aliases: ["ugp"], HelpText = "Uploads a given file, or many files in bulk that match a pattern, to a project's package registry on a GitLab instance.")]
 public class UploadGenericPackageCommandArgument : GitLabCliCommandArgument
 {
     public override TimeSpan? HttpRequestTimeout => TimeSpan.FromMinutes(10); //accomodate shitass internet

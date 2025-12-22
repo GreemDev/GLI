@@ -4,6 +4,7 @@ using Ryujinx.Systems.Update.Common;
 
 namespace gli.Commands;
 
+[Verb("refresh-version-cache", aliases: ["rvc"], HelpText = "Signals to a Ryubing UpdateServer instance to refresh its internal version cache for the provided release channel. Requires an admin token.")]
 public class RefreshVersionCacheArgument : UpdateServerCliCommandArgument
 {
     protected override bool NeedsAuthorization => true;

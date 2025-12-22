@@ -4,6 +4,7 @@ using Ryujinx.Systems.Update.Common;
 
 namespace gli.Commands;
 
+[Verb("get-next-version", aliases: ["gnv"], HelpText = "Retrieves the next version from a Ryubing UpdateServer instance for the provided release channel.")]
 public class GetNextVersionArgument : UpdateServerCliCommandArgument
 {
     protected override bool NeedsAuthorization => false;

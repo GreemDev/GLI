@@ -8,7 +8,7 @@ using Gommon;
 
 namespace gli.Commands;
 
-public class CheckForUpdateCommand() : CliCommand<CheckForUpdateArgument>(CliCommandName.CheckForUpdate)
+public class CheckForUpdateCommand : CliCommand<CheckForUpdateArgument>
 {
     private static readonly Version CurrentVersion = typeof(CheckForUpdateCommand).Assembly.GetName().Version!;
     private static readonly string CurrentVersionString = CurrentVersion.ToString()[..^2];

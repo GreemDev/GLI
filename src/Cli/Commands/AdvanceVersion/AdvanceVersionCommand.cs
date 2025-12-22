@@ -3,7 +3,7 @@ using gli.Helpers;
 
 namespace gli.Commands;
 
-public class AdvanceVersionCommand() : CliCommand<AdvanceVersionArgument>(CliCommandName.AdvanceVersion)
+public class AdvanceVersionCommand : CliCommand<AdvanceVersionArgument>
 {
     protected override async ValueTask<ExitCode> ExecuteAsync(AdvanceVersionArgument arg)
     {

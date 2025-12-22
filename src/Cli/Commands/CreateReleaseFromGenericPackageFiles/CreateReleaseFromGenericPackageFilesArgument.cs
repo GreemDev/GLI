@@ -8,6 +8,9 @@ using NGitLab.Models;
 
 namespace gli.Commands;
 
+[Verb("create-release-from-generic-package-files", 
+    aliases: ["crfgpf", "release-from-package", "generate-release-from-gitlab-package"], 
+    HelpText = "Creates a release linking to the package files of a given GitLab Generic Package Registry package. Allows setting release title/body.")]
 public class CreateReleaseFromGenericPackageFilesArgument : GitLabCliCommandArgument
 {
     internal bool IsInit { get; private set; }
@@ -26,7 +29,10 @@ public class CreateReleaseFromGenericPackageFilesArgument : GitLabCliCommandArgu
     [Option('t', "release-title", Required = false, HelpText = "Title of the release in the GitLab UI.")]
     public string? ReleaseTitle { get; set; } = null;
 
-    [Option('b', "release-body", Required = false, HelpText = "Body of the release in the GitLab UI.")]
+    [Option('b', "release-body", Required = false, 
+        HelpText = "Body of the release in the GitLab UI. " +
+                   "If content is 'rf:' followed by a path, then the content for the body will be attempted to be read from the provided path. " +
+                   "If content is 'msd:' followed by a GitLab Milestone title, then the content for the body will be set to that milestone's description; if it can be found.")]
     public string? ReleaseBody { get; set; }
 
     public async Task InitIfNeededAsync(Project project)

@@ -4,8 +4,7 @@ using Gommon;
 
 namespace gli.Commands;
 
-public class UploadGenericPackageCommand()
-    : CliCommand<UploadGenericPackageCommandArgument>(CliCommandName.UploadGenericPackage)
+public class UploadGenericPackageCommand : CliCommand<UploadGenericPackageCommandArgument>
 {
     protected override async ValueTask<ExitCode> ExecuteAsync(UploadGenericPackageCommandArgument arg)
     {

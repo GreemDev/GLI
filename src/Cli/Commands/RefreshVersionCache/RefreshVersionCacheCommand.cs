@@ -3,7 +3,7 @@ using gli.Helpers;
 
 namespace gli.Commands;
 
-public class RefreshVersionCacheCommand() : CliCommand<RefreshVersionCacheArgument>(CliCommandName.RefreshVersionCache)
+public class RefreshVersionCacheCommand : CliCommand<RefreshVersionCacheArgument>
 {
     protected override async ValueTask<ExitCode> ExecuteAsync(RefreshVersionCacheArgument arg)
     {

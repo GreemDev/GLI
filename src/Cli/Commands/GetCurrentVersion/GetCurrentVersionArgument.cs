@@ -4,6 +4,7 @@ using Ryujinx.Systems.Update.Common;
 
 namespace gli.Commands;
 
+[Verb("get-current-version", aliases: ["gcv"], HelpText = "Retrieves the current version from a Ryubing UpdateServer instance for the provided release channel.")]
 public class GetCurrentVersionArgument : UpdateServerCliCommandArgument
 {
     protected override bool NeedsAuthorization => false;

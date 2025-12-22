@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using CommandLine;
 using gli.Helpers;
 using Gommon;
 
@@ -10,42 +9,9 @@ namespace gli.CommandLib;
 public abstract class CliCommand<TArg> : ICliCommand 
     where TArg : CliCommandArgument, new() //not directly instantiated via TArg(), but is via Activator
 {
-    public CliCommandName Name { get; }
-
-    protected CliCommand(CliCommandName name)
+    public ValueTask<ExitCode> InvokeAsync(object value)
     {
-        Name = name;
-    }
-
-    public ValueTask<ExitCode> InvokeAsync(string[] args)
-    {
-        ParserResult<TArg> parserResult;
-        try
-        {
-            parserResult = Parser.CustomDefault.ParseArguments<TArg>(args);
-        }
-        catch (InvalidOperationException ioe)
-        {
-            if (ioe.TargetSite?.Name is "ThrowMoreThanOneMatchException")
-            {
-                Logger.Info(LogSource.App,
-                    $"{Name} has options with names that conflict with the type it's derived from. Check the implementation.");
-                return new(ExitCode.OperationFailure);
-            }
-
-            throw;
-        }
-
-        if (parserResult is NotParsed<TArg> notParsedResult)
-        {
-            Logger.WriteToFile = false;
-
-            notParsedResult.Errors.ForEach(err => Logger.Error(LogSource.Cli, $" - {err.Tag}"));
-
-            return new(ExitCode.ArgumentParseFailed);
-        }
-
-        TArg parsedArg = parserResult is Parsed<TArg> parsed ? parsed.Value : null!;
+        TArg parsedArg = (TArg)value;
 
         Result pResult = parsedArg.BeforeExecution();
 
@@ -75,6 +41,5 @@ public abstract class CliCommand<TArg> : ICliCommand
 /// </summary>
 public interface ICliCommand
 {
-    public CliCommandName Name { get; }
-    public ValueTask<ExitCode> InvokeAsync(string[] args);
+    public ValueTask<ExitCode> InvokeAsync(object args);
 }

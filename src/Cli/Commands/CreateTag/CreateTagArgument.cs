@@ -3,6 +3,7 @@ using gli.CommandLib;
 
 namespace gli.Commands;
 
+[Verb("create-tag", aliases: ["ct"], HelpText = "Create a tag with the given name, optional ref and comment.")]
 public class CreateTagArgument : GitLabCliCommandArgument
 {
     [Option('n', "name", Required = true, HelpText = "The desired name of the tag.")]
