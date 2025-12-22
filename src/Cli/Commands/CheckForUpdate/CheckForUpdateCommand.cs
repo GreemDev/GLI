@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using gli.CommandLib;
 using gli.Helpers;
@@ -11,6 +10,9 @@ namespace gli.Commands;
 
 public class CheckForUpdateCommand() : CliCommand<CheckForUpdateArgument>(CliCommandName.CheckForUpdate)
 {
+    private static readonly Version CurrentVersion = typeof(CheckForUpdateCommand).Assembly.GetName().Version!;
+    private static readonly string CurrentVersionString = CurrentVersion.ToString()[..^2];
+
     protected override async ValueTask<ExitCode> ExecuteAsync(CheckForUpdateArgument arg)
     {
         var latest = await GitHubApi.GetLatestReleaseAsync(arg.Http);
@@ -19,23 +21,20 @@ public class CheckForUpdateCommand() : CliCommand<CheckForUpdateArgument>(CliCom
 
         if (!Version.TryParse(latest.Version, out var latestVersion))
         {
-            Logger.Error(LogSource.App, "Retrieved release's tag was not a valid .NET Version format.");
+            Logger.Error(LogSource.App, $"Retrieved release's tag was not a valid .NET Version format: '{latest.Version}'");
             return ExitCode.OperationFailure;
         }
 
-        var currentVersion = Assembly.GetExecutingAssembly().GetName().Version!;
-
-        if (currentVersion >= latestVersion)
+        if (CurrentVersion >= latestVersion)
         {
-            Logger.Info(LogSource.App, $"{currentVersion.ToString()[..^2]} is up to date.");
-            if (arg.Download)
-            {
-                Logger.Info(LogSource.App, "Nothing new to download; ignoring download flag.");
-            }
+            Logger.Info(LogSource.App, $"{CurrentVersionString} is up to date{
+                (arg.Download ? "; ignoring download flag" : string.Empty)
+            }.");
         }
         else
         {
-            Logger.Info(LogSource.App, $"{currentVersion.ToString()[..^2]} is out of date, {latestVersion} is now available.");
+            Logger.Info(LogSource.App, $"{CurrentVersionString} is out of date, {latestVersion} is now available.");
+            Logger.Info(LogSource.App, $"Changes: https://github.com/GreemDev/GLI/compare/{CurrentVersionString}...{latestVersion}");
             if (arg.Download)
             {
                 var binaryPath = new FilePath(GetRequiredGliBinaryName(), isDirectory: false);
