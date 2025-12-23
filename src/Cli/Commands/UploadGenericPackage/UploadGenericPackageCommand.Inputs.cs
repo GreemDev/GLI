@@ -48,7 +48,7 @@ public partial class UploadGenericPackageCommand
         }
     }
 
-    internal override Result BeforeExecution()
+    protected override Result BeforeExecution()
     {
         if (!Bulk)
         {

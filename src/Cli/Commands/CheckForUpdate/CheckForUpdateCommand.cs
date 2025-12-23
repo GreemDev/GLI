@@ -10,12 +10,12 @@ using Gommon;
 namespace gli.Commands;
 
 [Verb("check-for-update", aliases: ["update", "upd"], HelpText = "Checks for a new version of GLI from the upstream GitHub repository.")]
-public partial class CheckForUpdateCommand : CliCommand
+public partial class CheckForUpdateCommand : Command
 {
     private static readonly Version CurrentVersion = typeof(CheckForUpdateCommand).Assembly.GetName().Version!;
     private static readonly string CurrentVersionString = CurrentVersion.ToString()[..^2];
 
-    public override async ValueTask<ExitCode> InvokeAsync()
+    protected override async ValueTask<ExitCode> InvokeAsync()
     {
         var latest = await GitHubApi.GetLatestReleaseAsync(Http);
         if (latest is null)

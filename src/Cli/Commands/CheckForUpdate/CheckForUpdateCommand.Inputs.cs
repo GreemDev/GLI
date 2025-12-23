@@ -16,7 +16,7 @@ public partial class CheckForUpdateCommand
 
     public override TimeSpan? HttpRequestTimeout => TimeSpan.FromMinutes(10); //accommodate shitass internet
 
-    internal override Result BeforeExecution()
+    protected override Result BeforeExecution()
     {
         Http = GitHubApi.CreateHttpClient(HttpRequestTimeout);
         return Result.Success;

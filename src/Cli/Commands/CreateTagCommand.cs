@@ -6,7 +6,7 @@ using NGitLab.Models;
 namespace gli.Commands;
 
 [Verb("create-tag", aliases: ["ct"], HelpText = "Create a tag with the given name, optional ref and comment.")]
-public class CreateTagCommand : GitLabCliCommand
+public class CreateTagCommand : GitLabCommand
 {
     [Option('n', "name", Required = true, HelpText = "The desired name of the tag.")]
     public string TagName { get; set; } = null!;
@@ -19,8 +19,8 @@ public class CreateTagCommand : GitLabCliCommand
         Default = "Tag created by gli",
         Required = false, HelpText = "The comment to appear when viewing tag details in GitLab UI.")]
     public string? Comment { get; set; } = null!;
-    
-    public override ValueTask<ExitCode> InvokeAsync()
+
+    protected override ValueTask<ExitCode> InvokeAsync()
     {
         var repo = CreateGitLabClient().GetRepository(ProjectPath);
 

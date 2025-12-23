@@ -6,7 +6,7 @@ using Ryujinx.Systems.Update.Common;
 namespace gli.Commands;
 
 [Verb("refresh-version-cache", aliases: ["rvc"], HelpText = "Signals to a Ryubing UpdateServer instance to refresh its internal version cache for the provided release channel. Requires an admin token.")]
-public class RefreshVersionCacheCommand : UpdateServerCliCommand
+public class RefreshVersionCacheCommand : UpdateServerCommand
 {
     protected override bool NeedsAuthorization => true;
 
@@ -14,7 +14,7 @@ public class RefreshVersionCacheCommand : UpdateServerCliCommand
         HelpText = "The release channel you are requesting the version for.")]
     public ReleaseChannel ReleaseChannel { get; set; }
 
-    public override async ValueTask<ExitCode> InvokeAsync()
+    protected override async ValueTask<ExitCode> InvokeAsync()
     {
         var result = await UpdateClient.RefreshVersionCacheAsync(ReleaseChannel);
 

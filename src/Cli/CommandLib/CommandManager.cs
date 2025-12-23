@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using CommandLine;
 using gli.Helpers;
 using Gommon;
 
@@ -8,38 +7,36 @@ namespace gli.CommandLib;
 
 [SuppressMessage("Trimming",
     "IL2026:Members annotated with \'RequiresUnreferencedCodeAttribute\' require dynamic access otherwise can break functionality when trimming application code")]
-[SuppressMessage("Trimming",
-    "IL2111:Method with parameters or return value with `DynamicallyAccessedMembersAttribute` is accessed via reflection. Trimmer can\'t guarantee availability of the requirements of the method.")]
-public class CliCommandManager
+public static class CliCommandManager
 {
-    private readonly SafeDictionary<string, ICliCommand> _commandMap;
+    public static Type[] KnownCommandTypes { get; private set; } = [];
 
-    public Type[] KnownCommandTypes { get; }
-
-    public CliCommandManager()
+    public static void LoadCommands(params Assembly[] assemblies)
     {
-        KnownCommandTypes = Assembly.GetExecutingAssembly()
-            .GetTypes()
-            .Where(x => x.Inherits<ICliCommand>()
-                        && x is { IsAbstract: false, IsInterface: false, IsPublic: true })
+        KnownCommandTypes = KnownCommandTypes.Concat(
+                assemblies
+                    .SelectMany(x => x.GetTypes())
+                    .Where(x => x.Inherits<Command>()
+                                && x is { IsAbstract: false, IsInterface: false, IsPublic: true })
+                )
             .ToArray();
     }
 
-    public Task DispatchAsync(object argument)
+    public static Task DispatchAsync(object argument)
     {
-        if (argument is CliCommand command)
+        if (argument is Command command)
             return DispatchAsync(command);
 
         return Task.FromException(new ArgumentException(
-            $"Provided argument is not assignable to {typeof(CliCommand).AsFullNamePrettyString()}"
+            $"Provided argument is not assignable to {typeof(Command).AsFullNamePrettyString()}"
         ));
     }
 
-    private async Task DispatchAsync(CliCommand argument)
+    private static async Task DispatchAsync(Command argument)
     {
         Logger.WriteToFile = argument.WriteLogFiles;
 
-        var exitCode = await ICliCommand.InvokeAsync(argument);
+        var exitCode = await argument.RunAsync();
 
         if (exitCode is not ExitCode.NormalSilent)
             Logger.Log(

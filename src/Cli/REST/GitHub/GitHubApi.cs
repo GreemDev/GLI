@@ -1,10 +1,7 @@
-﻿using System.Net;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using System.Text.Json;
 using gli.Helpers;
-using gli.REST.GitLab;
 using Gommon;
-using NGitLab.Models;
 
 namespace gli.REST.GitHub;
 

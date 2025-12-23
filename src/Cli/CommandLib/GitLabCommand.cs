@@ -6,7 +6,7 @@ using NGitLab;
 
 namespace gli.CommandLib;
 
-public abstract class GitLabCliCommand : CliCommand
+public abstract class GitLabCommand : Command
 {
     [Option('S', "server-url", Required = false, Default = "https://git.ryujinx.app",
         HelpText = "The target GitLab instance to use.")]
@@ -30,7 +30,7 @@ public abstract class GitLabCliCommand : CliCommand
         => new(GitLabEndpoint, AccessToken);
 
     /// <remarks>ALWAYS call the base implementation when overriding! Respect the returned result so long as the derived type needs to authenticate with GitLab.</remarks>
-    internal override Result BeforeExecution()
+    protected override Result BeforeExecution()
     {
         try
         {

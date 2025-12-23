@@ -35,7 +35,7 @@ public partial class SendUpdateMessageCommand
         Required = true, HelpText = "The name of a color or a raw #RRGGBB hexadecimal number.")]
     public string EmbedColorStr { get; set; } = null!;
 
-    internal override Result BeforeExecution()
+    protected override Result BeforeExecution()
     {
         var search = EmbedColorStr.Replace("-", string.Empty);
 

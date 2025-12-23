@@ -13,9 +13,9 @@ namespace gli.Commands;
 [Verb("send-update-message", aliases: ["send-webhook"], 
     HelpText = "Sends an embed to a Discord webhook showing information about a GitLab release. " +
                "The code in this command (namely for finding what files to show) is intended for Ryubing, so your use may vary.")]
-public partial class SendUpdateMessageCommand : GitLabCliCommand
+public partial class SendUpdateMessageCommand : GitLabCommand
 {
-    public override async ValueTask<ExitCode> InvokeAsync()
+    protected override async ValueTask<ExitCode> InvokeAsync()
     {
         var project = await CreateGitLabClient().Projects.GetByNamespacedPathAsync(ProjectPath);
         if (project is null)

@@ -6,7 +6,7 @@ using Ryujinx.Systems.Update.Common;
 namespace gli.Commands;
 
 [Verb("get-next-version", aliases: ["gnv"], HelpText = "Retrieves the next version from a Ryubing UpdateServer instance for the provided release channel.")]
-public class GetNextVersionCommand : UpdateServerCliCommand
+public class GetNextVersionCommand : UpdateServerCommand
 {
     protected override bool NeedsAuthorization => false;
 
@@ -17,8 +17,8 @@ public class GetNextVersionCommand : UpdateServerCliCommand
     [Option('m', "major", Required = false, Default = false,
         HelpText = "Should the next version be a major release?")]
     public bool IsMajorRelease { get; set; }
-    
-    public override async ValueTask<ExitCode> InvokeAsync()
+
+    protected override async ValueTask<ExitCode> InvokeAsync()
     {
         if (await UpdateClient.GetNextVersionAsync(ReleaseChannel, IsMajorRelease) is not { } versionString)
         {

@@ -8,9 +8,9 @@ namespace gli.Commands;
 [Verb("upload-generic-package", aliases: ["ugp"],
     HelpText =
         "Uploads a given file, or many files in bulk that match a pattern, to a project's package registry on a GitLab instance.")]
-public partial class UploadGenericPackageCommand : GitLabCliCommand
+public partial class UploadGenericPackageCommand : GitLabCommand
 {
-    public override async ValueTask<ExitCode> InvokeAsync()
+    protected override async ValueTask<ExitCode> InvokeAsync()
     {
         var project = await CreateGitLabClient().Projects.GetByNamespacedPathAsync(ProjectPath);
         if (project is null)

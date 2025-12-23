@@ -7,9 +7,9 @@ namespace gli.Commands;
 [Verb("create-release-from-generic-package-files", 
     aliases: ["crfgpf"],
     HelpText = "Creates a release linking to the package files of a given GitLab Generic Package Registry package. Allows setting release title/body.")]
-public partial class CreateReleaseFromGenericPackageFilesCommand : GitLabCliCommand
+public partial class CreateReleaseFromGenericPackageFilesCommand : GitLabCommand
 {
-    public override async ValueTask<ExitCode> InvokeAsync()
+    protected override async ValueTask<ExitCode> InvokeAsync()
     {
         var project = await CreateGitLabClient().Projects.GetByNamespacedPathAsync(ProjectPath);
         if (project is null)

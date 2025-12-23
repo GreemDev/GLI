@@ -1,5 +1,4 @@
 ﻿using CommandLine;
-using gli.CommandLib;
 using gli.REST.GitLab;
 using gli.REST.Helpers;
 using gli.Helpers;
