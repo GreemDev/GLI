@@ -1,5 +1,4 @@
 ﻿using CommandLine;
-using gli;
 using gli.CommandLib;
 using gli.Helpers;
 using Gommon;
@@ -17,9 +16,8 @@ public static class Program
 
     public static CliCommandManager CommandManager { get; }
 
-    public static async Task Main(string[] args)
-    {
-        await Parser.CustomDefault
+    public static Task Main(string[] args) =>
+        Parser.CustomDefault
             .ParseArguments(args, CommandManager.KnownArgumentTypes)
             .WithNotParsed(errors =>
             {
@@ -27,6 +25,5 @@ public static class Program
                 Logger.Error(LogSource.Cli, "Error parsing command-line arguments:");
                 errors.ForEach(err => Logger.Error(LogSource.Cli, $" - {err.Tag}"));
             })
-            .WithParsedAsync(untypedOptions => CommandManager.DispatchAsync((Options)untypedOptions));
-    }
+            .WithParsedAsync(CommandManager.DispatchAsync);
 }

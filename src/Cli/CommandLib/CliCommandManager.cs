@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using CommandLine;
 using gli.Helpers;
 using Gommon;
 
@@ -37,7 +38,17 @@ public class CliCommandManager
         );
     }
 
-    public async Task DispatchAsync(Options argument)
+    public Task DispatchAsync(object argument)
+    {
+        if (argument.CanCast<Options>())
+            return DispatchAsync((Options)argument);
+
+        return Task.FromException(new ArgumentException(
+            $"Provided argument is not assignable to {typeof(Options).AsFullNamePrettyString()}"
+        ));
+    }
+
+    private async Task DispatchAsync(Options argument)
     {
         Logger.WriteToFile = argument.WriteLogFiles;
 
