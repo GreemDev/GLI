@@ -1,20 +1,24 @@
-﻿using gli.CommandLib;
+﻿using CommandLine;
+using gli.CommandLib;
 using gli.Helpers;
 
 namespace gli.Commands;
 
-public class CreateReleaseFromGenericPackageFilesCommand : CliCommand<CreateReleaseFromGenericPackageFilesArgument>
+[Verb("create-release-from-generic-package-files", 
+    aliases: ["crfgpf"],
+    HelpText = "Creates a release linking to the package files of a given GitLab Generic Package Registry package. Allows setting release title/body.")]
+public partial class CreateReleaseFromGenericPackageFilesCommand : GitLabCommand
 {
-    protected override async ValueTask<ExitCode> ExecuteAsync(CreateReleaseFromGenericPackageFilesArgument arg)
+    protected override async ValueTask<ExitCode> InvokeAsync()
     {
-        var project = await arg.CreateGitLabClient().Projects.GetByNamespacedPathAsync(arg.ProjectPath);
+        var project = await CreateGitLabClient().Projects.GetByNamespacedPathAsync(ProjectPath);
         if (project is null)
         {
-            Logger.Error(LogSource.App, $"Could not find the project '{arg.ProjectPath}' on '{arg.GitLabEndpoint}'.");
+            Logger.Error(LogSource.App, $"Could not find the project '{ProjectPath}' on '{GitLabEndpoint}'.");
             return ExitCode.ProjectNotFound;
         }
 
-        if (await arg.CreateReleaseFromGenericPackagesAsync(project) is not { } releaseInfo)
+        if (await CreateReleaseFromGenericPackagesAsync(project) is not { } releaseInfo)
             return ExitCode.ObjectNotFound;
 
         Logger.Info(LogSource.App, $"Release created at '{releaseInfo.Links.Self}'.");

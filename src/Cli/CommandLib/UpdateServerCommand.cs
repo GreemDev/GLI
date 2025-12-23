@@ -5,7 +5,7 @@ using Ryujinx.Systems.Update.Client;
 
 namespace gli.CommandLib;
 
-public abstract class UpdateServerCliCommandArgument : CliCommandArgument
+public abstract class UpdateServerCommand : Command
 {
     protected abstract bool NeedsAuthorization { get; }
 
@@ -41,7 +41,7 @@ public abstract class UpdateServerCliCommandArgument : CliCommandArgument
     public UpdateClient UpdateClient { get; private set; } = null!;
 
     /// <remarks>ALWAYS call the base implementation when overriding! Respect the returned result so long as the derived type needs to authenticate with the Update Server.</remarks>
-    internal override Result BeforeExecution()
+    protected override Result BeforeExecution()
     {
         try
         {

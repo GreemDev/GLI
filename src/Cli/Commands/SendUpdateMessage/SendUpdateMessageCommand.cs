@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Drawing;
 using System.Text;
+using CommandLine;
 using gli.CommandLib;
 using gli.REST.GitLab;
 using gli.Helpers;
@@ -9,48 +10,51 @@ using JNogueira.Discord.Webhook.Client;
 
 namespace gli.Commands;
 
-public class SendUpdateMessageCommand : CliCommand<SendUpdateMessageArgument>
+[Verb("send-update-message", aliases: ["send-webhook"], 
+    HelpText = "Sends an embed to a Discord webhook showing information about a GitLab release. " +
+               "The code in this command (namely for finding what files to show) is intended for Ryubing, so your use may vary.")]
+public partial class SendUpdateMessageCommand : GitLabCommand
 {
-    protected override async ValueTask<ExitCode> ExecuteAsync(SendUpdateMessageArgument arg)
+    protected override async ValueTask<ExitCode> InvokeAsync()
     {
-        var project = await arg.CreateGitLabClient().Projects.GetByNamespacedPathAsync(arg.ProjectPath);
+        var project = await CreateGitLabClient().Projects.GetByNamespacedPathAsync(ProjectPath);
         if (project is null)
         {
-            Logger.Error(LogSource.App, $"Could not find the project '{arg.ProjectPath}' on '{arg.GitLabEndpoint}'.");
+            Logger.Error(LogSource.App, $"Could not find the project '{ProjectPath}' on '{GitLabEndpoint}'.");
             return ExitCode.ProjectNotFound;
         }
 
-        if (await arg.GetReleaseAsync(project) is not { } release)
+        if (await GetReleaseAsync(project) is not { } release)
         {
             Logger.Error(LogSource.App,
-                $"Could not find a release on '{project.NameWithNamespace}' with the tag '{arg.ReleaseTag}'.");
+                $"Could not find a release on '{project.NameWithNamespace}' with the tag '{ReleaseTag}'.");
             return ExitCode.ObjectNotFound;
         }
 
-        var webhookClient = new DiscordWebhookClient(arg.WebhookUrl);
+        var webhookClient = new DiscordWebhookClient(WebhookUrl);
 
-        var message = new DiscordMessage(embeds: [CreateEmbed(arg, release)]);
+        var message = new DiscordMessage(embeds: [CreateEmbed(release)]);
 
         await webhookClient.SendToDiscord(message);
 
         return ExitCode.Normal;
     }
 
-    private static DiscordMessageEmbed CreateEmbed(SendUpdateMessageArgument arg, GitLabReleaseJsonResponse release)
-        => arg.EmbedThumbnailUrl != null
+    private DiscordMessageEmbed CreateEmbed(GitLabReleaseJsonResponse release)
+        => EmbedThumbnailUrl != null
             ? new(
                 title: release.Name,
-                description: arg.ShowReleaseDescription ? release.Description : null,
-                color: arg.EmbedColor,
+                description: ShowReleaseDescription ? release.Description : null,
+                color: EmbedColor,
                 author: new(release.Author.Name, iconUrl: release.Author.AvatarUrl),
                 url: release.Links.Self,
                 fields: CreateFields(release.Assets),
-                thumbnail: new(arg.EmbedThumbnailUrl)
+                thumbnail: new(EmbedThumbnailUrl)
             )
             : new(
                 title: release.Name,
-                description: arg.ShowReleaseDescription ? release.Description : null,
-                color: arg.EmbedColor,
+                description: ShowReleaseDescription ? release.Description : null,
+                color: EmbedColor,
                 author: new(release.Author.Name, iconUrl: release.Author.AvatarUrl),
                 url: release.Links.Self,
                 fields: CreateFields(release.Assets)

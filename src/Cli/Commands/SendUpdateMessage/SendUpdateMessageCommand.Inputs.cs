@@ -8,8 +8,7 @@ using NGitLab.Models;
 
 namespace gli.Commands;
 
-[Verb("send-update-message", aliases: ["send-webhook"], HelpText = "Sends an embed to a Discord webhook showing information about a GitLab release. The code in this command (namely for finding what files to show) is intended for Ryubing, so your use may vary.")]
-public class SendUpdateMessageArgument : GitLabCliCommandArgument
+public partial class SendUpdateMessageCommand
 {
     [Option('t', "release-tag",
         Required = true, HelpText = "The tag the release was made with.")]
@@ -36,7 +35,7 @@ public class SendUpdateMessageArgument : GitLabCliCommandArgument
         Required = true, HelpText = "The name of a color or a raw #RRGGBB hexadecimal number.")]
     public string EmbedColorStr { get; set; } = null!;
 
-    internal override Result BeforeExecution()
+    protected override Result BeforeExecution()
     {
         var search = EmbedColorStr.Replace("-", string.Empty);
 
