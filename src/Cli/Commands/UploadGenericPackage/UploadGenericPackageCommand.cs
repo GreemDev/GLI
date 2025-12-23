@@ -33,11 +33,20 @@ public partial class UploadGenericPackageCommand : GitLabCommand
 
             foreach (var filePath in files)
             {
+                uint tries = Retries;
+
+                Retry:
                 if (await UploadGenericPackageAsync(project, new FilePath(filePath)))
                 {
                     Logger.Info(LogSource.App,
                         $"'Uploaded {filePath.Replace(Environment.CurrentDirectory, string.Empty)}' to the package registry on project '{project.NameWithNamespace}' (id {project.Id}).");
                     completedFiles++;
+                }
+                else if (tries > 0)
+                {
+                    Logger.Info(LogSource.App, $"Retrying upload ({Retries - tries}/{Retries})...");
+                    tries--;
+                    goto Retry;
                 }
             }
 
@@ -51,8 +60,18 @@ public partial class UploadGenericPackageCommand : GitLabCommand
                 return ExitCode.FileNotFound;
             }
 
+            uint tries = Retries;
+
+            Retry:
             if (!await UploadGenericPackageAsync(project))
             {
+                if (tries > 0)
+                {
+                    Logger.Info(LogSource.App, $"Retrying upload ({Retries - tries}/{Retries})...");
+                    tries--;
+                    goto Retry;
+                }
+
                 Logger.Error(LogSource.App, $"'{FilePath.FullPath}' failed to upload.");
                 return ExitCode.UploadFailed;
             }
