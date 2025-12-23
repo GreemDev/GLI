@@ -18,7 +18,7 @@ public static class Program
 
     public static Task Main(string[] args) =>
         Parser.CustomDefault
-            .ParseArguments(args, CommandManager.KnownArgumentTypes)
+            .ParseArguments(args, CommandManager.KnownCommandTypes)
             .WithNotParsed(errors =>
             {
                 Logger.WriteToFile = false;

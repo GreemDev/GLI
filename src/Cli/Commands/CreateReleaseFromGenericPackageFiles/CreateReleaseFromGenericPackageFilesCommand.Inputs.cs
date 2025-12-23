@@ -8,12 +8,9 @@ using NGitLab.Models;
 
 namespace gli.Commands;
 
-[Verb("create-release-from-generic-package-files", 
-    aliases: ["crfgpf"],
-    HelpText = "Creates a release linking to the package files of a given GitLab Generic Package Registry package. Allows setting release title/body.")]
-public class CreateReleaseFromGenericPackageFilesArgument : GitLabCliCommandArgument
+public partial class CreateReleaseFromGenericPackageFilesCommand
 {
-    internal bool IsInit { get; private set; }
+    private bool IsInit { get; set; }
 
     [Option('n', "package-name", Required = true, HelpText = "The name of the generic package to list the items of.")]
     public string PackageName { get; set; } = null!;

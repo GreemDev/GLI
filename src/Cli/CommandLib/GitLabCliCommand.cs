@@ -6,7 +6,7 @@ using NGitLab;
 
 namespace gli.CommandLib;
 
-public class GitLabCliCommandArgument : CliCommandArgument
+public abstract class GitLabCliCommand : CliCommand
 {
     [Option('S', "server-url", Required = false, Default = "https://git.ryujinx.app",
         HelpText = "The target GitLab instance to use.")]

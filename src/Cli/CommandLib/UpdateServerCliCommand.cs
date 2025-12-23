@@ -5,7 +5,7 @@ using Ryujinx.Systems.Update.Client;
 
 namespace gli.CommandLib;
 
-public abstract class UpdateServerCliCommandArgument : CliCommandArgument
+public abstract class UpdateServerCliCommand : CliCommand
 {
     protected abstract bool NeedsAuthorization { get; }
 

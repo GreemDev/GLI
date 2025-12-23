@@ -1,19 +1,18 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using gli.Helpers;
+﻿using gli.Helpers;
 using Gommon;
 
 namespace gli.CommandLib;
 
-[SuppressMessage("Trimming",
-    "IL2026:Members annotated with \'RequiresUnreferencedCodeAttribute\' require dynamic access otherwise can break functionality when trimming application code")]
-public abstract class CliCommand<TArg> : ICliCommand 
-    where TArg : CliCommandArgument, new() //not directly instantiated via TArg(), but is via Activator
+/// <summary>
+///     Marker interface for reflective access.
+/// </summary>
+public interface ICliCommand
 {
-    public ValueTask<ExitCode> InvokeAsync(object value)
-    {
-        TArg parsedArg = (TArg)value;
+    public ValueTask<ExitCode> InvokeAsync();
 
-        Result pResult = parsedArg.BeforeExecution();
+    public static ValueTask<ExitCode> InvokeAsync(CliCommand command)
+    {
+        Result pResult = command.BeforeExecution();
 
         if (pResult.IsOf<ExitCodeState>(out var ecs))
             return new(ecs.Code);
@@ -30,16 +29,6 @@ public abstract class CliCommand<TArg> : ICliCommand
             return new(ExitCode.ArgumentParseFailed);
         }
 
-        return ExecuteAsync(parsedArg);
+        return command.InvokeAsync();
     }
-
-    protected abstract ValueTask<ExitCode> ExecuteAsync(TArg arg);
-}
-
-/// <summary>
-///     Marker interface for reflective access.
-/// </summary>
-public interface ICliCommand
-{
-    public ValueTask<ExitCode> InvokeAsync(object args);
 }

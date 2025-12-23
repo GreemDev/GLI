@@ -14,51 +14,32 @@ public class CliCommandManager
 {
     private readonly SafeDictionary<string, ICliCommand> _commandMap;
 
-    public Type[] KnownArgumentTypes { get; }
+    public Type[] KnownCommandTypes { get; }
 
     public CliCommandManager()
     {
-        var commandTypes = Assembly.GetExecutingAssembly()
+        KnownCommandTypes = Assembly.GetExecutingAssembly()
             .GetTypes()
             .Where(x => x.Inherits<ICliCommand>()
                         && x is { IsAbstract: false, IsInterface: false, IsPublic: true })
             .ToArray();
-
-        KnownArgumentTypes = commandTypes.Select(x => x.BaseType!.GenericTypeArguments.First()).ToArray();
-
-        _commandMap = new SafeDictionary<string, ICliCommand>(
-            commandTypes
-#pragma warning disable IL2067
-                .Select(x => (Type: x, Instance: (ICliCommand)Activator.CreateInstance(x)))
-#pragma warning restore IL2067
-                .ToDictionary<(Type Type, ICliCommand Instance), string, ICliCommand>(
-                    x => x.Type.BaseType!.GenericTypeArguments.First().Name,
-                    x => x.Instance
-                )
-        );
     }
 
     public Task DispatchAsync(object argument)
     {
-        if (argument.CanCast<Options>())
-            return DispatchAsync((Options)argument);
+        if (argument is CliCommand command)
+            return DispatchAsync(command);
 
         return Task.FromException(new ArgumentException(
-            $"Provided argument is not assignable to {typeof(Options).AsFullNamePrettyString()}"
+            $"Provided argument is not assignable to {typeof(CliCommand).AsFullNamePrettyString()}"
         ));
     }
 
-    private async Task DispatchAsync(Options argument)
+    private async Task DispatchAsync(CliCommand argument)
     {
         Logger.WriteToFile = argument.WriteLogFiles;
 
-        if (_commandMap[argument.GetType().Name] is not { } command)
-        {
-            Logger.Error(LogSource.App, "An unregistered command was provided.");
-            return;
-        }
-
-        var exitCode = await command.InvokeAsync(argument);
+        var exitCode = await ICliCommand.InvokeAsync(argument);
 
         if (exitCode is not ExitCode.NormalSilent)
             Logger.Log(
