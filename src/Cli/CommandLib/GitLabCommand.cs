@@ -26,8 +26,7 @@ public abstract class GitLabCommand : Command
 
     public IHttpClientProxy Http { get; private set; } = null!;
 
-    public GitLabClient CreateGitLabClient()
-        => new(GitLabEndpoint, AccessToken);
+    public GitLabClient GitLabClient { get; private set; } = null!;
 
     /// <remarks>ALWAYS call the base implementation when overriding! Respect the returned result so long as the derived type needs to authenticate with GitLab.</remarks>
     protected override Result BeforeExecution()
@@ -42,6 +41,7 @@ public abstract class GitLabCommand : Command
         }
 
         Http = GitLabApi.CreateHttpClient(GitLabEndpoint, AccessToken, HttpRequestTimeout);
+        GitLabClient = new GitLabClient(GitLabEndpoint, AccessToken);
 
         return Result.Success;
     }

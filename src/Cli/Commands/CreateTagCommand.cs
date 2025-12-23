@@ -22,7 +22,7 @@ public class CreateTagCommand : GitLabCommand
 
     protected override ValueTask<ExitCode> InvokeAsync()
     {
-        var repo = CreateGitLabClient().GetRepository(ProjectPath);
+        var repo = GitLabClient.GetRepository(ProjectPath);
 
         if (repo == null)
             return new(ExitCode.ProjectNotFound);

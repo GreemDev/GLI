@@ -11,7 +11,7 @@ public partial class CreateReleaseFromGenericPackageFilesCommand : GitLabCommand
 {
     protected override async ValueTask<ExitCode> InvokeAsync()
     {
-        var project = await CreateGitLabClient().Projects.GetByNamespacedPathAsync(ProjectPath);
+        var project = await GitLabClient.Projects.GetByNamespacedPathAsync(ProjectPath);
         if (project is null)
         {
             Logger.Error(LogSource.App, $"Could not find the project '{ProjectPath}' on '{GitLabEndpoint}'.");

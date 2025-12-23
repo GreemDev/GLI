@@ -121,7 +121,7 @@ public partial class CreateReleaseFromGenericPackageFilesCommand
 
         try
         {
-            return await CreateGitLabClient().GetReleases(project.Id).CreateAsync(new ReleaseCreate
+            return await GitLabClient.GetReleases(project.Id).CreateAsync(new ReleaseCreate
             {
                 TagName = PackageVersion,
                 Ref = ReleaseRef.EqualsAnyIgnoreCase("null") ? null : ReleaseRef,
