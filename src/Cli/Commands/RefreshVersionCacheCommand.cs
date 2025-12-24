@@ -16,9 +16,7 @@ public class RefreshVersionCacheCommand : UpdateServerCommand
 
     protected override async ValueTask<ExitCode> InvokeAsync()
     {
-        var result = await UpdateClient.RefreshVersionCacheAsync(ReleaseChannel);
-
-        if (result is null || !result.Value)
+        if (!(await UpdateClient.RefreshVersionCacheAsync(ReleaseChannel) ?? false))
         {
             // error logs are handled by the update client
             return ExitCode.OperationFailure;

@@ -11,9 +11,7 @@ public class AdvanceVersionCommand : UpdateServerCommand
 
     protected override async ValueTask<ExitCode> InvokeAsync()
     {
-        var result = await UpdateClient.AdvanceVersionAsync();
-
-        if (result is null || !result.Value)
+        if (!(await UpdateClient.AdvanceVersionAsync() ?? false))
         {
             // error logs are handled by the update client
             return ExitCode.OperationFailure;

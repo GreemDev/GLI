@@ -16,9 +16,7 @@ public class IncrementVersionCommand : UpdateServerCommand
 
     protected override async ValueTask<ExitCode> InvokeAsync()
     {
-        var result = await UpdateClient.IncrementVersionAsync(ReleaseChannel);
-
-        if (result is null || !result.Value)
+        if (!(await UpdateClient.IncrementVersionAsync(ReleaseChannel) ?? false))
         {
             // error logs are handled by the update client
             return ExitCode.OperationFailure;
