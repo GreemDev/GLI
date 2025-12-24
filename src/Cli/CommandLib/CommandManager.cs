@@ -7,7 +7,7 @@ namespace gli.CommandLib;
 
 [SuppressMessage("Trimming",
     "IL2026:Members annotated with \'RequiresUnreferencedCodeAttribute\' require dynamic access otherwise can break functionality when trimming application code")]
-public static class CliCommandManager
+public static class CommandManager
 {
     public static Type[] KnownCommandTypes { get; private set; } = [];
 

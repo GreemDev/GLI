@@ -10,8 +10,5 @@ public static class Extensions
             message is null
                 ? Result.Failure(new ExitCodeState(exitCode))
                 : Result.Failure(new ExitCodeAndMessageState(exitCode, message));
-
-        public static Result MessageFailure(string message)
-            => Result.Failure(new MessageError(Guard.Require(message)));
     }
 }

@@ -10,17 +10,17 @@ public static class Program
     static Program()
     {
         Logger.OutputLogToStandardOut();
-        CliCommandManager.LoadCommands(typeof(Program).Assembly);
+        CommandManager.LoadCommands(typeof(Program).Assembly);
     }
 
     public static Task Main(string[] args) =>
         Parser.CustomDefault
-            .ParseArguments(args, CliCommandManager.KnownCommandTypes)
+            .ParseArguments(args, CommandManager.KnownCommandTypes)
             .WithNotParsed(errors =>
             {
                 Logger.WriteToFile = false;
                 Logger.Error(LogSource.Cli, "Error parsing command-line arguments:");
                 errors.ForEach(err => Logger.Error(LogSource.Cli, $" - {err.Tag}"));
             })
-            .WithParsedAsync(CliCommandManager.DispatchAsync);
+            .WithParsedAsync(CommandManager.DispatchAsync);
 }
