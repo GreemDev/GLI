@@ -10,7 +10,7 @@ using JNogueira.Discord.Webhook.Client;
 
 namespace gli.Commands;
 
-[Verb("send-update-message", aliases: ["send-webhook"], 
+[Verb("send-update-message", aliases: ["send-webhook"],
     HelpText = "Sends an embed to a Discord webhook showing information about a GitLab release. " +
                "The code in this command (namely for finding what files to show) is intended for Ryubing, so your use may vary.")]
 public partial class SendUpdateMessageCommand : GitLabCommand
@@ -31,11 +31,10 @@ public partial class SendUpdateMessageCommand : GitLabCommand
             return ExitCode.ObjectNotFound;
         }
 
-        var webhookClient = new DiscordWebhookClient(WebhookUrl);
-
-        var message = new DiscordMessage(embeds: [CreateEmbed(release)]);
-
-        await webhookClient.SendToDiscord(message);
+        await new DiscordWebhookClient(WebhookUrl)
+            .SendToDiscord(
+                new DiscordMessage(embeds: [CreateEmbed(release)])
+            );
 
         return ExitCode.Normal;
     }
