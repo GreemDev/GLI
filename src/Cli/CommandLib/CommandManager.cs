@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using CommandLine;
 using gli.Helpers;
 using Gommon;
 
@@ -20,6 +21,19 @@ public static class CommandManager
                                 && x is { IsAbstract: false, IsInterface: false, IsPublic: true })
                 )
             .ToArray();
+    }
+
+    public static async Task Run(string[] args, Parser parser)
+    {
+        await parser
+            .ParseArguments(args, KnownCommandTypes)
+            .WithNotParsed(errors =>
+            {
+                Logger.WriteToFile = false;
+                Logger.Error(LogSource.Cli, "Error parsing command-line arguments:");
+                errors.ForEach(err => Logger.Error(LogSource.Cli, $" - {err.Tag}"));
+            })
+            .WithParsedAsync(DispatchAsync);
     }
 
     public static Task DispatchAsync(object argument)

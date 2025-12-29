@@ -13,14 +13,5 @@ public static class Program
         CommandManager.LoadCommands(typeof(Program).Assembly);
     }
 
-    public static Task Main(string[] args) =>
-        Parser.CustomDefault
-            .ParseArguments(args, CommandManager.KnownCommandTypes)
-            .WithNotParsed(errors =>
-            {
-                Logger.WriteToFile = false;
-                Logger.Error(LogSource.Cli, "Error parsing command-line arguments:");
-                errors.ForEach(err => Logger.Error(LogSource.Cli, $" - {err.Tag}"));
-            })
-            .WithParsedAsync(CommandManager.DispatchAsync);
+    public static Task Main(string[] args) => CommandManager.Run(args, Parser.CustomDefault);
 }
