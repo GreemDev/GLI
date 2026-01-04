@@ -39,7 +39,7 @@ public partial class UploadGenericPackageCommand : GitLabCommand
                 if (await UploadGenericPackageAsync(project, new FilePath(filePath)))
                 {
                     Logger.Info(LogSource.App,
-                        $"'Uploaded {filePath.Replace(Environment.CurrentDirectory, string.Empty)}' to the package registry on project '{project.NameWithNamespace}' (id {project.Id}).");
+                        $"Uploaded '{filePath.Replace(Environment.CurrentDirectory, string.Empty)}' to the package registry on project '{project.NameWithNamespace}' (id {project.Id}).");
                     completedFiles++;
                 }
                 else if (tries > 0)
