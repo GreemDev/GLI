@@ -2,6 +2,7 @@
 using gli.CommandLib;
 using gli.Helpers;
 using Gommon;
+using NGitLab.Models;
 
 namespace gli.Commands;
 
@@ -19,67 +20,74 @@ public partial class UploadGenericPackageCommand : GitLabCommand
             return ExitCode.ProjectNotFound;
         }
 
-        if (Bulk)
+        return await (
+            Bulk
+                ? DoBulkAsync(project)
+                : DoNormalAsync(project)
+        );
+    }
+
+    private async ValueTask<ExitCode> DoNormalAsync(Project project)
+    {
+        if (!FilePath.ExistsAsFile)
         {
-            var files = Directory.EnumerateFiles(Environment.CurrentDirectory, FilePathRaw).ToArray();
-            if (files.Length is 0)
-            {
-                Logger.Error(LogSource.App,
-                    $"Search pattern '{FilePathRaw}' did not match any files in '{Environment.CurrentDirectory}'");
-                return ExitCode.FileNotFound;
-            }
-
-            int completedFiles = 0;
-
-            foreach (var filePath in files)
-            {
-                uint tries = Retries;
-
-                Retry:
-                if (await UploadGenericPackageAsync(project, new FilePath(filePath)))
-                {
-                    Logger.Info(LogSource.App,
-                        $"Uploaded '{filePath.Replace(Environment.CurrentDirectory, string.Empty)}' to the package registry on project '{project.NameWithNamespace}' (id {project.Id}).");
-                    completedFiles++;
-                }
-                else if (tries > 0)
-                {
-                    Logger.Info(LogSource.App, $"Retrying upload ({Retries - tries}/{Retries})...");
-                    tries--;
-                    goto Retry;
-                }
-            }
-
-            Logger.Info(LogSource.App, $"Finished. {completedFiles}/{files.Length} uploads successful.");
+            Logger.Error(LogSource.App, $"Could not find a file at '{FilePath.FullPath}'.");
+            return ExitCode.FileNotFound;
         }
-        else
+
+        uint tries = Retries;
+
+        Retry:
+        if (!await UploadGenericPackageAsync(project))
         {
-            if (!FilePath.ExistsAsFile)
+            if (tries > 0)
             {
-                Logger.Error(LogSource.App, $"Could not find a file at '{FilePath.FullPath}'.");
-                return ExitCode.FileNotFound;
+                Logger.Info(LogSource.App, $"Retrying upload ({Retries - tries}/{Retries})...");
+                tries--;
+                goto Retry;
             }
 
+            Logger.Error(LogSource.App, $"'{FilePath.FullPath}' failed to upload.");
+            return ExitCode.UploadFailed;
+        }
+
+        Logger.Info(LogSource.App,
+            $"Uploaded '{FilePath.FullPath}' to the package registry on project {project.NameWithNamespace} (id {project.Id}).");
+        return ExitCode.Normal;
+    }
+
+    private async ValueTask<ExitCode> DoBulkAsync(Project project)
+    {
+        var files = Directory.EnumerateFiles(Environment.CurrentDirectory, FilePathRaw).ToArray();
+        if (files.Length is 0)
+        {
+            Logger.Error(LogSource.App,
+                $"Search pattern '{FilePathRaw}' did not match any files in '{Environment.CurrentDirectory}'");
+            return ExitCode.FileNotFound;
+        }
+
+        int completedFiles = 0;
+
+        foreach (var filePath in files)
+        {
             uint tries = Retries;
 
             Retry:
-            if (!await UploadGenericPackageAsync(project))
+            if (await UploadGenericPackageAsync(project, new FilePath(filePath)))
             {
-                if (tries > 0)
-                {
-                    Logger.Info(LogSource.App, $"Retrying upload ({Retries - tries}/{Retries})...");
-                    tries--;
-                    goto Retry;
-                }
-
-                Logger.Error(LogSource.App, $"'{FilePath.FullPath}' failed to upload.");
-                return ExitCode.UploadFailed;
+                Logger.Info(LogSource.App,
+                    $"Uploaded '{filePath.Replace(Environment.CurrentDirectory, string.Empty)}' to the package registry on project '{project.NameWithNamespace}' (id {project.Id}).");
+                completedFiles++;
             }
-
-            Logger.Info(LogSource.App,
-                $"Uploaded '{FilePath.FullPath}' to the package registry on project {project.NameWithNamespace} (id {project.Id}).");
+            else if (tries > 0)
+            {
+                Logger.Info(LogSource.App, $"Retrying upload ({Retries - tries}/{Retries})...");
+                tries--;
+                goto Retry;
+            }
         }
 
+        Logger.Info(LogSource.App, $"Finished. {completedFiles}/{files.Length} uploads successful.");
         return ExitCode.Normal;
     }
 }
