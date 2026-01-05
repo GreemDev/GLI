@@ -22,17 +22,25 @@ public class CreateTagCommand : GitLabCommand
 
     protected override ValueTask<ExitCode> InvokeAsync()
     {
-        var repo = GitLabClient.GetRepository(ProjectPath);
-
-        if (repo == null)
-            return new(ExitCode.ProjectNotFound);
-
-        repo.Tags.Create(new TagCreate
+        try
         {
-            Name = TagName,
-            Message = Comment,
-            Ref = TagRef
-        });
+            var repo = GitLabClient.GetRepository(ProjectPath);
+
+            if (repo == null)
+                return new(ExitCode.ProjectNotFound);
+
+            repo.Tags.Create(new TagCreate
+            {
+                Name = TagName,
+                Message = Comment,
+                Ref = TagRef
+            });
+        }
+        catch (Exception e)
+        {
+            Logger.Error(LogSource.App, e);
+            return new(ExitCode.OperationFailure);
+        }
 
         Logger.Info(LogSource.App, $"Created tag '{TagName}' on project '{ProjectPath}'.");
 
