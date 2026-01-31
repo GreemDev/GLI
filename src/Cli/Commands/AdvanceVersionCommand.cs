@@ -1,6 +1,7 @@
 ﻿using CommandLine;
 using gli.CommandLib;
 using gli.Helpers;
+using Ryujinx.Systems.Update.Common;
 
 namespace gli.Commands;
 
@@ -8,10 +9,14 @@ namespace gli.Commands;
 public class AdvanceVersionCommand : UpdateServerCommand
 {
     protected override bool NeedsAuthorization => true;
+    
+    [Option('c', "release-channel", Required = false, Default = ReleaseChannel.Stable,
+        HelpText = "The release channel you are advancing the version for.")]
+    public ReleaseChannel ReleaseChannel { get; set; }
 
     protected override async ValueTask<ExitCode> InvokeAsync()
     {
-        if (!(await UpdateClient.AdvanceVersionAsync() ?? false))
+        if (!(await UpdateClient.AdvanceVersionAsync(ReleaseChannel) ?? false))
         {
             // error logs are handled by the update client
             return ExitCode.OperationFailure;
