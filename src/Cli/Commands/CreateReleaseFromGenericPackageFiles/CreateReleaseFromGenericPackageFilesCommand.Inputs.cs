@@ -3,7 +3,6 @@ using gli.REST.GitLab;
 using gli.REST.Helpers;
 using gli.Helpers;
 using Gommon;
-using NGitLab.Models;
 
 namespace gli.Commands;
 
@@ -31,7 +30,7 @@ public partial class CreateReleaseFromGenericPackageFilesCommand
                    "If content is 'msd:' followed by a GitLab Milestone title, then the content for the body will be set to that milestone's description; if it can be found.")]
     public string? ReleaseBody { get; set; }
 
-    public async Task InitIfNeededAsync(Project project)
+    public async Task InitIfNeededAsync(GitLabProject project)
     {
         if (ReleaseBody is null || IsInit) return;
 
@@ -71,7 +70,7 @@ public partial class CreateReleaseFromGenericPackageFilesCommand
         IsInit = true;
     }
 
-    public Task<GetProjectPackagesItem?> FindMatchingPackageAsync(Project project)
+    public Task<GetProjectPackagesItem?> FindMatchingPackageAsync(GitLabProject project)
     {
         var p = PaginatedEndpoint<GetProjectPackagesItem>.Builder(Http)
             .WithBaseUrl($"api/v4/projects/{project.Id}/packages")
@@ -89,7 +88,7 @@ public partial class CreateReleaseFromGenericPackageFilesCommand
         );
     }
 
-    public async Task<ReleaseInfo?> CreateReleaseFromGenericPackagesAsync(Project project)
+    public async Task<GitLabReleaseJsonResponse?> CreateReleaseFromGenericPackagesAsync(GitLabProject project)
     {
         await InitIfNeededAsync(project);
 
@@ -121,7 +120,7 @@ public partial class CreateReleaseFromGenericPackageFilesCommand
 
         try
         {
-            return await GitLabClient.GetReleases(project.Id).CreateAsync(new ReleaseCreate
+            return await GitLabApi.CreateReleaseAsync(Http, project.Path, new CreateRelease
             {
                 TagName = PackageVersion,
                 Ref = ReleaseRef.EqualsAnyIgnoreCase("null") ? null : ReleaseRef,

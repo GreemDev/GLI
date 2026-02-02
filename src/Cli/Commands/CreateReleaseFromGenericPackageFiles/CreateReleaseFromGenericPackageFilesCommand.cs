@@ -1,6 +1,7 @@
 ﻿using CommandLine;
 using gli.CommandLib;
 using gli.Helpers;
+using gli.REST.GitLab;
 
 namespace gli.Commands;
 
@@ -11,7 +12,7 @@ public partial class CreateReleaseFromGenericPackageFilesCommand : GitLabCommand
 {
     protected override async ValueTask<ExitCode> InvokeAsync()
     {
-        var project = await GitLabClient.Projects.GetByNamespacedPathAsync(ProjectPath);
+        var project = await GitLabApi.GetProjectAsync(Http, ProjectPath);
         if (project is null)
         {
             Logger.Error(LogSource.App, $"Could not find the project '{ProjectPath}' on '{GitLabEndpoint}'.");

@@ -1,7 +1,7 @@
 ﻿using CommandLine;
 using gli.CommandLib;
 using gli.Helpers;
-using NGitLab.Models;
+using gli.REST.GitLab;
 
 namespace gli.Commands;
 
@@ -20,30 +20,25 @@ public class CreateTagCommand : GitLabCommand
         Required = false, HelpText = "The comment to appear when viewing tag details in GitLab UI.")]
     public string? Comment { get; set; } = null!;
 
-    protected override ValueTask<ExitCode> InvokeAsync()
+    protected override async ValueTask<ExitCode> InvokeAsync()
     {
         try
         {
-            var repo = GitLabClient.GetRepository(ProjectPath);
-
-            if (repo == null)
-                return new(ExitCode.ProjectNotFound);
-
-            repo.Tags.Create(new TagCreate
+            bool success = await GitLabApi.CreateTagAsync(Http, ProjectPath, new CreateTag
             {
                 Name = TagName,
                 Message = Comment,
                 Ref = TagRef
             });
+
+            Logger.Info(LogSource.App, $"Created tag '{TagName}' on project '{ProjectPath}'.");
+
+            return success ? ExitCode.Normal : ExitCode.OperationFailure;
         }
         catch (Exception e)
         {
             Logger.Error(LogSource.App, e);
-            return new(ExitCode.OperationFailure);
+            return ExitCode.OperationFailure;
         }
-
-        Logger.Info(LogSource.App, $"Created tag '{TagName}' on project '{ProjectPath}'.");
-
-        return new(ExitCode.Normal);
     }
 }

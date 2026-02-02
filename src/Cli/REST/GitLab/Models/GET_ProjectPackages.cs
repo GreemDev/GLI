@@ -1,7 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using gli.Helpers;
 using gli.REST.Helpers;
-using NGitLab.Models;
 
 namespace gli.REST.GitLab;
 
@@ -17,7 +16,7 @@ public class GetProjectPackagesItem
 
     [JsonPropertyName("created_at")] public DateTimeOffset CreatedAt { get; set; }
 
-    public PaginatedEndpoint<GetPackageFilesItem> GetPackageFiles(IHttpClientProxy http, Project project)
+    public PaginatedEndpoint<GetPackageFilesItem> GetPackageFiles(IHttpClientProxy http, GitLabProject project)
         => PaginatedEndpoint<GetPackageFilesItem>.Builder(http)
             .WithBaseUrl($"api/v4/projects/{project.Id}/packages/{Id}/package_files")
             .WithJsonContentParser(GitLabSerializerContexts.Default.IEnumerableGetPackageFilesItem)

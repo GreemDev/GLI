@@ -2,8 +2,8 @@
 using CommandLine;
 using gli.CommandLib;
 using gli.Helpers;
+using gli.REST.GitLab;
 using Gommon;
-using NGitLab.Models;
 
 namespace gli.Commands;
 
@@ -12,7 +12,7 @@ public partial class UploadGenericPackageCommand
     public override TimeSpan? HttpRequestTimeout => TimeSpan.FromMinutes(10); //accomodate shitass internet
 
     public async Task<bool> UploadGenericPackageAsync(
-        Project project, FilePath? path = null)
+        GitLabProject project, FilePath? path = null)
     {
         var toUpload = path ?? FilePath;
 

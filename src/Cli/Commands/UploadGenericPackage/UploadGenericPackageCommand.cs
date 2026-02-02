@@ -1,8 +1,8 @@
 ﻿using CommandLine;
 using gli.CommandLib;
 using gli.Helpers;
+using gli.REST.GitLab;
 using Gommon;
-using NGitLab.Models;
 
 namespace gli.Commands;
 
@@ -13,7 +13,7 @@ public partial class UploadGenericPackageCommand : GitLabCommand
 {
     protected override async ValueTask<ExitCode> InvokeAsync()
     {
-        var project = await GitLabClient.Projects.GetByNamespacedPathAsync(ProjectPath);
+        var project = await GitLabApi.GetProjectAsync(Http, ProjectPath);
         if (project is null)
         {
             Logger.Error(LogSource.App, $"Could not find the project '{ProjectPath}' on '{GitLabEndpoint}'.");
@@ -27,7 +27,7 @@ public partial class UploadGenericPackageCommand : GitLabCommand
         );
     }
 
-    private async ValueTask<ExitCode> DoNormalAsync(Project project)
+    private async ValueTask<ExitCode> DoNormalAsync(GitLabProject project)
     {
         if (!FilePath.ExistsAsFile)
         {
@@ -56,7 +56,7 @@ public partial class UploadGenericPackageCommand : GitLabCommand
         return ExitCode.Normal;
     }
 
-    private async ValueTask<ExitCode> DoBulkAsync(Project project)
+    private async ValueTask<ExitCode> DoBulkAsync(GitLabProject project)
     {
         var files = Directory.EnumerateFiles(Environment.CurrentDirectory, FilePathRaw).ToArray();
         if (files.Length is 0)
