@@ -79,7 +79,7 @@ public partial class UploadGenericPackageCommand
             "If true, this will upload multiple files matching the pattern provided in the -p/--path argument. Path can be relative.")]
     public bool Bulk { get; set; }
 
-    [Option('r', "retry", Required = false, Default = 0,
+    [Option('r', "retry", Required = false, Default = (uint)0,
         HelpText =
             "Retries the upload up to the specified amount of times, if it fails. Applies to bulk upload individual files as well. Beware of ratelimits.")]
     public uint Retries { get; set; }
