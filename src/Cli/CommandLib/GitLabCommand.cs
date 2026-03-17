@@ -53,6 +53,14 @@ public abstract class GitLabCommand : Command
             throw new FileNotFoundException(
                 "Could not find an .accesstoken file. Either provide the argument (--access-token) or create the file.");
 
-        return fp.ReadAllText();
+        var lines = fp.ReadAllLines();
+
+        if (lines == null || lines.Length == 0)
+        {
+            throw new FormatException(
+                ".accesstoken file could not be read or did not contain any content");
+        }
+
+        return lines[0];
     }
 }

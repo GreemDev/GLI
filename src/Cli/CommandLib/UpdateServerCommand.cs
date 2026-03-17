@@ -34,8 +34,16 @@ public abstract class UpdateServerCommand : Command
             throw new FileNotFoundException(
                 "Could not find an .admintoken file. Either provide the argument '--admin-token' or create the file.");
         }
+        
+        var lines = fp.ReadAllLines();
 
-        return fp.ReadAllText();
+        if (lines == null || lines.Length == 0)
+        {
+            throw new FormatException(
+                ".admintoken file could not be read or did not contain any content");
+        }
+
+        return lines[0];
     }
 
     public UpdateClient UpdateClient { get; private set; } = null!;
