@@ -48,17 +48,17 @@ public abstract class GitLabCommand : Command
 
     private static string ReadAccessTokenFromFile()
     {
-        var fp = new FilePath(Environment.CurrentDirectory) / ".accesstoken";
+        var fp = new FilePath(Environment.CurrentDirectory) / ".glaccesstoken";
         if (!fp.ExistsAsFile)
             throw new FileNotFoundException(
-                "Could not find an .accesstoken file. Either provide the argument (--access-token) or create the file.");
+                "Could not find a .glaccesstoken file. Either provide the argument (--access-token) or create the file.");
 
         var lines = fp.ReadAllLines();
 
         if (lines == null || lines.Length == 0)
         {
             throw new FormatException(
-                ".accesstoken file could not be read or did not contain any content");
+                ".glaccesstoken file could not be read or did not contain any content");
         }
 
         return lines[0];

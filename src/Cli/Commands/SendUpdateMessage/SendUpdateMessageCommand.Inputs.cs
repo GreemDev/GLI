@@ -1,10 +1,8 @@
 ﻿using System.Drawing;
 using CommandLine;
-using gli.CommandLib;
-using gli.REST.GitLab;
+using ForgejoApiClient.Api;
 using gli.Helpers;
 using Gommon;
-using NGitLab.Models;
 
 namespace gli.Commands;
 
@@ -61,6 +59,8 @@ public partial class SendUpdateMessageCommand
         return base.BeforeExecution();
     }
 
-    public Task<GitLabReleaseJsonResponse?> GetReleaseAsync(Project project)
-        => GitLabApi.GetReleaseAsync(Http, project, ReleaseTag);
+    public Task<Release> GetReleaseAsync(string projectOwner, string projectName)
+    {
+        return ForgejoClient.Repository.GetReleaseTagAsync(projectOwner, projectName, ReleaseTag);
+    }
 }

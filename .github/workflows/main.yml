@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs: {}
   push:
-    branches: [ v2 ]
+    branches: [ v3 ]
     paths-ignore:
       - '.github/**'
       - 'docs/**'
@@ -18,7 +18,7 @@ on:
 
 
 env:
-  BASE_VERSION: "2.0"
+  BASE_VERSION: "3.0"
 
 jobs:
   build:
@@ -27,8 +27,8 @@ jobs:
       - name: Get version info
         id: version_info
         run: |
-          echo "build_version=${{ env.BASE_VERSION }}.${{ github.run_number }}" >> $GITHUB_OUTPUT
-          echo "prev_build_version=${{ env.BASE_VERSION }}.$((${{ github.run_number }} - 1))" >> $GITHUB_OUTPUT
+          echo "build_version=${{ env.BASE_VERSION }}.$((${{ github.run_number }} - 30))" >> $GITHUB_OUTPUT
+          echo "prev_build_version=${{ env.BASE_VERSION }}.$(($((${{ github.run_number }} - 1)) - 30))" >> $GITHUB_OUTPUT
         shell: bash
 
       - uses: actions/checkout@v4

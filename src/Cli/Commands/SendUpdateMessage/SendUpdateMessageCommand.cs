@@ -2,8 +2,8 @@
 using System.Drawing;
 using System.Text;
 using CommandLine;
+using ForgejoApiClient.Api;
 using gli.CommandLib;
-using gli.REST.GitLab;
 using gli.Helpers;
 using Gommon;
 using JNogueira.Discord.Webhook.Client;
@@ -11,70 +11,65 @@ using JNogueira.Discord.Webhook.Client;
 namespace gli.Commands;
 
 [Verb("send-update-message", aliases: ["send-webhook"],
-    HelpText = "Sends an embed to a Discord webhook showing information about a GitLab release. " +
+    HelpText = "Sends an embed to a Discord webhook showing information about a Forgejo release. " +
                "The code in this command (namely for finding what files to show) is intended for Ryubing, so your use may vary.")]
-public partial class SendUpdateMessageCommand : GitLabCommand
+public partial class SendUpdateMessageCommand : ForgejoCommand
 {
     protected override async ValueTask<ExitCode> InvokeAsync()
     {
-        var project = await GitLabClient.Projects.GetByNamespacedPathAsync(ProjectPath);
-        if (project is null)
-        {
-            Logger.Error(LogSource.App, $"Could not find the project '{ProjectPath}' on '{GitLabEndpoint}'.");
-            return ExitCode.ProjectNotFound;
-        }
-
-        if (await GetReleaseAsync(project) is not { } release)
+        if (await GetReleaseAsync(ProjectOwner, ProjectName) is not { id: not null } release)
         {
             Logger.Error(LogSource.App,
-                $"Could not find a release on '{project.NameWithNamespace}' with the tag '{ReleaseTag}'.");
+                $"Could not find a release on '{ProjectPath}' with the tag '{ReleaseTag}'.");
             return ExitCode.ObjectNotFound;
         }
 
         await new DiscordWebhookClient(WebhookUrl)
             .SendToDiscord(
-                new DiscordMessage(embeds: [CreateEmbed(release)])
+                new DiscordMessage(embeds:
+                [
+                    CreateEmbed(release)
+                ])
             );
 
         return ExitCode.Normal;
     }
 
-    private DiscordMessageEmbed CreateEmbed(GitLabReleaseJsonResponse release)
+    private DiscordMessageEmbed CreateEmbed(Release release)
         => EmbedThumbnailUrl != null
             ? new(
-                title: release.Name,
-                description: ShowReleaseDescription ? release.Description : null,
+                title: release.name,
+                description: ShowReleaseDescription ? release.body : null,
                 color: EmbedColor,
-                author: new(release.Author.Name, iconUrl: release.Author.AvatarUrl),
-                url: release.Links.Self,
-                fields: CreateFields(release.Assets),
+                author: new(release.author?.login_name, iconUrl: release.author?.avatar_url),
+                url: release.html_url,
+                fields: CreateFields(release.assets),
                 thumbnail: new(EmbedThumbnailUrl)
             )
             : new(
-                title: release.Name,
-                description: ShowReleaseDescription ? release.Description : null,
+                title: release.name,
+                description: ShowReleaseDescription ? release.body : null,
                 color: EmbedColor,
-                author: new(release.Author.Name, iconUrl: release.Author.AvatarUrl),
-                url: release.Links.Self,
-                fields: CreateFields(release.Assets)
+                author: new(release.author?.login_name, iconUrl: release.author?.avatar_url),
+                url: release.html_url,
+                fields: CreateFields(release.assets)
             );
 
-    private static DiscordMessageEmbedField[] CreateFields(
-        GitLabReleaseJsonResponse.GitLabReleaseAssetsJsonResponse assets)
+    private static DiscordMessageEmbedField[] CreateFields(ICollection<Attachment> assets)
     {
-        var windowsX64 = assets.Links.FirstOrDefault(x => x.AssetName.ContainsIgnoreCase("win_x64"));
-        var windowsArm64 = assets.Links.FirstOrDefault(x => x.AssetName.ContainsIgnoreCase("win_arm64"));
-        var linuxX64 = assets.Links.FirstOrDefault(x =>
-            x.AssetName.ContainsIgnoreCase("linux_x64") && !x.AssetName.EndsWithIgnoreCase(".AppImage"));
-        var linuxX64AppImage = assets.Links.FirstOrDefault(x =>
-            x.AssetName.ContainsIgnoreCase("x64") && x.AssetName.EndsWithIgnoreCase(".AppImage"));
-        var macOsUniversal = assets.Links.FirstOrDefault(x => x.AssetName.ContainsIgnoreCase("macos_universal"));
-        var macOsArm = assets.Links.FirstOrDefault(x => x.AssetName.ContainsIgnoreCase("macos_arm64"));
-        var linuxArm64 = assets.Links.FirstOrDefault(x =>
-            x.AssetName.ContainsIgnoreCase("linux_arm64") && !x.AssetName.EndsWithIgnoreCase(".AppImage"));
-        var linuxArm64AppImage = assets.Links.FirstOrDefault(x =>
-            x.AssetName.ContainsIgnoreCase("arm64") && x.AssetName.EndsWithIgnoreCase(".AppImage"));
-        var androidApk = assets.Links.FirstOrDefault(x => x.AssetName.EndsWithIgnoreCase(".apk"));
+        var windowsX64 = assets.FirstOrDefault(x => x.name.ContainsIgnoreCase("win_x64"));
+        var windowsArm64 = assets.FirstOrDefault(x => x.name.ContainsIgnoreCase("win_arm64"));
+        var linuxX64 = assets.FirstOrDefault(x => x.name.ContainsIgnoreCase("linux_x64") 
+                                                  && !x.name.EndsWithIgnoreCase(".AppImage"));
+        var linuxX64AppImage = assets.FirstOrDefault(x => x.name.ContainsIgnoreCase("x64") 
+                                                          && x.name.EndsWithIgnoreCase(".AppImage"));
+        var macOsUniversal = assets.FirstOrDefault(x => x.name.ContainsIgnoreCase("macos_universal"));
+        var macOsArm = assets.FirstOrDefault(x => x.name.ContainsIgnoreCase("macos_arm64"));
+        var linuxArm64 = assets.FirstOrDefault(x => x.name.ContainsIgnoreCase("linux_arm64")
+                                                    && !x.name.EndsWithIgnoreCase(".AppImage"));
+        var linuxArm64AppImage = assets.FirstOrDefault(x => x.name.ContainsIgnoreCase("arm64")
+                                                            && x.name.EndsWithIgnoreCase(".AppImage"));
+        var androidApk = assets.FirstOrDefault(x => x.name.EndsWithIgnoreCase(".apk"));
 
         var arrayBuilder = ImmutableArray.CreateBuilder<DiscordMessageEmbedField>();
 
@@ -88,28 +83,28 @@ public partial class SendUpdateMessageCommand : GitLabCommand
 
         return arrayBuilder.ToArray();
 
-        void applyArtifact(GitLabReleaseJsonResponse.AssetLink? asset, string friendlyName, bool inline = false)
+        void applyArtifact(Attachment? asset, string friendlyName, bool inline = false)
         {
             if (asset is null)
                 return;
 
-            arrayBuilder.Add(new DiscordMessageEmbedField(friendlyName, $"[{asset.AssetName}]({asset.Url})", inline));
+            arrayBuilder.Add(new DiscordMessageEmbedField(friendlyName, $"[{asset.name}]({asset.browser_download_url})", inline));
         }
 
         void applyArtifacts(
-            (GitLabReleaseJsonResponse.AssetLink? Normal, GitLabReleaseJsonResponse.AssetLink? AppImage) asset,
+            (Attachment? Normal, Attachment? AppImage) asset,
             string friendlyName, bool inline = true)
         {
             var releaseBody = new StringBuilder();
 
             if (asset.Normal != null)
             {
-                releaseBody.AppendLine($"[{asset.Normal.AssetName}]({asset.Normal.Url})");
+                releaseBody.AppendLine($"[{asset.Normal.name}]({asset.Normal.browser_download_url})");
             }
 
             if (asset.AppImage != null)
             {
-                releaseBody.AppendLine($"([AppImage]({asset.AppImage.Url})\u200B)");
+                releaseBody.AppendLine($"([AppImage]({asset.AppImage.browser_download_url})\u200B)");
             }
 
             if (releaseBody.Length is 0)
