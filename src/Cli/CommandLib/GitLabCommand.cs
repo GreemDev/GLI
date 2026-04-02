@@ -8,7 +8,7 @@ namespace gli.CommandLib;
 
 public abstract class GitLabCommand : Command
 {
-    [Option('S', "server-url", Required = false, Default = "https://git.ryujinx.app",
+    [Option('S', "server-url", Required = false, Default = "https://legacy.git.ryujinx.app",
         HelpText = "The target GitLab instance to use.")]
     public string GitLabEndpoint { get; set; } = null!;
 
