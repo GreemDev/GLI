@@ -7,14 +7,15 @@ namespace gli.REST.GitHub;
 
 public static class GitHubApi
 {
-    public static IHttpClientProxy CreateHttpClient(TimeSpan? timeout = null)
+    public static IHttpClientProxy CreateHttpClient(string? accessToken = null, TimeSpan? timeout = null)
         => new DefaultHttpClientProxy(new HttpClient
             {
                 Timeout = timeout ?? TimeSpan.FromSeconds(100),
                 BaseAddress = new Uri("https://api.github.com"),
                 DefaultRequestHeaders =
                 {
-                    UserAgent = { new ProductInfoHeaderValue("gli", "1.0.0") }
+                    UserAgent = { new ProductInfoHeaderValue("gli", "1.0.0") },
+                    Authorization = accessToken != null ? AuthenticationHeaderValue.Parse($"Bearer {accessToken}") : null
                 }
             },
             (fmt, args, caller)
@@ -26,16 +27,67 @@ public static class GitHubApi
                 )
         );
 
-    public static async Task<ReleaseData?> GetLatestReleaseAsync(IHttpClientProxy httpClient)
+    public static async Task<ReleaseData?> GetReleaseAsync(IHttpClientProxy httpClient, string repoOwner,
+        string repoName, string tagName)
     {
-        var resp = await httpClient.GetAsync("repos/GreemDev/GLI/releases/latest");
-        
-        if (!resp.IsSuccessStatusCode) 
+        var resp = await httpClient.GetAsync($"repos/{repoOwner}/{repoName}/releases/tags/{tagName}");
+
+        if (!resp.IsSuccessStatusCode)
             return null;
 
         return JsonSerializer.Deserialize(
             await resp.Content.ReadAsStringAsync(),
             GitHubSerializerContexts.Default.ReleaseData
         );
+    }
+
+    public static async Task<ReleaseData?> GetReleaseAsync(IHttpClientProxy httpClient, string repoString,
+        string tagName)
+    {
+        Guard.Ensure(repoString.Contains('/'),
+            $"Invoking {nameof(GetLatestReleaseAsync)} with only one string argument should contain a delimiting forward slash.");
+        var resp = await httpClient.GetAsync($"repos/{repoString}/releases/tags/{tagName}");
+
+        if (!resp.IsSuccessStatusCode)
+            return null;
+
+        return JsonSerializer.Deserialize(
+            await resp.Content.ReadAsStringAsync(),
+            GitHubSerializerContexts.Default.ReleaseData
+        );
+    }
+
+    public static async Task<ReleaseData?> GetLatestReleaseAsync(IHttpClientProxy httpClient, string repoString)
+    {
+        Guard.Ensure(repoString.Contains('/'),
+            $"Invoking {nameof(GetLatestReleaseAsync)} with only one string argument should contain a delimiting forward slash.");
+        var resp = await httpClient.GetAsync($"repos/{repoString}/releases/latest");
+
+        if (!resp.IsSuccessStatusCode)
+            return null;
+
+        return JsonSerializer.Deserialize(
+            await resp.Content.ReadAsStringAsync(),
+            GitHubSerializerContexts.Default.ReleaseData
+        );
+    }
+
+    public static async Task<ReleaseData?> GetLatestReleaseAsync(IHttpClientProxy httpClient, string repoOwner,
+        string repoName)
+    {
+        var resp = await httpClient.GetAsync($"repos/{repoOwner}/{repoName}/releases/latest");
+
+        if (!resp.IsSuccessStatusCode)
+            return null;
+
+        return JsonSerializer.Deserialize(
+            await resp.Content.ReadAsStringAsync(),
+            GitHubSerializerContexts.Default.ReleaseData
+        );
+    }
+
+    public static Task<ReleaseData?> GetLatestGliReleaseAsync(IHttpClientProxy httpClient)
+    {
+        return GetLatestReleaseAsync(httpClient, "GreemDev", "GLI");
     }
 }

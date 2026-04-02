@@ -19,6 +19,7 @@
       <PackageReference Include="ForgejoApiClient" Version="14.0.0-rev.2" />
       <PackageReference Include="Gommon" Version="2.8.0.4" />
       <PackageReference Include="GreemDev.Colorful.Console" Version="1.3.2" />
+      <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="10.0.5"/>
       <PackageReference Include="NGitLab" Version="11.2.0" />
       <PackageReference Include="Ryujinx.UpdateClient" Version="1.0.73" />
     </ItemGroup>

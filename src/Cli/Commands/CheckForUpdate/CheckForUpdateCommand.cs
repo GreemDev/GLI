@@ -17,7 +17,7 @@ public partial class CheckForUpdateCommand : Command
 
     protected override async ValueTask<ExitCode> InvokeAsync()
     {
-        var latest = await GitHubApi.GetLatestReleaseAsync(Http);
+        var latest = await GitHubApi.GetLatestGliReleaseAsync(Http);
         if (latest is null)
             return ExitCode.ObjectNotFound;
 

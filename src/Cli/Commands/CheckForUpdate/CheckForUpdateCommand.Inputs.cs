@@ -18,7 +18,7 @@ public partial class CheckForUpdateCommand
 
     protected override Result BeforeExecution()
     {
-        Http = GitHubApi.CreateHttpClient(HttpRequestTimeout);
+        Http = GitHubApi.CreateHttpClient(null, HttpRequestTimeout);
         return Result.Success;
     }
 }
