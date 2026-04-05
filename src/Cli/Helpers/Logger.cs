@@ -45,7 +45,7 @@ public static partial class Logger
     #region Logger methods with invocation info
 
     /// <summary>
-    ///     Prints a <see cref="System.Diagnostics.Debug"/> message to the console from the specified <paramref name="src"/> source, with the given <paramref name="message"/> message.
+    ///     Prints a <see cref="LogSeverity.Debug"/> message to the console from the specified <paramref name="src"/> source, with the given <paramref name="message"/> message.
     /// </summary>
     /// <param name="src">Source to print the message from.</param>
     /// <param name="message">Message to print.</param>
@@ -79,7 +79,7 @@ public static partial class Logger
         => Log(LogSeverity.Critical, src, message, e, caller);
 
     /// <summary>
-    ///     Prints a <see cref="LogSeverity.Critical"/> message to the console from the specified <paramref name="src"/> source, with the given <paramref name="message"/> message, with the specified <paramref name="e"/> exception if provided.
+    ///     Prints a <see cref="LogSeverity.Warning"/> message to the console from the specified <paramref name="src"/> source, with the given <paramref name="message"/> message, with the specified <paramref name="e"/> exception if provided.
     /// </summary>
     /// <param name="src">Source to print the message from.</param>
     /// <param name="message">Message to print.</param>
@@ -100,15 +100,15 @@ public static partial class Logger
     /// </summary>
     /// <param name="e">Exception to print.</param>
     /// <param name="src">Source to print the message from.</param>
-    public static void Error(Exception e, InvocationInfo caller, LogSource src = LogSource.App)
-        => Error(src, string.Empty, caller, e);
+    public static void Error(Exception e, InvocationInfo caller, LogSource? src = null)
+        => Error(src ?? LogSource.App, string.Empty, caller, e);
 
     #endregion
 
     #region Normal logger methods
 
     /// <summary>
-    ///     Prints a <see cref="LogSeverity.Debug"/> message to the console from the specified <paramref name="src"/> source, with the given <paramref name="message"/> message.
+    ///     Prints a <see creLogSeverityLogSeverity.Debug"/> message to the console from the specified <paramref name="src"/> source, with the given <paramref name="message"/> message.
     /// </summary>
     /// <param name="src">Source to print the message from.</param>
     /// <param name="message">Message to print.</param>
@@ -116,7 +116,7 @@ public static partial class Logger
         => Log(LogSeverity.Debug, src, message);
 
     /// <summary>
-    ///     Prints a <see cref="LogSeverity.Info"/> message to the console from the specified <paramref name="src"/> source, with the given <paramref name="message"/> message.
+    ///     Prints a <see creLogSeverityLogSeverity.Info"/> message to the console from the specified <paramref name="src"/> source, with the given <paramref name="message"/> message.
     /// </summary>
     /// <param name="src">Source to print the message from.</param>
     /// <param name="message">Message to print.</param>
@@ -124,7 +124,7 @@ public static partial class Logger
         => Log(LogSeverity.Info, src, message);
 
     /// <summary>
-    ///     Prints a <see cref="LogSeverity.Error"/> message to the console from the specified <paramref name="src"/> source, with the given <paramref name="message"/> message, with the specified <paramref name="e"/> exception if provided.
+    ///     Prints a <see creLogSeverityLogSeverity.Error"/> message to the console from the specified <paramref name="src"/> source, with the given <paramref name="message"/> message, with the specified <paramref name="e"/> exception if provided.
     /// </summary>
     /// <param name="src">Source to print the message from.</param>
     /// <param name="message">Message to print.</param>
@@ -133,7 +133,7 @@ public static partial class Logger
         => Log(LogSeverity.Error, src, message, e);
 
     /// <summary>
-    ///     Prints a <see cref="LogSeverity.Critical"/> message to the console from the specified <paramref name="src"/> source, with the given <paramref name="message"/> message, with the specified <paramref name="e"/> exception if provided.
+    ///     Prints a <see creLogSeverityLogSeverity.Critical"/> message to the console from the specified <paramref name="src"/> source, with the given <paramref name="message"/> message, with the specified <paramref name="e"/> exception if provided.
     /// </summary>
     /// <param name="src">Source to print the message from.</param>
     /// <param name="message">Message to print.</param>
@@ -142,7 +142,7 @@ public static partial class Logger
         => Log(LogSeverity.Critical, src, message, e);
 
     /// <summary>
-    ///     Prints a <see cref="LogSeverity.Critical"/> message to the console from the specified <paramref name="src"/> source, with the given <paramref name="message"/> message, with the specified <paramref name="e"/> exception if provided.
+    ///     Prints a <see creLogSeverityLogSeverity.Critical"/> message to the console from the specified <paramref name="src"/> source, with the given <paramref name="message"/> message, with the specified <paramref name="e"/> exception if provided.
     /// </summary>
     /// <param name="src">Source to print the message from.</param>
     /// <param name="message">Message to print.</param>
@@ -151,7 +151,7 @@ public static partial class Logger
         => Log(LogSeverity.Warning, src, message, e);
 
     /// <summary>
-    ///     Prints a <see cref="LogSeverity.Verbose"/> message to the console from the specified <paramref name="src"/> source, with the given <paramref name="message"/> message.
+    ///     Prints a <see creLogSeverityLogSeverity.Verbose"/> message to the console from the specified <paramref name="src"/> source, with the given <paramref name="message"/> message.
     /// </summary>
     /// <param name="src">Source to print the message from.</param>
     /// <param name="message">Message to print.</param>
@@ -159,7 +159,7 @@ public static partial class Logger
         => Log(LogSeverity.Verbose, src, message);
 
     /// <summary>
-    ///     Prints a <see cref="LogSeverity.Error"/> message to the console from the specified <see cref="LogSource"/> for
+    ///     Prints a <see creLogSeverityLogSeverity.Error"/> message to the console from the specified <see cref="LogSource"/> for
     ///     the specified <paramref name="e"/> exception.
     /// </summary>
     /// <param name="source">Source of the log message.</param>
@@ -168,7 +168,7 @@ public static partial class Logger
         => Error(source, string.Empty, e);
 
     /// <summary>
-    ///     Prints a <see cref="LogSeverity.Error"/> message to the console for the specified <paramref name="e"/> exception.
+    ///     Prints a <see creLogSeverityLogSeverity.Error"/> message to the console for the specified <paramref name="e"/> exception.
     /// </summary>
     /// <param name="e">Exception to print.</param>
     public static void Error(Exception e) => Error(LogSource.App, e);
@@ -180,7 +180,7 @@ public static partial class Logger
         LogEventHandler.Clear();
         Event += logEvent =>
         {
-            lock (LogSync)
+            lock (_logSync)
             {
                 if (WriteToFile)
                     ExecuteWithFileWrite(logEvent.Severity, logEvent.Source, logEvent.Message, logEvent.Error,

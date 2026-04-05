@@ -7,12 +7,16 @@ namespace gli.Helpers;
 
 public static partial class Logger
 {
-    private static readonly Lock LogSync = new();
+    private static readonly Lock _logSync = new();
 
-    public static void Log(LogSeverity s, LogSource from, string message, Exception e = null,
+    public static void Log(
+        LogSeverity s,
+        LogSource from,
+        string message,
+        Exception? e = null,
         InvocationInfo caller = default)
     {
-        if (s is LogSeverity.Debug && !IsDebugLoggingEnabled)
+        if (s == LogSeverity.Debug && !IsDebugLoggingEnabled)
             return;
 
         Log(new EventArgs
@@ -28,11 +32,8 @@ public static partial class Logger
     private static void ExecuteStdOutOnly(LogSeverity s, LogSource src, string message, Exception e,
         InvocationInfo caller)
     {
-        var (color, value) = VerifySeverity(s);
-        Append($"{value}:".P(), color);
-
-        (color, value) = VerifySource(src);
-        Append($"[{value}]".P(), color);
+        Append($"{s.Identifier}:".P(), s.Color);
+        Append($"[{src.Identifier}]".P(), src.Color);
 
         if (IsDebugLoggingEnabled && caller.IsInitialized)
         {
@@ -67,15 +68,13 @@ public static partial class Logger
     {
         var content = new StringBuilder();
 
-        var (color, value) = VerifySeverity(s);
-        Append($"{value}:".P(), color);
+        Append($"{s.Identifier}:".P(), s.Color);
         var dt = DateTime.Now.ToLocalTime();
-        content.Append($"[{dt.FormatDate()} | {dt.FormatFullTime()}] {value} -> ");
+        content.Append($"[{dt.FormatDate()} | {dt.FormatFullTime()}] {s.Identifier} -> ");
 
-        (color, value) = VerifySource(src);
-        Append($"[{value}]".P(), color);
-        content.Append(string.Intern($"{value} -> "));
-        
+        Append($"[{src.Identifier}]".P(), src.Color);
+        content.Append(string.Intern($"{src.Identifier} -> "));
+
         if (IsDebugLoggingEnabled && caller.IsInitialized)
         {
             caller.IfPresent(debugInfoContent =>
@@ -108,7 +107,7 @@ public static partial class Logger
     }
 
     public static FilePath GetLogFilePath(DateTime date)
-        => new FilePath("logs") / string.Intern($"{date.Year}-{date.Month}-{date.Day}.log");
+        => FilePath.Logs / string.Intern($"{date.Year}-{date.Month}-{date.Day}.log");
 
     private static void Append(string m, Color c)
     {
@@ -122,29 +121,6 @@ public static partial class Logger
         Console.Write(m);
         sb?.Append(m);
     }
-
-    private static (Color Color, string Source) VerifySource(LogSource source) =>
-        source switch
-        {
-            LogSource.App => (Color.LawnGreen, "CORE"),
-            LogSource.Cli => (Color.SteelBlue, "CLI"),
-            LogSource.UpdateClient => (Color.Coral, "UCLIENT"),
-            LogSource.Unknown => (Color.Fuchsia, "UNKNOWN"),
-            _ => throw new InvalidOperationException($"The specified LogSource {source} is invalid.")
-        };
-
-
-    private static (Color Color, string Level) VerifySeverity(LogSeverity severity) =>
-        severity switch
-        {
-            LogSeverity.Critical => (Color.Maroon, "CRITICAL"),
-            LogSeverity.Error => (Color.DarkRed, "ERROR"),
-            LogSeverity.Warning => (Color.Yellow, "WARN"),
-            LogSeverity.Info => (Color.SpringGreen, "INFO"),
-            LogSeverity.Verbose => (Color.Pink, "VERBOSE"),
-            LogSeverity.Debug => (Color.SandyBrown, "DEBUG"),
-            _ => throw new InvalidOperationException($"The specified LogSeverity ({severity}) is invalid.")
-        };
 
     public static string P(this string input, int padding = 10) => string.Intern(input.PadRight(padding));
 }
