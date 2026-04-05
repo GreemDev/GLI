@@ -7,8 +7,6 @@ namespace gli.Helpers;
 
 public static partial class Logger
 {
-    static Logger() => FilePath.Logs.CreateAsDirectory();
-
     private static readonly Lock LogSync = new();
 
     public static void Log(LogSeverity s, LogSource from, string message, Exception e = null,

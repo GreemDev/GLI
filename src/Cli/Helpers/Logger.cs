@@ -10,7 +10,19 @@ public static partial class Logger
 {
     public static readonly TextWriter TextWriter = new LoggerWriter();
 
-    public static bool WriteToFile { get; set; }
+    public static bool WriteToFile
+    {
+        get;
+        set
+        {
+            field = value;
+            if (field)
+            {
+                if (!FilePath.Logs.ExistsAsDirectory)
+                    FilePath.Logs.CreateAsDirectory();
+            }
+        }
+    }
 
     public static event Action<EventArgs> Event
     {
