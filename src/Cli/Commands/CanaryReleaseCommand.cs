@@ -1,5 +1,6 @@
 ﻿using CommandLine;
 using ForgejoApiClient;
+using ForgejoApiClient.Api;
 using gli.CommandLib;
 using gli.Helpers;
 using gli.REST.Forgejo;
@@ -26,6 +27,15 @@ public partial class CanaryReleaseCommand : ForgejoCommand
         {
             Logger.Error(LogSource.App, $"Could not find a release with the tag {ReleaseRef} on project '{ProjectPath}' on '{ForgejoEndpoint}'. Missing permissions?");
             return ExitCode.ProjectNotFound;
+        }
+
+        if (release.hide_archive_links is false)
+        {
+            await ForgejoClient.Repository.UpdateReleaseAsync(
+                ProjectOwner, ProjectName, release.id.Value, new EditReleaseOption
+                {
+                    hide_archive_links = true
+                });
         }
 
         await ForgejoClient.Repository.CreateReleaseAttachmentAsync(
