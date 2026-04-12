@@ -41,7 +41,7 @@ public partial class SendUpdateMessageCommand : ForgejoCommand
                 title: release.name,
                 description: ShowReleaseDescription ? release.body : null,
                 color: EmbedColor,
-                author: new(release.author?.login_name, iconUrl: release.author?.avatar_url),
+                author: new(release.author?.login_name ?? release.author?.login, iconUrl: release.author?.avatar_url),
                 url: release.html_url,
                 fields: CreateFields(release.assets),
                 thumbnail: new(EmbedThumbnailUrl)
@@ -50,7 +50,7 @@ public partial class SendUpdateMessageCommand : ForgejoCommand
                 title: release.name,
                 description: ShowReleaseDescription ? release.body : null,
                 color: EmbedColor,
-                author: new(release.author?.login_name, iconUrl: release.author?.avatar_url),
+                author: new(release.author?.login_name ?? release.author?.login, iconUrl: release.author?.avatar_url),
                 url: release.html_url,
                 fields: CreateFields(release.assets)
             );
