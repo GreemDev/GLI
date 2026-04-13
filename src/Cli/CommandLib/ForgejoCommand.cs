@@ -8,13 +8,13 @@ namespace gli.CommandLib;
 
 public abstract class ForgejoCommand : Command
 {
-    [Option('S', "server-url", Required = false, Default = "https://git.greemdev.net/",
-        HelpText = "The target GitLab instance to use.")]
+    [Option('S', "server-url", Required = false, Default = "https://git.ryujinx.app/",
+        HelpText = "The target Forgejo instance to use.")]
     public string ForgejoEndpoint { get; set; } = null!;
 
     [Option('T', "access-token", Required = false, Default = null,
         HelpText =
-            "https://git.greemdev.net/user/settings/applications/tokens/new | If a file next to the executable named '.accesstoken' exists, the contents of that file will be used here. An error will be thrown if that file does not exist and this argument is not provided.")]
+            "https://git.ryujinx.app/user/settings/applications/tokens/new | If a file next to the executable named '.accesstoken' exists, the contents of that file will be used here. An error will be thrown if that file does not exist and this argument is not provided.")]
     public string? AccessToken { get; set; }
 
     [Option('P', "project", Required = true,
