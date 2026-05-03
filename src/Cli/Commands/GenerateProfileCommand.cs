@@ -4,6 +4,8 @@ using gli.CommandLib;
 using gli.Helpers;
 using Gommon;
 using Octokit;
+using Starscript;
+using Parser = Starscript.Parser;
 
 namespace gli.Commands;
 
@@ -35,8 +37,12 @@ public class GenerateProfileCommand : NonRepositoryGitHubCommand
     public bool IncludePrivate { get; set; }
 
     [Option('h', "header", Default = null,
-        HelpText = "Header content. Use this for a proper README description of yourself, if desired.")]
+        HelpText = "Header content. Use this for a proper README description of yourself, if desired. Supports Starscript.")]
     public string? FileHeader { get; set; } = null!;
+
+    [Option('s', "disable-starscript", Default = false,
+        HelpText = "Disable Starscript parsing, compilation, and execution for the header content.")]
+    public bool StarscriptDisabled { get; set; } = false;
 
     [Option("result-file-name", Default = "README",
         HelpText = "The name of the resulting file, not including path or extension.")]
@@ -84,7 +90,47 @@ public class GenerateProfileCommand : NonRepositoryGitHubCommand
 
         if (FileHeader != null)
         {
-            result.AppendLine(FileHeader.Replace("\\n", "\n"));
+            if (!StarscriptDisabled)
+            {
+                if (!Parser.TryParse(FileHeader.Replace("\\n", "\n"), out var parserResult))
+                {
+                    Logger.Error(LogSource.App, "There were errors when parsing the file header script input:");
+                    foreach (var pError in parserResult.Errors)
+                    {
+                        Logger.Error(LogSource.App, $"| {pError}");
+                    }
+
+                    result.AppendLine(FileHeader.Replace("\\n", "\n"));
+                }
+                else
+                {
+                    var script = Compiler.SingleCompile(parserResult);
+
+#if DEBUG
+                    Logger.Debug(LogSource.App, "Script constants:");
+                    foreach (var (idx, constant) in script.Constants.ToArray().Index())
+                    {
+                        Logger.Debug(LogSource.App, $"{idx}: '{constant}'");
+                    }
+                    Logger.Debug(LogSource.App, "Executing script...");
+#endif
+
+                    try
+                    {
+                        result.AppendLine(script.Execute(StarscriptHelper.Hypervisor).ToString());
+                    }
+                    catch (StarscriptException se)
+                    {
+                        Logger.Error(LogSource.App, se);
+                        return ExitCode.ArgumentParseFailed;
+                    }
+                }
+            }
+            else
+            {
+                result.AppendLine(FileHeader.Replace("\\n", "\n"));
+            }
+
             result.AppendLine();
         }
 

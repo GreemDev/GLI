@@ -35,6 +35,9 @@ namespace gli.Helpers
         )
             where T : ISpanParsable<T>
             => T.Parse(s, formatProvider);
+
+        public static int TruncateToInt(this double d)
+            => (int)Math.Truncate(d);
     }
 }
 
