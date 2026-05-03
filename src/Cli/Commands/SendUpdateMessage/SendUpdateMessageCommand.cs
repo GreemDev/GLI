@@ -41,7 +41,10 @@ public partial class SendUpdateMessageCommand : ForgejoCommand
                 title: release.name,
                 description: ShowReleaseDescription ? release.body : null,
                 color: EmbedColor,
-                author: new(release.author?.login_name ?? release.author?.login, iconUrl: release.author?.avatar_url),
+                author: new(string.IsNullOrEmpty(release.author?.login_name)
+                        ? release.author?.login
+                        : release.author.login_name,
+                    iconUrl: release.author?.avatar_url),
                 url: release.html_url,
                 fields: CreateFields(release.assets),
                 thumbnail: new(EmbedThumbnailUrl)
@@ -50,7 +53,11 @@ public partial class SendUpdateMessageCommand : ForgejoCommand
                 title: release.name,
                 description: ShowReleaseDescription ? release.body : null,
                 color: EmbedColor,
-                author: new(release.author?.login_name ?? release.author?.login, iconUrl: release.author?.avatar_url),
+                author: new(
+                    string.IsNullOrEmpty(release.author?.login_name)
+                        ? release.author?.login
+                        : release.author.login_name,
+                    iconUrl: release.author?.avatar_url),
                 url: release.html_url,
                 fields: CreateFields(release.assets)
             );
@@ -59,9 +66,9 @@ public partial class SendUpdateMessageCommand : ForgejoCommand
     {
         var windowsX64 = assets.FirstOrDefault(x => x.name.ContainsIgnoreCase("win_x64"));
         var windowsArm64 = assets.FirstOrDefault(x => x.name.ContainsIgnoreCase("win_arm64"));
-        var linuxX64 = assets.FirstOrDefault(x => x.name.ContainsIgnoreCase("linux_x64") 
+        var linuxX64 = assets.FirstOrDefault(x => x.name.ContainsIgnoreCase("linux_x64")
                                                   && !x.name.EndsWithIgnoreCase(".AppImage"));
-        var linuxX64AppImage = assets.FirstOrDefault(x => x.name.ContainsIgnoreCase("x64") 
+        var linuxX64AppImage = assets.FirstOrDefault(x => x.name.ContainsIgnoreCase("x64")
                                                           && x.name.EndsWithIgnoreCase(".AppImage"));
         var macOsUniversal = assets.FirstOrDefault(x => x.name.ContainsIgnoreCase("macos_universal"));
         var macOsArm = assets.FirstOrDefault(x => x.name.ContainsIgnoreCase("macos_arm64"));
@@ -88,7 +95,8 @@ public partial class SendUpdateMessageCommand : ForgejoCommand
             if (asset is null)
                 return;
 
-            arrayBuilder.Add(new DiscordMessageEmbedField(friendlyName, $"[{asset.name}]({asset.browser_download_url})", inline));
+            arrayBuilder.Add(new DiscordMessageEmbedField(friendlyName, $"[{asset.name}]({asset.browser_download_url})",
+                inline));
         }
 
         void applyArtifacts(
