@@ -92,13 +92,17 @@ public class GenerateProfileCommand : NonRepositoryGitHubCommand
 
         foreach (var (org, repositories) in _organizationRepositories)
         {
-            if (org.Name != org.Login)
+            if (org.Name != org.Login && !string.IsNullOrEmpty(org.Name))
             {
                 result.AppendLine($"## {org.Name} ({org.Login})");
             }
-            else
+            else if (!string.IsNullOrEmpty(org.Name))
             {
                 result.AppendLine($"## {org.Name}");
+            } 
+            else
+            {
+                result.AppendLine($"## {org.Login}");
             }
             result.AppendLine($"> {org.Description}");
 
