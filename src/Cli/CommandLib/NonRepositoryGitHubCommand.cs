@@ -6,7 +6,7 @@ using Octokit;
 
 namespace gli.CommandLib;
 
-public abstract class GitHubCommand : Command
+public abstract class NonRepositoryGitHubCommand : Command
 {
     protected abstract bool NeedsAuthorization { get; }
 
@@ -14,10 +14,6 @@ public abstract class GitHubCommand : Command
         HelpText =
             "https://github.com/settings/tokens | If a file next to the executable named '.ghaccesstoken' exists, the contents of that file will be used here. An error will be thrown if that file does not exist and this argument is not provided.")]
     public string? AccessToken { get; set; }
-
-    [Option('R', "repository", Required = true,
-        HelpText = "The 'owner/project' you are requesting. For example, GreemDev/GLI.")]
-    public string Repository { get; set; } = null!;
 
     public IHttpClientProxy Http { get; private set; } = null!;
 
@@ -37,7 +33,7 @@ public abstract class GitHubCommand : Command
         }
 
         Http = GitHubApi.CreateHttpClient(AccessToken, HttpRequestTimeout);
-        GitHubClient = new GitHubClient(new ProductHeaderValue("gli/1.0.0"))
+        GitHubClient = new GitHubClient(new ProductHeaderValue("gli", "1.0.0"))
         {
             Credentials = new Credentials(token: AccessToken)
         };
