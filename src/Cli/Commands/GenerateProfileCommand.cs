@@ -21,7 +21,8 @@ public class GenerateProfileCommand : NonRepositoryGitHubCommand
     [Option('u', "username", Required = true, HelpText = "The user to list repositories for.")]
     public string User { get; set; } = null!;
 
-    [Option('o', "organizations", Default = null, HelpText = "The organizations to list repositories for.", Separator = ';')]
+    [Option('o', "organizations", Default = null, HelpText = "The organizations to list repositories for.",
+        Separator = ';')]
     public IEnumerable<string>? Organizations { get; set; } = null!;
 
     [Option('e', "exclusions", Default = null,
@@ -31,14 +32,20 @@ public class GenerateProfileCommand : NonRepositoryGitHubCommand
     [Option('i', "case-insensitive-exclusions", Default = false,
         HelpText = "Use a case-insensitive comparer when checking exclusions.")]
     public bool CaseInsensitiveExclusions { get; set; }
-    
+
     [Option('p', "include-private", Default = false,
         HelpText = "Include private repositories that the token can see.")]
     public bool IncludePrivate { get; set; }
 
     [Option('h', "header", Default = null,
-        HelpText = "Header content. Use this for a proper README description of yourself, if desired. Supports Starscript.")]
-    public string? FileHeader { get; set; } = null!;
+        HelpText =
+            "Header content. Use this for a proper README description of yourself, if desired. Supports Starscript.")]
+    public string? FileHeader { get; set; }
+
+    [Option('H', "header-file", Default = null,
+        HelpText =
+            "Header content, read from a file. Use this for a proper README description of yourself, if desired. Supports Starscript.")]
+    public string? FileHeaderFile { get; set; }
 
     [Option('s', "disable-starscript", Default = false,
         HelpText = "Disable Starscript parsing, compilation, and execution for the header content.")]
@@ -67,6 +74,24 @@ public class GenerateProfileCommand : NonRepositoryGitHubCommand
 
     protected override async ValueTask<ExitCode> InvokeAsync()
     {
+        if (FileHeader != null && FileHeaderFile != null)
+        {
+            Logger.Warn(LogSource.App,
+                "-h (--header) and -H (--header-file) should not be used together, as they override the same data.");
+            Logger.Warn(LogSource.App,
+                "Using content from file (-H/--header-file) if it exists. Using raw content parameter if it doesn't exist.");
+        }
+
+        if (FileHeaderFile != null)
+        {
+            if (File.Exists(FileHeaderFile))
+            {
+                FileHeader = await File.ReadAllTextAsync(FileHeaderFile);
+            }
+
+            FileHeaderFile = null;
+        }
+
         var userRepositories = ApplyExclusions(await GitHubClient.Repository.GetAllForUser(User))
             .ToArray();
 
@@ -112,6 +137,7 @@ public class GenerateProfileCommand : NonRepositoryGitHubCommand
                     {
                         Logger.Debug(LogSource.App, $"{idx}: '{constant}'");
                     }
+
                     Logger.Debug(LogSource.App, "Executing script...");
 #endif
 
@@ -145,7 +171,7 @@ public class GenerateProfileCommand : NonRepositoryGitHubCommand
             else if (!string.IsNullOrEmpty(org.Name))
             {
                 result.AppendLine($"## {org.Name}");
-            } 
+            }
             else
             {
                 result.AppendLine($"## {org.Login}");
@@ -194,16 +220,17 @@ public class GenerateProfileCommand : NonRepositoryGitHubCommand
 
         foreach (var repoGroup in grouped)
         {
-            var inner = new StringBuilder().AppendLine($"### {repoGroup.Language}");
+            var inner = new StringBuilder($"### {repoGroup.Language}").AppendLine().AppendLine();
 
             foreach (var activeRepo in repoGroup.Active.OrderByDescending(x => x.StargazersCount))
             {
                 if (activeRepo.Private && !IncludePrivate) continue;
 
                 if (string.IsNullOrEmpty(activeRepo.Description))
-                    inner.AppendLine($"  - [{activeRepo.Name}]({activeRepo.HtmlUrl}) - ★{activeRepo.StargazersCount}");
+                    inner.AppendLine($"- [{activeRepo.Name}]({activeRepo.HtmlUrl}) - ★{activeRepo.StargazersCount}");
                 else
-                    inner.AppendLine($"  - [{activeRepo.Name}]({activeRepo.HtmlUrl}) - ★{activeRepo.StargazersCount}: `{activeRepo.Description}`");
+                    inner.AppendLine(
+                        $"- [{activeRepo.Name}]({activeRepo.HtmlUrl}) - ★{activeRepo.StargazersCount}: `{activeRepo.Description}`");
             }
 
             if (repoGroup.Archived.Length > 0)
@@ -214,9 +241,11 @@ public class GenerateProfileCommand : NonRepositoryGitHubCommand
                     if (archivedRepo.Private && !IncludePrivate) continue;
 
                     if (string.IsNullOrEmpty(archivedRepo.Description))
-                        inner.AppendLine($"    - [{archivedRepo.Name}]({archivedRepo.HtmlUrl}) - ★{archivedRepo.StargazersCount}");
+                        inner.AppendLine(
+                            $"  - [{archivedRepo.Name}]({archivedRepo.HtmlUrl}) - ★{archivedRepo.StargazersCount}");
                     else
-                        inner.AppendLine($"    - [{archivedRepo.Name}]({archivedRepo.HtmlUrl}) - ★{archivedRepo.StargazersCount}: `{archivedRepo.Description}`");
+                        inner.AppendLine(
+                            $"  - [{archivedRepo.Name}]({archivedRepo.HtmlUrl}) - ★{archivedRepo.StargazersCount}: `{archivedRepo.Description}`");
                 }
             }
 
@@ -243,7 +272,7 @@ public class GenerateProfileCommand : NonRepositoryGitHubCommand
 
         foreach (var repoGroup in grouped)
         {
-            var inner = new StringBuilder().AppendLine($"### {repoGroup.Language}");
+            var inner = new StringBuilder($"### {repoGroup.Language}").AppendLine().AppendLine();
 
             foreach (var activeRepo in repoGroup.Active.OrderByDescending(x => x.StargazersCount))
             {
@@ -252,7 +281,8 @@ public class GenerateProfileCommand : NonRepositoryGitHubCommand
                 if (string.IsNullOrEmpty(activeRepo.Description))
                     inner.AppendLine($"- [{activeRepo.Name}]({activeRepo.HtmlUrl}) - ★{activeRepo.StargazersCount}");
                 else
-                    inner.AppendLine($"- [{activeRepo.Name}]({activeRepo.HtmlUrl}) - ★{activeRepo.StargazersCount}: `{activeRepo.Description}`");
+                    inner.AppendLine(
+                        $"- [{activeRepo.Name}]({activeRepo.HtmlUrl}) - ★{activeRepo.StargazersCount}: `{activeRepo.Description}`");
             }
 
             if (repoGroup.Archived.Length > 0)
@@ -263,9 +293,11 @@ public class GenerateProfileCommand : NonRepositoryGitHubCommand
                     if (archivedRepo.Private && !IncludePrivate) continue;
 
                     if (string.IsNullOrEmpty(archivedRepo.Description))
-                        inner.AppendLine($"  - [{archivedRepo.Name}]({archivedRepo.HtmlUrl}) - ★{archivedRepo.StargazersCount}");
+                        inner.AppendLine(
+                            $"  - [{archivedRepo.Name}]({archivedRepo.HtmlUrl}) - ★{archivedRepo.StargazersCount}");
                     else
-                        inner.AppendLine($"  - [{archivedRepo.Name}]({archivedRepo.HtmlUrl}) - ★{archivedRepo.StargazersCount}: `{archivedRepo.Description}`");
+                        inner.AppendLine(
+                            $"  - [{archivedRepo.Name}]({archivedRepo.HtmlUrl}) - ★{archivedRepo.StargazersCount}: `{archivedRepo.Description}`");
                 }
             }
 
