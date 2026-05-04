@@ -51,7 +51,7 @@ public partial class GenerateProfileCommand
                     Logger.Debug(LogSource.App, "Script constants:");
                     foreach (var (idx, constant) in script.Constants.ToArray().Index())
                     {
-                        Logger.Debug(LogSource.App, $"{idx}: '{constant}'");
+                        Logger.Debug(LogSource.App, $"{idx}: '{constant}'".ReplaceLineEndings("<newline>"));
                     }
 
                     Logger.Debug(LogSource.App, "Executing script...");
