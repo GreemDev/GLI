@@ -37,10 +37,21 @@ public abstract class GitHubCommand : Command
         }
 
         Http = GitHubApi.CreateHttpClient(AccessToken, HttpRequestTimeout);
-        GitHubClient = new GitHubClient(new ProductHeaderValue("gli/1.0.0"))
+
+        try
         {
-            Credentials = new Credentials(token: AccessToken)
-        };
+            // This allows GLI to work on GitHub Enterprise Server and the more commonly used Gitea & Forgejo.
+            // Gitea and Forgejo are largely API-compatible with GitHub.
+            GitHubClient = Environment.GetEnvironmentVariable("GITHUB_API_URL") is { } apiUrl
+                ? new GitHubClient(new ProductHeaderValue("gli", "1.0.0"), new Uri(apiUrl))
+                : new GitHubClient(new ProductHeaderValue("gli", "1.0.0"));
+        }
+        catch (UriFormatException)
+        {
+            return Result.MessageFailure("GITHUB_API_URL is not a well-formed URI string.");
+        }
+
+        GitHubClient.Credentials = new Credentials(token: AccessToken);
 
         return Result.Success;
     }
