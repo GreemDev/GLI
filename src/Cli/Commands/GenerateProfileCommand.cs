@@ -150,7 +150,13 @@ public class GenerateProfileCommand : NonRepositoryGitHubCommand
             {
                 result.AppendLine($"## {org.Login}");
             }
-            result.AppendLine($"> {org.Description}");
+
+            result.AppendLine();
+
+            if (!string.IsNullOrEmpty(org.Description))
+            {
+                result.AppendLine($"> {org.Description}").AppendLine();
+            }
 
             GenerateOrgRepoMarkdown(result, repositories);
         }
