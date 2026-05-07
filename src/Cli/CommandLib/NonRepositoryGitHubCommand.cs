@@ -47,7 +47,8 @@ public abstract class NonRepositoryGitHubCommand : Command
             return Result.MessageFailure("GITHUB_API_URL is not a well-formed URI string.");
         }
 
-        GitHubClient.Credentials = new Credentials(token: AccessToken);
+        if (AccessToken != null)
+            GitHubClient.Credentials = new Credentials(token: AccessToken);
 
         return Result.Success;
     }

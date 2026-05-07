@@ -4,7 +4,7 @@ namespace gli.Commands;
 
 public partial class GenerateProfileCommand
 {
-    protected override bool NeedsAuthorization => true;
+    protected override bool NeedsAuthorization => false;
 
     [Option('u', "username", Required = true, HelpText = "The user to list repositories for.")]
     public string User { get; set; } = null!;
