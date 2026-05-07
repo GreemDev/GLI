@@ -50,9 +50,7 @@ public partial class GenerateProfileCommand
 
     private void GenerateOrgRepoMarkdown(StringBuilder sb, Repository[] repositories)
     {
-        var grouped = Group(repositories).ToArray();
-
-        foreach (var repoGroup in grouped)
+        foreach (var repoGroup in Group(repositories))
         {
             var inner = new StringBuilder($"### {repoGroup.Language}").AppendLine().AppendLine();
 
@@ -80,9 +78,7 @@ public partial class GenerateProfileCommand
 
     private void GenerateUserRepoMarkdown(StringBuilder sb)
     {
-        var grouped = Group(_userRepositories).ToArray();
-
-        foreach (var repoGroup in grouped)
+        foreach (var repoGroup in Group(_userRepositories))
         {
             var inner = new StringBuilder($"### {repoGroup.Language}").AppendLine().AppendLine();
 

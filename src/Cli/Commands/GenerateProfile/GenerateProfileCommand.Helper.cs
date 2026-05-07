@@ -39,7 +39,7 @@ public partial class GenerateProfileCommand
     ///     <br/><br/>
     ///     Repositories with no language are skipped entirely, as those are usually just metadata repositories (like organization/user profile repositories).
     /// </summary>
-    private static IEnumerable<(string Language, Repository[] Active, Repository[] Archived)>
+    private static IOrderedEnumerable<(string Language, Repository[] Active, Repository[] Archived)>
         Group(IEnumerable<Repository> repositories)
     {
         return repositories
