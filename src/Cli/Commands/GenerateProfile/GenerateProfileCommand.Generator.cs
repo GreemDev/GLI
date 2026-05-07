@@ -73,7 +73,7 @@ public partial class GenerateProfileCommand
                 {
                     if (archivedRepo.Private && !IncludePrivate) continue;
 
-                    inner.AppendLine($"  - {FormatMarkdown(archivedRepo)}");
+                    inner.AppendLine($"    - {FormatMarkdown(archivedRepo)}");
                 }
             }
 
