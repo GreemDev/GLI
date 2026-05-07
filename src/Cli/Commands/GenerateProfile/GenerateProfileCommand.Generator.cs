@@ -23,24 +23,21 @@ public partial class GenerateProfileCommand
             ? $"[{repo.Name}]({repo.HtmlUrl}) - ★{repo.StargazersCount}"
             : $"[{repo.Name}]({repo.HtmlUrl}) - ★{repo.StargazersCount}: `{repo.Description.Trim()}`";
 
+    private static string FormatMarkdownHeader(Organization org)
+    {
+        if (!string.IsNullOrEmpty(org.Name) && org.Name != org.Login)
+            return $"## {org.Name} ({org.Login})";
+
+        return !string.IsNullOrEmpty(org.Name)
+            ? $"## {org.Name}"
+            : $"## {org.Login}";
+    }
+
     private void GenerateOrgMarkdown(StringBuilder sb)
     {
         foreach (var (org, repositories) in _organizationRepositories)
         {
-            if (org.Name != org.Login && !string.IsNullOrEmpty(org.Name))
-            {
-                sb.AppendLine($"## {org.Name} ({org.Login})");
-            }
-            else if (!string.IsNullOrEmpty(org.Name))
-            {
-                sb.AppendLine($"## {org.Name}");
-            }
-            else
-            {
-                sb.AppendLine($"## {org.Login}");
-            }
-
-            sb.AppendLine();
+            sb.AppendLine(FormatMarkdownHeader(org)).AppendLine();
 
             if (!string.IsNullOrEmpty(org.Description))
             {
