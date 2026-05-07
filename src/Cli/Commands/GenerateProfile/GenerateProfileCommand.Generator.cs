@@ -23,7 +23,7 @@ public partial class GenerateProfileCommand
     private static string FormatMarkdown(Repository repo)
         => string.IsNullOrEmpty(repo.Description)
             ? $"[{repo.Name}]({repo.HtmlUrl}) - ★{repo.StargazersCount}"
-            : $"[{repo.Name}]({repo.HtmlUrl}) - ★{repo.StargazersCount}: `{repo.Description}`";
+            : $"[{repo.Name}]({repo.HtmlUrl}) - ★{repo.StargazersCount}: `{repo.Description.Trim()}`";
 
     private void GenerateOrgMarkdown(StringBuilder sb)
     {
