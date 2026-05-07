@@ -51,7 +51,10 @@ public partial class GenerateProfileCommand
                 var archived = group.Where(x => x.Archived).ToArray();
                 return (Language: group.Key, Active: active, Archived: archived);
             })
-            .OrderByDescending(x => x.Active.Length);
+            .OrderByDescending(x =>
+                x.Active.Sum(y => y.StargazersCount) + x.Archived.Sum(y => y.StargazersCount)
+            )
+            .ThenByDescending(x => x.Active.Length);
     }
 
     /// <summary>
