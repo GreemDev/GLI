@@ -9,8 +9,6 @@ public partial class GenerateProfileCommand
     {
         result = new();
 
-        LoadHeaderFromFile();
-
         if (!ApplyFileHeader(result))
             return false;
 

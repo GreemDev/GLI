@@ -17,6 +17,8 @@ public partial class GenerateProfileCommand : NonRepositoryGitHubCommand
     {
         await LoadRepositoriesAsync();
 
+        LoadHeaderFromFile();
+
         if (!GenerateMarkdown(out StringBuilder result))
             return ExitCode.ArgumentParseFailed;
 
