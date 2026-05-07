@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System.Collections.Immutable;
+using System.Text;
+using gli.Helpers;
 using Octokit;
 
 namespace gli.Commands;
@@ -45,10 +47,11 @@ public partial class GenerateProfileCommand
             }
 
             GenerateOrgRepoMarkdown(sb, repositories);
+            Logger.Info(LogSource.App, $"Generated profile info from repositories owned by organization '{org.Login}'.");
         }
     }
 
-    private void GenerateOrgRepoMarkdown(StringBuilder sb, Repository[] repositories)
+    private void GenerateOrgRepoMarkdown(StringBuilder sb, ImmutableArray<Repository> repositories)
     {
         foreach (var repoGroup in Group(repositories))
         {
@@ -102,5 +105,7 @@ public partial class GenerateProfileCommand
 
             sb.Append(inner).AppendLine();
         }
+
+        Logger.Info(LogSource.App, $"Generated profile info from repositories owned by '{User}'.");
     }
 }

@@ -21,6 +21,7 @@ public partial class GenerateProfileCommand
             if (File.Exists(FileHeaderFile))
             {
                 FileHeader = File.ReadAllText(FileHeaderFile);
+                Logger.Info(LogSource.App, $"Successfully read header content from '{Path.GetFullPath(FileHeaderFile)}'.");
             }
 
             FileHeaderFile = null;
@@ -60,6 +61,7 @@ public partial class GenerateProfileCommand
                     try
                     {
                         sb.AppendLine(script.Execute(StarscriptHelper.Hypervisor).ToString());
+                        Logger.Info(LogSource.App, "Successfully injected a Starscript file header.");
                     }
                     catch (StarscriptException se)
                     {
@@ -71,6 +73,7 @@ public partial class GenerateProfileCommand
             else
             {
                 sb.AppendLine(FileHeader.Replace("\\n", "\n"));
+                Logger.Info(LogSource.App, "Successfully injected a string file header.");
             }
 
             sb.AppendLine();

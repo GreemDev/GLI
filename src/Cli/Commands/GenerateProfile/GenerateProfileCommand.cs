@@ -19,6 +19,8 @@ public partial class GenerateProfileCommand : NonRepositoryGitHubCommand
 
         LoadHeaderFromFile();
 
+        Logger.Info(LogSource.App, "Running the generator...");
+
         if (!GenerateMarkdown(out StringBuilder result))
             return ExitCode.ArgumentParseFailed;
 

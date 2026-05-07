@@ -1,35 +1,45 @@
-﻿using gli.Helpers;
+﻿using System.Collections.Immutable;
+using gli.Helpers;
 using Gommon;
 using Octokit;
+using Starscript.Util;
 
 namespace gli.Commands;
 
 public partial class GenerateProfileCommand
 {
-    private readonly Dictionary<Organization, Repository[]> _organizationRepositories = new();
-    private Repository[] _userRepositories = [];
+    private readonly Dictionary<Organization, ImmutableArray<Repository>> _organizationRepositories = new();
+    private ImmutableArray<Repository> _userRepositories = [];
 
     /// <summary>
     ///     Organization repositories are loaded to <see cref="_organizationRepositories"/>, user repositories are loaded to <see cref="_userRepositories"/>.
     /// </summary>
     private async Task LoadRepositoriesAsync()
     {
-        _userRepositories = ApplyExclusions(await GitHubClient.Repository.GetAllForUser(User))
-            .ToArray();
+        (_userRepositories, var excludedUserRepos) = await ApplyExclusionsAsync(GitHubClient.Repository.GetAllForUser(User));
 
-        Logger.Info(LogSource.App,
-            $"Found {_userRepositories.Length} repositories for user '{User}' after applying exclusions.");
+        Logger.Info(LogSource.App, $"Found {
+            "repository".Pluralize(_userRepositories.Length, Plurality.Ies, prefixQuantity: true)
+        } for user '{User}'{
+            (excludedUserRepos is 0
+                ? "; no exclusions matched."
+                : $" after applying {"matching exclusion".Pluralize(excludedUserRepos, prefixQuantity: true)}.")
+        }");
 
         // ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
         foreach (var org in Organizations ?? [])
         {
-            var orgRepositories = ApplyExclusions(await GitHubClient.Repository.GetAllForOrg(org))
-                .ToArray();
+            var (orgRepositories, excludedCount) = await ApplyExclusionsAsync(GitHubClient.Repository.GetAllForOrg(org));
 
             _organizationRepositories[await GitHubClient.Organization.Get(org)] = orgRepositories;
 
-            Logger.Info(LogSource.App,
-                $"Found {orgRepositories.Length} repositories for organization '{org}' after applying exclusions.");
+            Logger.Info(LogSource.App, $"Found {
+                "repository".Pluralize(orgRepositories.Length, Plurality.Ies, prefixQuantity: true)
+            } for organization '{org}'{
+                (excludedCount is 0
+                    ? "; no exclusions matched."
+                    : $" after applying {"matching exclusion".Pluralize(excludedCount, prefixQuantity: true)}.")
+            }");
         }
     }
 
@@ -60,13 +70,35 @@ public partial class GenerateProfileCommand
     /// <summary>
     ///     Apply the exclusions defined in <see cref="Exclusions"/> (if any are present), respecting case sensitivity from <see cref="CaseInsensitiveExclusions"/>.
     /// </summary>
-    private IEnumerable<Repository> ApplyExclusions(IEnumerable<Repository> input)
+    private async Task<(ImmutableArray<Repository> Result, int Excluded)> ApplyExclusionsAsync(Task<IReadOnlyList<Repository>> input)
     {
-        if (Exclusions is null) return input;
+        if (Exclusions is null || !Exclusions.Any())
+            return await input.Then(x => (x.ToImmutableArray(), 0));
 
-        return input.Where(x => !(CaseInsensitiveExclusions
-            ? Exclusions.ContainsIgnoreCase(x.FullName)
-            : Exclusions.Contains(x.FullName))
-        );
+        var result = ImmutableArray.CreateBuilder<Repository>();
+        int excludedCount = 0;
+
+        foreach (var repo in await input)
+        {
+            if (isExcluded(repo))
+            {
+                excludedCount++;
+            }
+            else
+            {
+                result.Add(repo);
+            }
+        }
+
+        return (result.DrainToImmutable(), excludedCount);
+
+        bool isExcluded(Repository repo)
+        {
+            if (Exclusions is null) return false;
+
+            return CaseInsensitiveExclusions
+                ? Exclusions.ContainsIgnoreCase(repo.FullName)
+                : Exclusions.Contains(repo.FullName);
+        }
     }
 }
