@@ -47,9 +47,8 @@ public class AsciiCommand : Command
             font = FigletFont.Load(await resp.Content.ReadAsStreamAsync());
         }
 
-        var figlet = new Figlet(font);
-
-        var lines = figlet.ToAscii(Content).ConcreteValue.Split('\n');
+        var lines = Figlet.GetAscii(Content, font)
+            .ConcreteValue.Split('\n');
 
         foreach (var line in lines)
         {
