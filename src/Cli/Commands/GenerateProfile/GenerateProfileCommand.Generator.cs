@@ -37,6 +37,8 @@ public partial class GenerateProfileCommand
 
     private void GenerateOrgMarkdown(StringBuilder sb)
     {
+        if (OrganizationMode) return;
+
         foreach (var (org, repositories) in _organizationRepositories)
         {
             sb.AppendLine(FormatMarkdownHeader(org)).AppendLine();

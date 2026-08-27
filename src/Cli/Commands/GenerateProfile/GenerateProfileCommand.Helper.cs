@@ -16,15 +16,32 @@ public partial class GenerateProfileCommand
     /// </summary>
     private async Task LoadRepositoriesAsync()
     {
-        (_userRepositories, var excludedUserRepos) = await ApplyExclusionsAsync(GitHubClient.Repository.GetAllForUser(User));
+        if (OrganizationMode)
+        {
+            (_userRepositories, var excludedUserRepos) = await ApplyExclusionsAsync(GitHubClient.Repository.GetAllForOrg(User));
 
-        Logger.Info(LogSource.App, $"Found {
-            "repository".Pluralize(_userRepositories.Length, Plurality.Ies, prefixQuantity: true)
-        } for user '{User}'{
-            (excludedUserRepos is 0
-                ? "; no exclusions matched."
-                : $" after applying {"matching exclusion".Pluralize(excludedUserRepos, prefixQuantity: true)}.")
-        }");
+            Logger.Info(LogSource.App, $"Found {
+                "repository".Pluralize(_userRepositories.Length, Plurality.Ies, prefixQuantity: true)
+            } for organization '{User}'{
+                (excludedUserRepos is 0
+                    ? "; no exclusions matched."
+                    : $" after applying {"matching exclusion".Pluralize(excludedUserRepos, prefixQuantity: true)}.")
+            }");
+        }
+        else
+        {
+            (_userRepositories, var excludedUserRepos) = await ApplyExclusionsAsync(GitHubClient.Repository.GetAllForUser(User));
+
+            Logger.Info(LogSource.App, $"Found {
+                "repository".Pluralize(_userRepositories.Length, Plurality.Ies, prefixQuantity: true)
+            } for user '{User}'{
+                (excludedUserRepos is 0
+                    ? "; no exclusions matched."
+                    : $" after applying {"matching exclusion".Pluralize(excludedUserRepos, prefixQuantity: true)}.")
+            }");
+        }
+
+        if (OrganizationMode) return;
 
         // ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
         foreach (var org in Organizations ?? [])

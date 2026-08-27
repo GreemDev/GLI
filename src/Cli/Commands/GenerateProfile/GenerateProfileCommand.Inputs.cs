@@ -6,12 +6,16 @@ public partial class GenerateProfileCommand
 {
     protected override bool NeedsAuthorization => false;
 
-    [Option('u', "username", Required = true, HelpText = "The user to list repositories for.")]
+    [Option('u', "username", Required = true, HelpText = "The user or organization to list repositories for.")]
     public string User { get; set; } = null!;
 
-    [Option('o', "organizations", Default = null, HelpText = "The organizations to list repositories for.",
+    [Option('o', "organizations", Default = null, HelpText = "The organizations to list repositories for. Cannot use if using an organization as username.",
         Separator = ';')]
     public IEnumerable<string>? Organizations { get; set; } = null!;
+
+    [Option("for-org", Default = false,
+        HelpText = "Treats the 'username' option as an organization and ignores the additional organizations option. Useful for generating an organization README.")]
+    public bool OrganizationMode { get; set; } = false;
 
     [Option('e', "exclusions", Default = null,
         HelpText = "The fully-qualified names of repositories to ignore; i.e. microsoft/vscode.", Separator = ';')]
