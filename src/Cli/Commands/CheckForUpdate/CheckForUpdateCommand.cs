@@ -85,30 +85,8 @@ public partial class CheckForUpdateCommand : Command
     [SuppressMessage("ReSharper", "HeuristicUnreachableCode")]
     public static string GetRequiredGliBinaryName()
     {
-#pragma warning disable CS8519 // The given expression never matches the provided constant.
-        if (Program.PlatformExtension is not "%%GLI_PLATFORM_EXTENSION%%")
-#pragma warning restore CS8519 // The given expression never matches the provided constant.
-
-        {
-            const string result = $"gli-{Program.PlatformExtension}";
-            return OperatingSystem.IsWindows() ? $"{result}.exe" : result;
-        }
-
-        var archString = RuntimeInformation.OSArchitecture switch
-        {
-            Architecture.X86 => "x86",
-            Architecture.X64 => "x64",
-            Architecture.Arm => "arm",
-            Architecture.Arm64 => "arm64",
-            Architecture.LoongArch64 => "loongarch64",
-            _ => throw new ArgumentOutOfRangeException(RuntimeInformation.OSArchitecture.Name)
-        };
-
-        if (OperatingSystem.IsWindows())
-            return $"gli-win-{archString}.exe";
-
-        string os = OperatingSystem.IsLinux() ? "linux" : "osx"; //windows is handled above because of .exe
-
-        return $"gli-{os}-{archString}";
+        return OperatingSystem.IsWindows()
+            ? $"gli-{RuntimeInformation.RuntimeIdentifier}.exe"
+            : $"gli-{RuntimeInformation.RuntimeIdentifier}";
     }
 }

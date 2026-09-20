@@ -4,19 +4,9 @@ if [ $# != 2 ]; then
    exit 1
 fi
 
-function setup {
-   sed -r --in-place "s/\%\%GLI_PLATFORM_EXTENSION\%\%/$1/g;" Program.cs
-}
-
-function cleanup {
-   git restore .
-}
-
 function pub {
   echo "Compiling for $1..."
-  setup $1
   dotnet publish -c release -r $1 --self-contained -o ../../build/$1 --p:Version="$2"
-  cleanup
 
   if stringContain "win" $1; then
     mv ../../build/$1/gli.exe ../../artifacts/gli-$1.exe

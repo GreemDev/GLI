@@ -4,8 +4,6 @@ using gli.Helpers;
 
 public static class Program
 {
-    public const string PlatformExtension = "%%GLI_PLATFORM_EXTENSION%%";
-    
     static Program()
     {
         Logger.OutputLogToStandardOut();
