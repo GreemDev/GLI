@@ -6,19 +6,19 @@ fi
 
 function pub {
   echo "Compiling for $1..."
-  dotnet publish -c release -r $1 --self-contained -o ../../build/$1 --p:Version="$2"
+  dotnet publish -c release -r $1 --self-contained -o ../../buildOut/$1 --p:Version="$2"
 
   if stringContain "win" $1; then
-    mv ../../build/$1/gli.exe ../../artifacts/gli-$1.exe
+    mv ../../buildOut/$1/gli.exe ../../artifacts/gli-$1.exe
   else
-    mv ../../build/$1/gli ../../artifacts/gli-$1
+    mv ../../buildOut/$1/gli ../../artifacts/gli-$1
   fi
 }
 
 stringContain() { case $2 in *$1* ) return 0;; *) return 1;; esac ;}
 
 echo "Cleaning previous build & packages..."
-rm -rf build
+rm -rf buildOut
 rm -rf artifacts
 mkdir artifacts
 
